@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\FoodstuffCategoryController;
 use App\Http\Controllers\FoodstuffController;
+use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -21,3 +22,6 @@ Route::post('/add-foodstuff-category', [FoodstuffCategoryController::class, 'add
 
 Route::get('/add-foodstuff-form', [FoodstuffController::class, 'showAddFoodstuff'])->name('show-add-foodstuff');
 Route::post('/add-foodstuff', [FoodstuffController::class, 'addFoodstuff'])->name('add-foodstuff');
+
+Route::get('/add-recipe-form', [RecipeController::class, 'showAddRecipe'])->name('show-add-recipe');
+Route::post('/add-recipe', [RecipeController::class, 'addRecipe'])->name('add-recipe');
