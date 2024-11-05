@@ -14,4 +14,12 @@ class FoodstuffRepository
             Log::error('Can\'t add foodstuff: ' . $e->getMessage());
         }
     }
+
+    public function editFoodstuff($foodstuffData, $id) {
+        try {
+            return Foodstuff::where('id', $id)->update($foodstuffData);
+        } catch (\Exception $e) {
+            Log::error('Can\'t edit foodstuff: ' . $e->getMessage());
+        }
+    }
 }

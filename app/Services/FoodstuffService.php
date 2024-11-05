@@ -15,4 +15,8 @@ class FoodstuffService
     public function addFoodstuff($foodstuffdata) {
         return $this->foodstuffRepository->addFoodstuff($foodstuffdata);
     }
+
+    public function editFoodstuff($foodstuffdata, $id) {
+        return $this->foodstuffRepository->editFoodstuff($foodstuffdata, $id);
+    }
 }

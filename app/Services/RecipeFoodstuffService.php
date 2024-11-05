@@ -11,7 +11,16 @@ class RecipeFoodstuffService
     public function __construct() {
         $this->recipeFoodstuffRepository = new RecipeFoodstuffRepository();
     }
-    public function addRecipeFoodstuff($recipeFoodstuffData) {
-        return $this->recipeFoodstuffRepository->addRecipeFoodstuff($recipeFoodstuffData);
+    public function addRecipeFoodstuff($recipeId, $foodstuffs) {
+        $this->recipeFoodstuffRepository->addRecipeFoodstuff($recipeId, $foodstuffs);
     }
+
+    public function getRecipeFoodstuffs($id) {
+        return $this->recipeFoodstuffRepository->getRecipeFoodstuffs($id);
+    }
+
+    public function deleteRecipeFoodstuff($recipeId) {
+        $this->recipeFoodstuffRepository->deleteRecipeFoodstuff($recipeId);
+    }
+
 }

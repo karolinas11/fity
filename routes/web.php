@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
+
     return view('welcome');
 });
 
@@ -25,3 +26,19 @@ Route::post('/add-foodstuff', [FoodstuffController::class, 'addFoodstuff'])->nam
 
 Route::get('/add-recipe-form', [RecipeController::class, 'showAddRecipe'])->name('show-add-recipe');
 Route::post('/add-recipe', [RecipeController::class, 'addRecipe'])->name('add-recipe');
+
+Route::get('/user/{userId}', [UserController::class, 'assignRecipesToUser'])->name('assign-recipes-to-user');
+
+Route::get('/recipes', [RecipeController::class, 'showRecipesList'])->name('show-recipes-list');
+Route::get('/foodstuffs', [FoodstuffController::class, 'showFoodstuffsList'])->name('show-foodstuffs-list');
+
+Route::get('/foodstuff/{foodstuffId}/edit', [FoodstuffController::class, 'showFoodstuffEdit'])->name('show-foodstuff-edit');
+Route::post('/foodstuff/{foodstuffId}/edit', [FoodstuffController::class, 'editFoodstuff'])->name('edit-foodstuff');
+Route::delete('/foodstuff/{foodstuffId}/delete', [FoodstuffController::class, 'deleteFoodstuff'])->name('delete-foodstuff');
+
+Route::get('/recipe/{recipeId}/edit', [RecipeController::class, 'showRecipeEdit'])->name('show-recipe-edit');
+Route::post('/recipe/{recipeId}/edit', [RecipeController::class, 'editRecipe'])->name('edit-recipe');
+Route::delete('/recipe/{recipeId}/delete', [RecipeController::class, 'deleteRecipe'])->name('delete-recipe');
+
+
+Route::get('/ide-gas', [RecipeController::class, 'printRecipes'])->name('ide-gas');

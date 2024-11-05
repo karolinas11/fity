@@ -23,7 +23,7 @@ class FoodstuffCategoryController extends Controller
         ];
 
         $foodstuffCategory = $this->foodstuffCategoryService->addFoodstuffCategory($foodstuffCategoryData);
-        return response()->json($foodstuffCategory);
+        return redirect()->route('show-add-foodstuff-category');
     }
 
 }

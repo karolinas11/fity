@@ -15,4 +15,22 @@ class RecipeRepository
             Log::error('Can\'t add recipe: ' . $e->getMessage());
         }
     }
+
+    public function editRecipe($recipeData, $id) {
+        try {
+            $recipe = Recipe::find($id);
+            $recipe->name = $recipeData['name'];
+            $recipe->description = $recipeData['description'];
+            $recipe->short_description = $recipeData['short_description'];
+            $recipe->type = $recipeData['type'];
+            $recipe->save();
+            return $recipe;
+        } catch (QueryException $e) {
+            Log::error('Can\'t edit recipe: ' . $e->getMessage());
+        }
+    }
+
+    public function getRecipeFoodstuffs($id) {
+        return Recipe::find($id)->foodstuffs;
+    }
 }

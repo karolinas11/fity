@@ -14,4 +14,12 @@ class RecipeService
     public function addRecipe($recipeData) {
         return $this->recipeRepository->addRecipe($recipeData);
     }
+
+    public function editRecipe($recipeData, $id) {
+        return $this->recipeRepository->editRecipe($recipeData, $id);
+    }
+
+    public function getRecipeFoodstuffs($id) {
+        return $this->recipeRepository->getRecipeFoodstuffs($id);
+    }
 }
