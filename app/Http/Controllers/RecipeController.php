@@ -9,6 +9,7 @@ use App\Models\Recipe;
 use App\Services\RecipeFoodstuffService;
 use App\Services\RecipeService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class RecipeController
 {
@@ -66,6 +67,22 @@ class RecipeController
         return redirect()->route('show-recipes-list');
     }
 
+    public function testCurl() {
+        $response = Http::timeout(240)->post('https://fity-algorithm.fly.dev//meal-plan', [
+            'target_calories' => 2405,
+            'target_protein' => 141,
+            'target_fat' => 84,
+        ]);
+
+        if ($response->successful()) {
+            $data = $response->json();
+            echo json_encode($data);
+        } else {
+            $error = $response->body();
+            echo $error;
+        }
+    }
+
     public function printRecipes() {
         $recipes = Recipe::all();
         //dd($recipes);
@@ -110,7 +127,7 @@ class RecipeController
                             'carbohydrates' => $recipeCarbohydrates + $carbohydrates
                         ];
                         array_push($recipesFinal, $recipeFinal);
-                        $min += 20;
+                        $min += 5;
                     }
                 }
             }
