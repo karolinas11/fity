@@ -42,3 +42,4 @@ Route::delete('/recipe/{recipeId}/delete', [RecipeController::class, 'deleteReci
 
 
 Route::get('/ide-gas', [RecipeController::class, 'printRecipes'])->name('ide-gas');
+Route::get('/test-curl', [RecipeController::class, 'testCurl'])->name('test-curl');

@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Http;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
@@ -39,7 +40,11 @@ class UserController extends Controller
             'age' => $request->input('age'),
             'gender' => $request->input('gender'),
             'activity' => $request->input('activity'),
-            'insulin_resistance' => $request->input('insulin_resistance')
+            'insulin_resistance' => $request->input('insulin_resistance'),
+            'meals_num' => $request->input('meals_num'),
+            'tolerance_calories' => $request->input('tolerance_calories'),
+            'tolerance_proteins' => $request->input('tolerance_proteins'),
+            'tolerance_fats' => $request->input('tolerance_fats'),
         ];
 
         $user = $this->userService->addUser($userData);
@@ -102,33 +107,26 @@ class UserController extends Controller
             'fats' => $fats,
         ];
 
-        dd($target);
+        $response = Http::timeout(10000)->post('https://fity-algorithm.fly.dev/meal-plan', [
+            'target_calories' => $calories,
+            'target_protein' => $proteins,
+            'target_fat' => $fats,
+            'meals_num' => $user->meals_num,
+            'tolerance_calories' => $user->tolerance_calories,
+            'tolerance_proteins' => $user->tolerance_proteins,
+            'tolerance_fats' => $user->tolerance_fats,
+        ]);
 
-        $notApprovedCombination = [];
-
-        $found = false;
-        while(!$found) {
-            $recipes = Recipe::with('foodstuffs')
-            ->inRandomOrder()
-            ->take(3)
-            ->get()
-            ->map(function($recipe) {
-                $recipe->total_calories = $recipe->foodstuffs->sum(fn($fs) => $fs->calories * $fs->min / 100);
-                $recipe->total_proteins = $recipe->foodstuffs->sum(fn($fs) => $fs->proteins * $fs->min / 100);
-                $recipe->total_fats = $recipe->foodstuffs->sum(fn($fs) => $fs->fats * $fs->min / 100);
-                $recipe->total_carbohydrates = $recipe->foodstuffs->sum(fn($fs) => $fs->carbohydrates * $fs->min / 100);
-                return $recipe;
-            });
-
-
-            $combination = [$recipes[0]->id, $recipes[1]->id, $recipes[2]->id];
-
-            if(!in_array($combination, $notApprovedCombination)) {
-
-            }
+        if ($response->successful()) {
+            $data = $response->json();
+        } else {
+            $error = $response->body();
+            echo $error;
         }
 
-//        dd($target);
+        // dd($data);
+
+        return view('user-recipes', compact('user', 'target', 'data'));
 
     }
 
