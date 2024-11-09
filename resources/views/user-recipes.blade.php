@@ -88,12 +88,19 @@
                                 <p>Proteini - {{ $meal['protein'] }}g</p>
                                 <p>Masti - {{ $meal['fat'] }}g</p>
                                 <p>Ugljeni hidrati - {{ $meal['carbs'] }}g</p>
+                                @foreach($meal['foodstuffs'] as $foodstuff)
+                                    <p>{{$foodstuff['name']}} - {{$foodstuff['amount']}}g</p>
+                                @endforeach
                             </div>
                         @endforeach
                         <div class="col-md-1">
                             <h6>Kalorije - {{ $day['total_calories'] }}</h6>
                             <h6>Proteini - {{ $day['total_protein'] }}g</h6>
                             <h6>Masti - {{ $day['total_fat'] }}g</h6>
+                            <h4>Razlika</h4>
+                            <h6>Kalorije  {{ $day['total_calories'] - $target['calories'] }}g</h6>
+                            <h6>Proteini  {{ $day['total_protein'] - $target['proteins'] }}g</h6>
+                            <h6>Masti  {{ $day['total_fat']  -  $target['fats'] }}g</h6>
                         </div>
                     </div>
                 @endforeach

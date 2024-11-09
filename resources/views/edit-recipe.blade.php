@@ -3,6 +3,9 @@
 @section('content')
     <div class="container mt-5">
         <h2 class="mb-4">Izmeni recept</h2>
+        <p><strong>Proteini: </strong>{{ round($proteinPercentage, 2) }}%</p>
+        <p><strong>Masti: </strong>{{ round($fatPercentage, 2) }}%</p>
+        <p><strong>Ugljeni hidrati: </strong>{{ round($carbPercentage, 2) }}%</p>
         <form id="recipe-form">
             @csrf
             <div class="form-group mb-3">
@@ -20,6 +23,8 @@
                 <textarea name="short_description" class="form-control" placeholder="Unesite kratki opis">{{ $recipe->short_description }}</textarea>
             </div>
 
+
+
             <div class="form-group mb-3">
                 <label for="type">Tip obroka</label>
                 <select name="type" class="form-select">
@@ -28,6 +33,11 @@
                     <option value="2">Večera</option>
                     <option @if($recipe->type == 3) selected @endif value="3">Užina</option>
                 </select>
+            </div>
+
+            <div class="col-md-12">
+                <label>Insulinska rezistencija</label>
+                <input  @if($recipe->insulin == 1) checked @endif type="checkbox" name="insulin">
             </div>
 
             <div class="foodstuffs mb-4">
@@ -48,6 +58,9 @@
                         <div class="col-md-2 d-flex align-items-end">
                             <button type="button" class="btn btn-danger remove-foodstuff">Ukloni</button>
                         </div>
+
+
+
                         <div class="col-md-12">
                             <label>Nosilac proteina</label>
                             <input @if($recipeFoodstuff->proteins_holder) checked @endif type="checkbox" name="proteins_holder">
@@ -157,10 +170,11 @@
                     description: document.querySelector('textarea[name="description"]').value,
                     short_description: document.querySelector('textarea[name="short_description"]').value,
                     type: document.querySelector('select[name="type"]').value,
+                    insulin: document.querySelector('input[name="insulin"]').checked ? 1: 0,
                     foodstuffs: foodstuffData
                 },
                 success: function(result) {
-                    alert('Recept uspešno izmenen!');
+                    alert('Recept uspešno izmenjen!');
                     window.location.href = window.origin + '/recipes/';
                 }
             });
