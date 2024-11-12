@@ -85,7 +85,6 @@ class RecipeController
 
     public function printRecipes() {
         $recipes = Recipe::all();
-        //dd($recipes);
         $recipesFinal = [];
         foreach ($recipes as $recipe) {
             $recipeFoodstuffs = $this->recipeFoodstuffService->getRecipeFoodstuffs($recipe->id);
@@ -95,7 +94,7 @@ class RecipeController
             $carbohydrates = 0;
 
             foreach ($recipeFoodstuffs as $recipeFoodstuff) {
-                if($recipeFoodstuff->proteins_holder == 0) {
+                if($recipeFoodstuff->proteins_holder == 0 && $recipeFoodstuff->fats_holder == 0 && $recipeFoodstuff->carbohydrates_holder == 0) {
                     $calories += Foodstuff::where('id', $recipeFoodstuff->foodstuff_id)->first()->calories * $recipeFoodstuff->amount / 100;
                     $proteins += Foodstuff::where('id', $recipeFoodstuff->foodstuff_id)->first()->proteins * $recipeFoodstuff->amount / 100;
                     $fats += Foodstuff::where('id', $recipeFoodstuff->foodstuff_id)->first()->fats * $recipeFoodstuff->amount / 100;

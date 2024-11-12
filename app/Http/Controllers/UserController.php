@@ -107,7 +107,7 @@ class UserController extends Controller
             'fats' => $fats,
         ];
 
-        $response = Http::timeout(10000)->post('https://fity-algorithm.fly.dev/meal-plan', [
+        $response = Http::timeout(10000)->post('http://127.0.0.1:8000/meal-plan', [
             'target_calories' => $calories,
             'target_protein' => $proteins,
             'target_fat' => $fats,
@@ -124,7 +124,7 @@ class UserController extends Controller
             echo $error;
         }
 
-        // dd($data);
+        dd($data);
 
         return view('user-recipes', compact('user', 'target', 'data'));
 
