@@ -19,6 +19,7 @@ class RecipeController
     public function __construct() {
         $this->recipeService = new RecipeService();
         $this->recipeFoodstuffService = new RecipeFoodstuffService();
+
     }
     public function showAddRecipe() {
         $foodstuffs = Foodstuff::all();
@@ -30,7 +31,8 @@ class RecipeController
             'name' => $request->input('name'),
             'description' => $request->input('description'),
             'short_description' => $request->input('short_description'),
-            'type' => $request->input('type')
+            'type' => $request->input('type'),
+            'insulin'=> $request->input('insulin')
         ];
         $recipe = $this->recipeService->addRecipe($recipeData);
         $this->recipeFoodstuffService->addRecipeFoodstuff($recipe->id, $request->input('foodstuffs'));
@@ -45,7 +47,26 @@ class RecipeController
         $recipe = Recipe::find($id);
         $foodstuffs = Foodstuff::all();
         $recipeFoodstuffs = $this->recipeFoodstuffService->getRecipeFoodstuffs($id);
-        return view('edit-recipe', compact('recipe', 'foodstuffs', 'recipeFoodstuffs'));
+        $fats=0;
+        $proteins=0;
+        $carbs=0;
+        foreach( $recipeFoodstuffs as $recipeFoodstuff){
+            $foodstuff = Foodstuff::find($recipeFoodstuff->foodstuff_id);
+            $proteins += ($recipeFoodstuff->amount / 100) * $foodstuff->proteins;
+            $fats += ($recipeFoodstuff->amount / 100) * $foodstuff->fats;
+            $carbs += ($recipeFoodstuff->amount / 100) * $foodstuff->carbohydrates;
+
+        }
+
+        $totalMass = $proteins + $fats + $carbs;
+
+
+        $proteinPercentage = $totalMass > 0 ? ($proteins / $totalMass) * 100 : 0;
+        $fatPercentage = $totalMass > 0 ? ($fats / $totalMass) * 100 : 0;
+        $carbPercentage = $totalMass > 0 ? ($carbs / $totalMass) * 100 : 0;
+
+
+        return view('edit-recipe', compact('recipe', 'foodstuffs', 'recipeFoodstuffs','proteinPercentage', 'fatPercentage', 'carbPercentage'));
     }
 
     public function editRecipe(Request $request, $id) {
@@ -53,6 +74,7 @@ class RecipeController
             'name' => $request->input('name'),
             'description' => $request->input('description'),
             'short_description' => $request->input('short_description'),
+            'insulin' => $request->input('insulin'),
             'type' => $request->input('type')
         ];
         $recipe = $this->recipeService->editRecipe($recipeData, $id);

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Foodstuff;
 use App\Models\Recipe;
 use App\Models\User;
+use App\Services\RecipeFoodstuffService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -14,9 +16,11 @@ use Symfony\Component\Process\Process;
 class UserController extends Controller
 {
     protected UserService $userService;
+    protected RecipeFoodstuffService $recipefoodstuffService;
 
     public function __construct() {
         $this->userService = new UserService();
+        $this->recipefoodstuffService= new RecipeFoodstuffService();
     }
 
     public function runPythonScript()
@@ -52,61 +56,123 @@ class UserController extends Controller
     }
 
     public function assignRecipesToUser($userId) {
+
+
         $user = User::find($userId);
-        $calories = 0;
-        $weight = 0;
-        if($user->gender == 'm') {
-            $calories = 66.47 + (13.75 * $user->weight) + (5.003 * $user->height) - (6.755 * $user->age);
-            $weight = 48 + (1.1 * ($user->height - 152.4));
-        } else {
-            $calories = 655.1 + (9.563 * $user->weight) + (1.85 * $user->height) - (4.676 * $user->age);
-            $weight = 45 + (0.9 * ($user->height - 152.4));
-        }
-        $calories = $calories * $user->activity;
+        $target = $this->userService->getMacrosForUser($user);
 
-        $proteins = 0;
-        $fats = 0;
-        if($user->goal == 'reduction') {
-            $calories -= 300;
-            $proteins = 2 * $weight;
-            $fats = $weight;
-        } else if($user->goal == 'increase') {
-            $calories += 500;
-            $proteins = 2 * $weight;
-            $fats = 1.2 * $weight;
-        } else {
-            switch ($user->activity) {
-                case '1.0':
-                    $proteins = 1.6 * $weight;
-                    $fats = $weight;
-                    break;
-                case '1.15':
-                    $proteins = 1.8 * $weight;
-                    $fats = $weight;
-                    break;
-                case '1.3':
-                    $proteins = 2 * $weight;
-                    $fats = $weight;
-                    break;
-                case '1.5':
-                    $proteins = 2 * $weight;
-                    $fats = 1.1 * $weight;
-                    break;
-                case '1.75':
-                    $proteins = 2 * $weight;
-                    $fats = 1.3 * $weight;
-                    break;
-                default:
-                    break;
-            }
-        }
+//        dd($target);
 
-        $target = [
-            'calories' => $calories,
-            'proteins' => $proteins,
-            'fats' => $fats,
+//        $response = Http::timeout(10000)->post('https://fity-algorithm.fly.dev/meal-plan', [
+//            'target_calories' => $target['calories'],
+//            'target_protein' => $target['proteins'],
+//            'target_fat' => $target['fats'],
+//            'meals_num' => $user->meals_num,
+//            'tolerance_calories' => $user->tolerance_calories,
+//            'tolerance_proteins' => $user->tolerance_proteins,
+//            'tolerance_fats' => $user->tolerance_fats,
+//        ]);
+//
+//        if ($response->successful()) {
+//            $data = $response->json();
+//        } else {
+//            $error = $response->body();
+//            echo $error;
+//        }
+
+        $data = [
+            "daily_plans" => [
+                [
+                    "day" => 1,
+                    "meals" => [
+                        [
+                            "meal_name" => "Namazane galete",
+                            "same_meal_id" => 39,
+                            "category" => 3,
+                            "calories" => 531.2,
+                            "protein" => 13.26,
+                            "carbs" => 88.8,
+                            "fat" => 10.53,
+                        ],
+                        [
+                            "meal_name" => "Ručak 5 - 100",
+                            "same_meal_id" => 14,
+                            "category" => 2,
+                            "calories" => 474.76,
+                            "protein" => 22.612,
+                            "carbs" => 59.883,
+                            "fat" => 11.927,
+                        ],
+                        [
+                            "meal_name" => "Jajakado sendvič",
+                            "same_meal_id" => 82,
+                            "category" => 1,
+                            "calories" => 314.8,
+                            "protein" => 12.22,
+                            "carbs" => 21.25,
+                            "fat" => 19.913,
+                        ],
+                        [
+                            "meal_name" => "Ručak 21 - 100",
+                            "same_meal_id" => 99,
+                            "category" => 2,
+                            "calories" => 639.17,
+                            "protein" => 31.388,
+                            "carbs" => 26.536,
+                            "fat" => 70.08,
+                        ],
+                    ],
+                    "total_calories" => 1959.93,
+                    "total_protein" => 79.48,
+                    "total_fat" => 112.45,
+                ],
+                [
+                    "day" => 2,
+                    "meals" => [
+                        [
+                            "meal_name" => "Bademi sa urmama",
+                            "same_meal_id" => 35,
+                            "category" => 3,
+                            "calories" => 198.9,
+                            "protein" => 3.345,
+                            "carbs" => 5.185,
+                            "fat" => 39.675,
+                        ],
+                        [
+                            "meal_name" => "Losos tortilja sa jajima - 430",
+                            "same_meal_id" => 78,
+                            "category" => 1,
+                            "calories" => 597.85,
+                            "protein" => 39.193,
+                            "carbs" => 36.107,
+                            "fat" => 28.909,
+                        ],
+                        [
+                            "meal_name" => "Ručak 42 - 100",
+                            "same_meal_id" => 120,
+                            "category" => 2,
+                            "calories" => 617.47,
+                            "protein" => 36.11,
+                            "carbs" => 21.567,
+                            "fat" => 43.87,
+                        ],
+                        [
+                            "meal_name" => "Ručak 13 - 100",
+                            "same_meal_id" => 21,
+                            "category" => 2,
+                            "calories" => 462.96,
+                            "protein" => 38.972,
+                            "carbs" => 55.875,
+                            "fat" => 6.165,
+                        ],
+                    ],
+                    "total_calories" => 1877.18,
+                    "total_protein" => 117.62,
+                    "total_fat" => 118.619,
+                ],
+            ],
         ];
-
+//         dd($data);
         $response = Http::timeout(10000)->post('http://127.0.0.1:8000/meal-plan', [
             'target_calories' => $calories,
             'target_protein' => $proteins,
@@ -117,14 +183,26 @@ class UserController extends Controller
             'tolerance_fats' => $user->tolerance_fats,
         ]);
 
-        if ($response->successful()) {
-            $data = $response->json();
-        } else {
-            $error = $response->body();
-            echo $error;
+         foreach($data['daily_plans'] as &$day){
+             foreach( $day['meals'] as &$meal){
+                 $foodstuffs = $this->recipefoodstuffService->getRecipeFoodstuffs($meal['same_meal_id']);
+                 $foodstuffsData=[];
+                 foreach ($foodstuffs as $foodstuff){
+                     $foodstuffData=[];
+                     $foodstuffData['amount']=$foodstuff['amount'];
+                     $foodstuffData['name']=Foodstuff::find($foodstuff->foodstuff_id)->name;
+                    // echo $foodstuff->amount +++++
+                     //$foodstuffData = Foodstuff::find($foodstuff->foodstuff_id);
+                     //echo $foodstuffData;
+                     array_push($foodstuffsData,$foodstuffData);
+                 }
+                // echo json_encode($foodstuffsData);
+                 $meal['foodstuffs']=$foodstuffsData;
+             }
         }
 
         dd($data);
+         //dd($data);
 
         return view('user-recipes', compact('user', 'target', 'data'));
 
