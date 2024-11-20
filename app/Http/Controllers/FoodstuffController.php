@@ -34,6 +34,7 @@ class FoodstuffController extends Controller
              'carbohydrates' => $request->input('carbohydrates'),
              'min' => $request->input('min'),
              'max' => $request->input('max'),
+             'step' => $request->input('step'),
          ];
 
          $foodstuff = $this->foodstuffService->addFoodstuff($foodstuffData);
@@ -62,6 +63,7 @@ class FoodstuffController extends Controller
             'carbohydrates' => $request->input('carbohydrates'),
             'min' => $request->input('min'),
             'max' => $request->input('max'),
+            'step' => $request->input('step'),
         ];
         $foodstuff = $this->foodstuffService->editFoodstuff($foodstuffData, $id);
         return redirect()->route('show-foodstuffs-list');

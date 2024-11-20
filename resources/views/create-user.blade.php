@@ -95,12 +95,19 @@
                 <div class="col-md-8">
                     <input type="number" name="tolerance_proteins" class="form-control" value="5">
                 </div>
-            </div>
+            </d     iv>
 
             <div class="row mb-3">
                 <label for="tolerance_fats" class="col-md-4 col-form-label">Tolerancija masti +-</label>
                 <div class="col-md-8">
                     <input type="number" name="tolerance_fats" class="form-control" value="5">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label for="days" class="col-md-4 col-form-label">Broj dana</label>
+                <div class="col-md-8">
+                    <input type="number" name="days" class="form-control" value="7">
                 </div>
             </div>
 

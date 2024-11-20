@@ -2,6 +2,15 @@
 
 @section('content')
 
+    <style>
+        .divider {
+            width: 100px;
+            margin: 20px auto;
+            height: 1px;
+            background: black;
+        }
+    </style>
+
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-12 text-center">
@@ -10,7 +19,19 @@
             <div class="row text-center">
                 <div class="col-md-4">
                     <h3>Cilj</h3>
-                    <p>{{ $user->goal }}</p>
+                    <p>
+                        @switch($user->goal)
+                            @case('reduction')
+                                Redukcija telesne mase
+                            @break
+                            @case('stable')
+                                Održavanje telesne mase
+                            @break
+                            @case('increase')
+                                Uvećanje telesne mase
+                            @break
+                        @endswitch
+                    </p>
                 </div>
                 <div class="col-md-4">
                     <h3>Visina</h3>
@@ -83,13 +104,18 @@
                         </div>
                         @foreach($day['meals'] as $meal)
                             <div class="col-md-2">
-                                <h4>{{ $meal['meal_name'] }}</h4>
+                                <h4>{{ \App\Models\Recipe::find($meal['same_meal_id'])->name }}</h4>
+                                <div class="divider"></div>
                                 <p>Kalorije - {{ $meal['calories'] }}</p>
                                 <p>Proteini - {{ $meal['protein'] }}g</p>
                                 <p>Masti - {{ $meal['fat'] }}g</p>
                                 <p>Ugljeni hidrati - {{ $meal['carbs'] }}g</p>
+                                <div class="divider"></div>
+                                @foreach($meal['holders'] as $key => $holder)
+                                    <p>{{ \App\Models\Foodstuff::find($key)->name }} - {{ $holder }}g</p>
+                                @endforeach
                                 @foreach($meal['foodstuffs'] as $foodstuff)
-                                    <p>{{$foodstuff['name']}} - {{$foodstuff['amount']}}g</p>
+                                    <p>{{ $foodstuff['name'] }} - {{ $foodstuff['amount'] }}g</p>
                                 @endforeach
                             </div>
                         @endforeach
