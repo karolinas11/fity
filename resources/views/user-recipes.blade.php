@@ -111,16 +111,41 @@
                                 <p>Masti - {{ $meal['fat'] }}g</p>
                                 <p>Ugljeni hidrati - {{ $meal['carbs'] }}g</p>
                                 <div class="divider"></div>
-                                @foreach($meal['holders'] as $key => $holder)
-                                    <p>{{ \App\Models\Foodstuff::find($key)->name }} - {{ $holder }}g</p>
+
+
+                                @foreach($meal['holders'] as $holder)
+                                    @php
+                                        $foodstuff = \App\Models\Foodstuff::find($holder['id']);
+                                    @endphp
+
+                                    @if($foodstuff)
+                                        <p>
+                                            {{ $foodstuff->name }} -
+                                            {{ $holder['amount'] }}g
+
+                                            @if($holder['p'] == 1)
+                                                - p
+                                            @endif
+
+                                            @if($holder['f'] == 1)
+                                                - m
+                                            @endif
+
+                                            @if($holder['c'] == 1)
+                                                - u
+                                            @endif
+                                        </p>
+                                    @else
+                                        <p>Namirnica nije pronađena za ID {{ $holder['id'] }}.</p>
+                                    @endif
                                 @endforeach
                                 @foreach($meal['foodstuffs'] as $foodstuff)
-                                    <p>{{ $foodstuff['name'] }} - {{ $foodstuff['amount'] }}g</p>
+                                    <p>{{ $foodstuff['name'] }} - {{ $foodstuff['amount']}}g   </p>
                                 @endforeach
                             </div>
                         @endforeach
                         <div class="col-md-1">
-                            <h6>Kalorije - {{ $day['total_calories'] }}</h6>
+                            <h6>Kalorije - {{ $day['total_calories'] }}g</h6>
                             <h6>Proteini - {{ $day['total_protein'] }}g</h6>
                             <h6>Masti - {{ $day['total_fat'] }}g</h6>
                             <h4>Razlika</h4>

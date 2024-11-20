@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Foodstuff;
 use App\Models\Recipe;
+use App\Models\RecipeFoodstuff;
 use App\Models\User;
 use App\Services\RecipeFoodstuffService;
 use App\Services\UserService;
@@ -46,6 +47,7 @@ class UserController extends Controller
         ];
 
         $user = $this->userService->addUser($userData);
+        //dd($user);
         return redirect()->route('assign-recipes-to-user', ['userId' => $user->id]);
     }
 
@@ -78,8 +80,25 @@ class UserController extends Controller
                  $holders = [];
                  foreach ($pairs as $pair) {
                      list($key, $value) = explode(' - ', $pair);
-                     $holders[(int)$key] = (int)$value;
+                    /* $holders[(int)$key] = (int)$value;*/
+                     $holderFoodStuffRecipe =RecipeFoodstuff::where('foodstuff_id', (int)$key)
+                                                        ->where('recipe_id',$meal['same_meal_id'])->first();
+
+                     if($holderFoodStuffRecipe)
+                        {
+                             $singleHolder = [
+                                 'id' => (int)$key,
+                                 'name' =>Foodstuff::find((int)$key)->name,
+                                 'amount' => (int)$value,
+                                 'p' => $holderFoodStuffRecipe->proteins_holder,
+                                 'f' => $holderFoodStuffRecipe->fats_holder,
+                                 'c' => $holderFoodStuffRecipe->carbohydrates_holder
+                             ];
+
+                            array_push($holders,$singleHolder);
+                         }
                  }
+
                  foreach ($foodstuffs as $foodstuff){
                      if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->carbohydrates_holder == 0) {
                          $foodstuffData = [];
@@ -87,11 +106,13 @@ class UserController extends Controller
                          $foodstuffData['name'] = Foodstuff::find($foodstuff->foodstuff_id)->name;
                          array_push($foodstuffsData,$foodstuffData);
                      }
+
                  }
                  $meal['foodstuffs'] = $foodstuffsData;
                  $meal['holders'] = $holders;
              }
         }
+
 
         return view('user-recipes', compact('user', 'target', 'data'));
     }
