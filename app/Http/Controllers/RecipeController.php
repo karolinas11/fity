@@ -414,7 +414,8 @@ class RecipeController
 
 
         foreach ($recipesFinal as $key => $recipe) {
-            echo $key . ',' . $recipe['id'] . ',' . $recipe['name'] . ',' . $recipe['category'] . ',' . $recipe['calories'] . ',' . $recipe['proteins'] . ',' . $recipe['fats'] . ',' . $recipe['carbohydrates'] . ',' . $recipe['holders'] ."<br>";
+            $innerHolders = $recipe['holders']? $recipe['holders'] : 'null';
+            echo $key . ',' . $recipe['id'] . ',' . $recipe['name'] . ',' . $recipe['category'] . ',' . $recipe['calories'] . ',' . $recipe['proteins'] . ',' . $recipe['fats'] . ',' . $recipe['carbohydrates'] . ',' . $innerHolders ."<br>";
         }
     }
 
