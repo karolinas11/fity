@@ -95,7 +95,7 @@
                 <div class="col-md-8">
                     <input type="number" name="tolerance_proteins" class="form-control" value="5">
                 </div>
-            </d     iv>
+            </div>
 
             <div class="row mb-3">
                 <label for="tolerance_fats" class="col-md-4 col-form-label">Tolerancija masti +-</label>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Foodstuff;
 use App\Models\Recipe;
+use App\Models\RecipeFoodstuff;
 use App\Models\User;
 use App\Services\RecipeFoodstuffService;
 use App\Services\UserService;
@@ -28,7 +29,30 @@ class UserController extends Controller
         return view('create-user');
     }
 
+    //vratis iz funkcije macrose za tog usera, editujem  jedna koja edituje podatke druga koja vraca macrose, tu koje edituje podatke nju napravis
+    public function editUser(Request $request){
 
+        $userData = [
+            'goal' => $request->input('goal'),
+            'height' => $request->input('height'),
+            'weight' => $request->input('weight'),
+            'age' => $request->input('age'),
+            'gender' => $request->input('gender'),
+            'activity' => $request->input('activity')
+        ];
+
+        $userId= $request->input('user_id');
+        $user = $this->userService->editUser($userData, $userId);
+
+       /* $target = $this->userService->getMacrosForUser($user);*/
+
+        if(!$user){
+
+            return response()->json(['success' => false, 'message'=> 'Korisnik nije pronadjen!'], 200);
+        }
+        $target = $this->userService->getMacrosForUser($user);
+        return response()->json(['success'=> true, 'target'=> $target], 200);
+    }
     public function addUser(Request $request) {
         $userData = [
             'goal' => $request->input('goal'),
@@ -46,6 +70,7 @@ class UserController extends Controller
         ];
 
         $user = $this->userService->addUser($userData);
+        //dd($user);
         return redirect()->route('assign-recipes-to-user', ['userId' => $user->id]);
     }
 
@@ -78,8 +103,25 @@ class UserController extends Controller
                  $holders = [];
                  foreach ($pairs as $pair) {
                      list($key, $value) = explode(' - ', $pair);
-                     $holders[(int)$key] = (int)$value;
+                    /* $holders[(int)$key] = (int)$value;*/
+                     $holderFoodStuffRecipe =RecipeFoodstuff::where('foodstuff_id', (int)$key)
+                                                        ->where('recipe_id',$meal['same_meal_id'])->first();
+
+                     if($holderFoodStuffRecipe)
+                        {
+                             $singleHolder = [
+                                 'id' => (int)$key,
+                                 'name' =>Foodstuff::find((int)$key)->name,
+                                 'amount' => (int)$value,
+                                 'p' => $holderFoodStuffRecipe->proteins_holder,
+                                 'f' => $holderFoodStuffRecipe->fats_holder,
+                                 'c' => $holderFoodStuffRecipe->carbohydrates_holder
+                             ];
+
+                            array_push($holders,$singleHolder);
+                         }
                  }
+
                  foreach ($foodstuffs as $foodstuff){
                      if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->carbohydrates_holder == 0) {
                          $foodstuffData = [];
@@ -87,11 +129,13 @@ class UserController extends Controller
                          $foodstuffData['name'] = Foodstuff::find($foodstuff->foodstuff_id)->name;
                          array_push($foodstuffsData,$foodstuffData);
                      }
+
                  }
                  $meal['foodstuffs'] = $foodstuffsData;
                  $meal['holders'] = $holders;
              }
         }
+
 
         return view('user-recipes', compact('user', 'target', 'data'));
     }
