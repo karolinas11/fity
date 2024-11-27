@@ -16,83 +16,70 @@
             <div class="col-md-12 text-center">
                 <h1 class="mb-4">Korisnik #{{ $user->id }}</h1>
             </div>
+
+                 <input type="hidden" name="user_id" id="user_id" value="{{ $user->id }}">
             <div class="row text-center">
                 <div class="col-md-4">
                     <h3>Cilj</h3>
-                    <p>
-                        @switch($user->goal)
-                            @case('reduction')
-                                Redukcija telesne mase
-                            @break
-                            @case('stable')
-                                Održavanje telesne mase
-                            @break
-                            @case('increase')
-                                Uvećanje telesne mase
-                            @break
-                        @endswitch
-                    </p>
+                    <select name="goal" id="goal" class="form-select">
+                        <option value="reduction" {{ $user->goal == 'reduction' ? 'selected' : '' }}>Redukcija telesne mase</option>
+                        <option value="stable" {{ $user->goal == 'stable' ? 'selected' : '' }}>Održavanje telesne mase</option>
+                        <option value="increase" {{ $user->increase == 'increase' ? 'selected' : '' }}>Uvećanje telesne mase</option>
+                    </select>
                 </div>
                 <div class="col-md-4">
-                    <h3>Visina</h3>
-                    <p>{{ $user->height }}cm</p>
+                    <h3>Visina(cm)</h3>
+                    <input type="text" name="height" id="height" class="form-control" value="{{ $user->height }}" placeholder="Visina u cm">
+
                 </div>
                 <div class="col-md-4">
-                    <h3>Težina</h3>
-                    <p>{{ $user->weight }}kg</p>
+                    <h3>Težina(kg)</h3>
+                    <input type="text" name="weight" id="weight" class="form-control" value="{{ $user->weight }}">
                 </div>
                 <div class="col-md-4">
                     <h3>Godine</h3>
-                    <p>{{ $user->age }}</p>
+
+                    <input type="text" name="age" id="age" class="form-control" value="{{ $user->age }}">
                 </div>
                 <div class="col-md-4">
                     <h3>Aktivnost</h3>
-                    <p>
-                        @switch($user->activity)
-                            @case(1.0)
-                                Bez aktivnosti
-                            @break
-                            @case(1.15)
-                                Malo aktivnosti
-                            @break
-                            @case(1.3)
-                                Srednje aktivnosti
-                            @break
-                            @case(1.5)
-                                Teške aktivnosti
-                            @break
-                            @case(1.75)
-                                Jako teške aktivnosti
-                            @break
-                       @endswitch
-                    </p>
+
+                    <select name="activity" id="activity" class="form-select">
+                        <option value="1.0" {{ $user->activity == 1.0 ? 'selected' : '' }}>Bez aktivnosti</option>
+                        <option value="1.15" {{ $user->activity == 1.15 ? 'selected' : '' }}>Malo aktivnosti</option>
+                        <option value="1.3" {{ $user->activity == 1.3 ? 'selected' : '' }}>Srednje aktivnosti</option>
+                        <option value="1.5" {{ $user->activity == 1.5 ? 'selected' : '' }}>Teške aktivnosti</option>
+                        <option value="1.75" {{ $user->activity == 1.75 ? 'selected' : '' }}>Jako teške aktivnosti</option>
+                    </select>
                 </div>
                 <div class="col-md-4">
                     <h3>Pol</h3>
-                    <p>
-                        @if($user->gender == 'm')
-                            Muški
-                        @else
-                            Ženski
-                        @endif
-                    </p>
+
+                    <select name="gender" id="gender" class="form-select">
+                        <option value="m" {{ $user->gender == 'm' ? 'selected' : '' }}>Muški</option>
+                        <option value="f"  {{ $user->gender == 'f' ? 'selected' : '' }}>Ženski</option>
+                    </select>
                 </div>
             </div>
+                <div class="col-md-12 text-center mt-4">
+                    <button type="submit" id="editUserButton" class="btn btn-primary">Sačuvaj izmene</button>
+                </div>
+
             <div class="col-md-12 text-center mt-5">
                 <h2 class="mb-4">Dnevni unos</h2>
             </div>
             <div class="row text-center">
                 <div class="col-md-4">
                     <h3>Kalorije</h3>
-                    <p>{{ $target['calories'] }}</p>
+                    <p id="calories">{{ $target['calories'] }}</p>
                 </div>
                 <div class="col-md-4">
                     <h3>Proteini</h3>
-                    <p>{{ $target['proteins'] }}g</p>
+                    <p id="proteins">{{ $target['proteins'] }}g</p>
                 </div>
                 <div class="col-md-4">
                     <h3>Masti</h3>
-                    <p>{{ $target['fats'] }}g</p>
+                    <p id="fats">{{ $target['fats'] }}g</p>
                 </div>
             </div>
             <div class="col-md-12 text-center mt-5">
@@ -159,4 +146,46 @@
         </div>
     </div>
 
+@endsection
+@section('scriptsBottom')
+    <script>
+
+        document.getElementById('editUserButton').addEventListener('click', function() {
+            //console.log('Selected gender:', document.getElementById('gender').value);
+            var userData = {
+                user_id: document.getElementById('user_id').value,
+                goal: document.getElementById('goal').value,
+                height: document.getElementById('height').value,
+                weight: document.getElementById('weight').value,
+                age: document.getElementById('age').value,
+                gender: document.getElementById('gender').value,
+                activity: document.getElementById('activity').value
+            };
+
+            // AJAX poziv za slanje podataka na server
+            fetch(`/user/edit`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify(userData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Ispisivanje rezultata u konzolu i rifres podataka
+                        document.getElementById('calories').textContent = data.target.calories;
+                        document.getElementById('proteins').textContent = data.target.proteins + 'g';
+                        document.getElementById('fats').textContent = data.target.fats + 'g';
+                        console.log('Makro podaci:', data.target);
+                    } else {
+                        console.log('Greška:', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Greška prilikom slanja AJAX zahteva:', error);
+                });
+        });
+    </script>
 @endsection

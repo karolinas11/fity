@@ -15,6 +15,11 @@ class UserService
     public function addUser($userData) {
         return $this->userRepository->addUser($userData);
     }
+
+    public function editUser($userData,$userId){
+        return $this->userRepository->editUser($userData,$userId);
+    }
+
     public function getMacrosForUser($user){
 
         $calories = 0;

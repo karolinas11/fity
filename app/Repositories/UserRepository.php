@@ -15,4 +15,18 @@ class UserRepository
             Log::error('Can\'t add user: ' . $e->getMessage());
         }
     }
+
+    public function editUser($userData, $userId){
+            try{
+                $user= User::find($userId);
+                if ( $user ){
+                    $user->update($userData);
+                    return $user;
+                }
+                return null;
+
+            }catch(QueryException $e){
+                Log::error('Can\'t edit user: ' . $e->getMessage());
+            }
+    }
 }

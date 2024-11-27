@@ -29,7 +29,30 @@ class UserController extends Controller
         return view('create-user');
     }
 
+    //vratis iz funkcije macrose za tog usera, editujem  jedna koja edituje podatke druga koja vraca macrose, tu koje edituje podatke nju napravis
+    public function editUser(Request $request){
 
+        $userData = [
+            'goal' => $request->input('goal'),
+            'height' => $request->input('height'),
+            'weight' => $request->input('weight'),
+            'age' => $request->input('age'),
+            'gender' => $request->input('gender'),
+            'activity' => $request->input('activity')
+        ];
+
+        $userId= $request->input('user_id');
+        $user = $this->userService->editUser($userData, $userId);
+
+       /* $target = $this->userService->getMacrosForUser($user);*/
+
+        if(!$user){
+
+            return response()->json(['success' => false, 'message'=> 'Korisnik nije pronadjen!'], 200);
+        }
+        $target = $this->userService->getMacrosForUser($user);
+        return response()->json(['success'=> true, 'target'=> $target], 200);
+    }
     public function addUser(Request $request) {
         $userData = [
             'goal' => $request->input('goal'),
