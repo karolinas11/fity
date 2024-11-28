@@ -42,7 +42,8 @@ class UserController extends Controller
             'tolerance_proteins'=>$request->input('tolerance_proteins'),
             'tolerance_fats'=>$request->input('tolerance_fats'),
             'tolerance_calories'=>$request->input('tolerance_calories'),
-            'meals_num'=>$request->input('meals_num')
+            'meals_num'=>$request->input('meals_num'),
+            'days'=>$request->input('days')
         ];
 
         $userId= $request->input('user_id');

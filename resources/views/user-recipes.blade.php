@@ -62,22 +62,30 @@
                 </div>
                 <div class="col-md-4">
                     <h3>Tolerancija kalorija</h3>
-                    <input type="text" name="tolerance_calories" id="tolerance_calories" class="form-control" value="{{ $user->tolerance_calories }}">
+                    <input type="number" name="tolerance_calories" id="tolerance_calories" class="form-control" value="{{ $user->tolerance_calories }}">
                 </div>
 
                 <div class="col-md-4">
                     <h3>Tolerancija proteina</h3>
-                    <input type="text" name="tolerance_proteins" id="tolerance_proteins" class="form-control" value="{{ $user->tolerance_proteins }}">
+                    <input type="number" name="tolerance_proteins" id="tolerance_proteins" class="form-control" value="{{ $user->tolerance_proteins }}">
                 </div>
 
                 <div class="col-md-4">
                     <h3>Tolerancija masti</h3>
-                    <input type="text" name="tolerance_fats" id="tolerance_fats" class="form-control" value="{{$user->tolerance_fats}}">
+                    <input type="number" name="tolerance_fats" id="tolerance_fats" class="form-control" value="{{$user->tolerance_fats}}">
                 </div>
 
                 <div class="col-md-4">
                     <h3>Broj obroka:</h3>
-                    <input type="text" name="meals_num" id="meals_num" class="form-control" value="{{$user->meals_num}}">
+                    <select name="meals_num" id="meals_num" class="form-control">
+                        <option value="3" {{$user->meals_num == '3' ? 'selected' : ''}}>3</option>
+                        <option value="4" {{$user->meals_num == '4' ? 'selected' : ''}}>4</option>
+                        <option value="5" {{$user->meals_num == '5' ? 'selected' : ''}}>5</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <h3>Broj dana</h3>
+                    <input type="number" name="days" id="days" class="form-control" value="{{$user->days}}">
                 </div>
             </div>
                 <div class="col-md-12 text-center mt-4">
@@ -182,7 +190,8 @@
                 tolerance_proteins: document.getElementById('tolerance_proteins').value,
                 tolerance_calories: document.getElementById('tolerance_calories').value,
                 tolerance_fats: document.getElementById('tolerance_fats').value,
-                meals_num: document.getElementById('meals_num').value
+                meals_num: document.getElementById('meals_num').value,
+                days: document.getElementById('days').value
             };
 
             // AJAX poziv za slanje podataka na server
