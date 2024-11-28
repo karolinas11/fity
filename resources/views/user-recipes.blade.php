@@ -60,6 +60,25 @@
                         <option value="f"  {{ $user->gender == 'f' ? 'selected' : '' }}>Ženski</option>
                     </select>
                 </div>
+                <div class="col-md-4">
+                    <h3>Tolerancija kalorija</h3>
+                    <input type="text" name="tolerance_calories" id="tolerance_calories" class="form-control" value="{{ $user->tolerance_calories }}">
+                </div>
+
+                <div class="col-md-4">
+                    <h3>Tolerancija proteina</h3>
+                    <input type="text" name="tolerance_proteins" id="tolerance_proteins" class="form-control" value="{{ $user->tolerance_proteins }}">
+                </div>
+
+                <div class="col-md-4">
+                    <h3>Tolerancija masti</h3>
+                    <input type="text" name="tolerance_fats" id="tolerance_fats" class="form-control" value="{{$user->tolerance_fats}}">
+                </div>
+
+                <div class="col-md-4">
+                    <h3>Broj obroka:</h3>
+                    <input type="text" name="meals_num" id="meals_num" class="form-control" value="{{$user->meals_num}}">
+                </div>
             </div>
                 <div class="col-md-12 text-center mt-4">
                     <button type="submit" id="editUserButton" class="btn btn-primary">Sačuvaj izmene</button>
@@ -159,7 +178,11 @@
                 weight: document.getElementById('weight').value,
                 age: document.getElementById('age').value,
                 gender: document.getElementById('gender').value,
-                activity: document.getElementById('activity').value
+                activity: document.getElementById('activity').value,
+                tolerance_proteins: document.getElementById('tolerance_proteins').value,
+                tolerance_calories: document.getElementById('tolerance_calories').value,
+                tolerance_fats: document.getElementById('tolerance_fats').value,
+                meals_num: document.getElementById('meals_num').value
             };
 
             // AJAX poziv za slanje podataka na server
