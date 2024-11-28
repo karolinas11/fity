@@ -3,6 +3,7 @@
 namespace App\DataTables;
 
 use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -24,7 +25,14 @@ class UserDataTable extends DataTable
                 return $user->id;
             })
             ->addColumn('goal', function(User $user) {
-                return $user->goal;
+                if($user->goal == 'increase'){
+                    return 'Uvećanje telesne mase';
+                }elseif ($user->goal == 'reduction'){
+                    return 'Redukcija telesne mase';
+                }else{
+                    return 'Održavanje telesne mase';
+                }
+
             })
             ->addColumn('height', function(User $user) {
                 return $user->height;
@@ -36,10 +44,26 @@ class UserDataTable extends DataTable
                 return $user->age;
             })
             ->addColumn('gender', function(User $user) {
-                return $user->gender;
+
+                if($user->gender == 'm'){
+                    return 'Muški';
+                }elseif ($user->gender == 'f'){
+                    return 'Ženski';
+                }
             })
             ->addColumn('activity', function(User $user) {
-                return $user->activity;
+                if ($user->activity == 1.0){
+                    return 'Bez aktivnosti';
+                }elseif ($user->activity == 1.15){
+                    return 'Malo aktivnosti';
+                }elseif($user->activity == 1.3){
+                    return 'Srednje aktivnosti';
+                }elseif($user->activity == 1.5){
+                    return 'Teške aktivnosti';
+                }elseif($user->activity == 1.75){
+                    return 'Jako teške aktivnosti';
+                }
+              //  return $user->activity;
             })
             ->addColumn('meals_num', function(User $user) {
                 return $user->meals_num;
@@ -55,6 +79,18 @@ class UserDataTable extends DataTable
             })
             ->addColumn('days', function(User $user) {
                 return $user->days;
+            })
+            ->addColumn('target_calories', function(User $user,UserService $userService) {
+                $target= $userService->getMacrosForUser($user);
+                return round($target['calories'],2);
+            })
+            ->addColumn('target_proteins', function(User $user,UserService $userService) {
+                $target= $userService->getMacrosForUser($user);
+                return round($target['proteins'],2);
+            })
+            ->addColumn('target_fats', function(User $user,UserService $userService) {
+                $target= $userService->getMacrosForUser($user);
+                return round($target['fats'],2);
             })
             ->addColumn('action', function (User $user) {
                 $editUrl = route('assign-recipes-to-user', $user->id);
@@ -114,6 +150,9 @@ class UserDataTable extends DataTable
             Column::make('tolerance_fats')->title('Tolerancija masti'),
             Column::make('tolerance_calories')->title('Tolerancija kalorija'),
             Column::make('days')->title('Dani'),
+            Column::make('target_calories')->title('Kalorije'),
+            Column::make('target_proteins')->title('Proteini'),
+            Column::make('target_fats')->title('Masti'),
             Column::computed('action')
                 ->title('Akcije')
                 ->exportable(false)
