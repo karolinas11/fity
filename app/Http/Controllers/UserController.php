@@ -38,7 +38,11 @@ class UserController extends Controller
             'weight' => $request->input('weight'),
             'age' => $request->input('age'),
             'gender' => $request->input('gender'),
-            'activity' => $request->input('activity')
+            'activity' => $request->input('activity'),
+            'tolerance_proteins'=>$request->input('tolerance_proteins'),
+            'tolerance_fats'=>$request->input('tolerance_fats'),
+            'tolerance_calories'=>$request->input('tolerance_calories'),
+            'meals_num'=>$request->input('meals_num')
         ];
 
         $userId= $request->input('user_id');

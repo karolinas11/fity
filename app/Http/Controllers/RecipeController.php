@@ -17,6 +17,7 @@ class RecipeController
     protected RecipeService $recipeService;
     protected RecipeFoodstuffService $recipeFoodstuffService;
 
+
     public function __construct() {
         $this->recipeService = new RecipeService();
         $this->recipeFoodstuffService = new RecipeFoodstuffService();
