@@ -76,10 +76,8 @@ class UserController extends Controller
 
     public function assignRecipesToUser($userId) {
 
-
         $user = User::find($userId);
         $target = $this->userService->getMacrosForUser($user);
-//        dd($target);
         $response = Http::timeout(10000)->post('https://fity-algorithm.fly.dev/meal-plan', [
             'target_calories' => $target['calories'],
             'target_protein' => $target['proteins'],
@@ -91,7 +89,6 @@ class UserController extends Controller
             'days' => $user->days
         ]);
 
-//        dd($data->json());
 
         $data = $response->json();
          foreach($data['daily_plans'] as &$day){
