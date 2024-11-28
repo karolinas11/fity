@@ -207,10 +207,11 @@
                 .then(data => {
                     if (data.success) {
                         // Ispisivanje rezultata u konzolu i rifres podataka
-                        document.getElementById('calories').textContent = data.target.calories;
-                        document.getElementById('proteins').textContent = data.target.proteins + 'g';
-                        document.getElementById('fats').textContent = data.target.fats + 'g';
-                        console.log('Makro podaci:', data.target);
+                        location.reload();
+                        // document.getElementById('calories').textContent = data.target.calories;
+                        // document.getElementById('proteins').textContent = data.target.proteins + 'g';
+                        // document.getElementById('fats').textContent = data.target.fats + 'g';
+                        // console.log('Makro podaci:', data.target);
                     } else {
                         console.log('Greška:', data.message);
                     }

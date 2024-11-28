@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\UserDataTable;
 use App\Models\Foodstuff;
 use App\Models\Recipe;
 use App\Models\RecipeFoodstuff;
@@ -140,6 +141,10 @@ class UserController extends Controller
 
 
         return view('user-recipes', compact('user', 'target', 'data'));
+    }
+
+    public function showUsersList(UserDataTable $dataTable) {
+        return $dataTable->render('users-list');
     }
 
 }
