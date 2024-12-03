@@ -8,6 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class FoodstuffCategory extends Model
 {
     use HasFactory;
-
     protected $guarded = [];
+
 }

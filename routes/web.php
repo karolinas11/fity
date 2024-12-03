@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\FoodstuffCategoryController;
 use App\Http\Controllers\FoodstuffController;
+use App\Http\Controllers\OnBoardingQuestionController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -46,3 +47,6 @@ Route::get('/ide-gas', [RecipeController::class, 'printRecipes'])->name('ide-gas
 Route::get('/test-curl', [RecipeController::class, 'testCurl'])->name('test-curl');
 
 Route::get('/users', [UserController::class, 'showUsersList'])->name('show-users-list');
+
+
+Route::get('/boarding-question',[OnBoardingQuestionController::class, 'index']);
