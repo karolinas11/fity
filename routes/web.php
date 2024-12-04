@@ -3,6 +3,7 @@
 use App\Http\Controllers\FoodstuffCategoryController;
 use App\Http\Controllers\FoodstuffController;
 use App\Http\Controllers\OnBoardingQuestionController;
+use App\Http\Controllers\onBoardingQuestionOptionController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -50,3 +51,5 @@ Route::get('/users', [UserController::class, 'showUsersList'])->name('show-users
 
 
 Route::get('/boarding-question',[OnBoardingQuestionController::class, 'index']);
+
+Route::post('api/add-option',[OnBoardingQuestionOptionController::class,'store']);
