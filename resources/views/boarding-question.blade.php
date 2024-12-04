@@ -3,7 +3,7 @@
 
 @section('content')
     @foreach($questions as $question)
-            <div class="container mt-2">
+            <div class="container mt-5">
 
                 <label for="{{$question->id}}" class="form-label">{{ $question->title }}</label>
 
@@ -52,13 +52,22 @@
             document.querySelectorAll(".add-option-btn").forEach(button=>{
                 button.addEventListener("click", function(){
                     const container = this.closest('.container').querySelector(".create-container");
-                    container.style.display = "block";
+
+                    if(container.style.display === "block"){
+                        container.style.display = "none";
+                    }else{
+                        container.style.display = "block";
+                    }
                 });
             });
             document.querySelectorAll(".delete-option-btn").forEach(button=>{
                button.addEventListener("click",function(){
                    const container2 = this.closest('.container').querySelector(".delete-container");
-                   container2.style.display = "block";
+                   if(container2.style.display === "block"){
+                       container2.style.display = "none";
+                   }else{
+                       container2.style.display = "block";
+                   }
                });
             });
             document.querySelectorAll(".remove-option-btn").forEach(button =>{
