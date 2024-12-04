@@ -2,6 +2,32 @@
 
 
 @section('content')
+    <div class="container d-flex mt-5">
+        <div class="col-4">
+            <h3>Dodaj pitanje</h3>
+        <button type="button" class="btn btn-primary mt-2 add-question-btn">Prikaži pitanje</button>
+        <div class="new-option-container add-question-container mt-4" style="display: none;">
+            <input type="text" id="new_pitanje" class="form-control mb-2" placeholder="unesite pitanje...">
+            <input type="text" id="new_type" class="form-control mb-2" placeholder="unesite tip pitanja(number,text,date,select....)">
+            <input type="text" id="new_id" class="form-control mb-2" placeholder="unesite njegov id,name">
+
+            <button type="button" class="btn btn-success mt-2 add-question">Dodaj pitanje</button>
+        </div>
+        </div>
+        <div class="col-4">
+            <h3>Izbrisi pitanje</h3>
+            <button type="button" class="btn btn-danger mt-2 delete-question-btn" >Izbrisi željeno pitanje</button>
+            <div class="new-option-container delete-question-container mt-4" style="display: none;">
+                <select name="questions" id="questions" class="form-select">
+                    @foreach($questions as $question)
+                        <option data-question-id="{{ $question->id }}" value="{{$question->name_question}}">{{$question->title}}</option>
+                    @endforeach
+                </select>
+
+                <button type="button" class="btn btn-danger mt-2 delete-question">Izbrisi pitanje</button>
+            </div>
+        </div>
+    </div>
     @foreach($questions as $question)
             <div class="container mt-5">
 
@@ -99,10 +125,17 @@
                                 .then(data => {
                                     if (data.success) {
                                         alert("Opcija je uspešno izbrisana");
+                                       const optionToRemove = selectElement.querySelector(`option[value="${selectedOption}"]`);
+                                       if (optionToRemove) {
+                                           optionToRemove.remove();
+                                       }
 
-                                        const optionToRemove = selectElement.querySelector(`option[value="${selectedOption}"]`);
-                                        if (optionToRemove) {
-                                            optionToRemove.remove();
+                                        const mainSelectElement = document.querySelector(`select[name="${selectElement.name}"]`);
+                                        if (mainSelectElement) {
+                                            const optionToRemoveFromMain = mainSelectElement.querySelector(`option[value="${selectedOption}"]`);
+                                            if (optionToRemoveFromMain) {
+                                                optionToRemoveFromMain.remove();
+                                            }
                                         }
                                     } else {
                                         alert("Opcija nije izbrisana");
@@ -163,6 +196,102 @@
                    /* .catch(error => console.error("Greska:", error));*/
                 });
             });
+
+
+            /*OVO JE ZA DODAVANJE PITANJA*/
+            document.querySelectorAll(".add-question-btn").forEach(button =>{
+                button.addEventListener("click",function(){
+                    const container3 = this.closest('.container').querySelector(".add-question-container");
+                    if(container3.style.display === "block"){
+                        container3.style.display = "none";
+                    }else {
+                        container3.style.display = "block";
+                    }
+                });
+            });
+
+            document.querySelector(".add-question").addEventListener("click", function(){
+                //Prkupi podatke iz input
+                const title = document.querySelector("#new_pitanje").value;
+                const type = document.querySelector("#new_type").value;
+                const name_question = document.querySelector("#new_id").value;
+                console.log(title,type,name_question);
+                if (!title || !type || !name_question) {
+                    alert("Molimo popunite sva polja.");
+                    return;
+                }
+                fetch("api/add-question",{
+                   method: "POST",
+                   headers: {
+                       "Content-Type": "application/json",
+                       "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                   },
+                   body: JSON.stringify({
+                      title: title,
+                      type: type,
+                      name_question: name_question,
+                   }),
+                })
+                .then((response)=>response.json())
+                .then((data)=>{
+                    if(data.success){
+                        alert("Pitanje je uspesno dodato!");
+                        /*addQuestionToDOM(data.question);*/
+
+                    }else{
+                        alert("Greska prilikom dodavanja pitanja");
+                    }
+                })
+                .catch((error)=>{
+                    console.error("Greska:", error);
+                });
+            });
+
+            /*OVO JE ZA BRISANJE PITANJA ISPOD */
+            document.querySelectorAll(".delete-question-btn").forEach(button => {
+                button.addEventListener("click", function(){
+                   const container4 = this.closest('.container').querySelector(".delete-question-container");
+                   if(container4.style.display === "block"){
+                       container4.style.display = "none";
+                   }else{
+                       container4.style.display = "block";
+                   }
+                });
+            });
+
+            document.querySelector(".delete-question").addEventListener("click", function (){
+                const selectElement = document.getElementById("questions");
+                const selectedOption = selectElement.options[selectElement.selectedIndex];
+                const questionId = selectedOption.getAttribute("data-question-id");
+
+                if (questionId) {
+                    console.log("ID izabranog pitanja:", questionId);
+
+                    fetch("/api/delete-question", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        },
+                        body: JSON.stringify({ id: questionId })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert("Pitanje uspešno izbrisano!");
+                                selectedOption.remove();
+                            } else {
+                                alert("Greška pri brisanju pitanja.");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Greška:", error);
+                            alert("Došlo je do greške pri slanju zahteva.");
+                        });
+                } else {
+                    alert("Molimo odaberite pitanje za brisanje.");
+                }
+            })
         });
     </script>
 @endsection
