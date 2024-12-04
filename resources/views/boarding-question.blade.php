@@ -59,8 +59,59 @@
                button.addEventListener("click",function(){
                    const container2 = this.closest('.container').querySelector(".delete-container");
                    container2.style.display = "block";
-               }) ;
+               });
             });
+            document.querySelectorAll(".remove-option-btn").forEach(button =>{
+                button.addEventListener("click", function(){
+                    const questionId = this.getAttribute("data-question-id");
+                    console.log(`Question ID: ${questionId}`);
+
+
+                    const container = this.closest(".delete-container");
+
+                    if (container) {
+
+                        const selectElement = container.querySelector("select");
+                        const selectedOption = selectElement ? selectElement.value : null;
+
+                        if (selectedOption) {
+                            fetch("/api/delete-option", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                },
+                                body: JSON.stringify({
+                                    question_id: questionId,
+                                    value: selectedOption
+                                })
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        alert("Opcija je uspešno izbrisana");
+
+                                        const optionToRemove = selectElement.querySelector(`option[value="${selectedOption}"]`);
+                                        if (optionToRemove) {
+                                            optionToRemove.remove();
+                                        }
+                                    } else {
+                                        alert("Opcija nije izbrisana");
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error("Greška u API zahtevu:", error);
+                                    alert("Došlo je do greške. Pogledajte konzolu za više informacija.");
+                                });
+                        } else {
+                            alert("Molimo odaberite opciju koju želite da obrišete.");
+                        }
+                    } else {
+                        console.error("Kontejner za brisanje nije pronađen.");
+                    }
+                });
+            });
+
             document.querySelectorAll(".save-option-btn").forEach(button=>{
                 button.addEventListener("click", function(){
                 const questionId = this.getAttribute("data-question-id");

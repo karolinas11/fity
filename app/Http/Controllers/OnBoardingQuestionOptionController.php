@@ -22,4 +22,16 @@ class OnBoardingQuestionOptionController {
 
             return response()->json($response);
     }
+
+    public function deleteOption(Request $request){
+        $request->validate([
+            'question_id' => 'required|exists:on_boarding_question,id',
+            'value' => 'required',
+        ]);
+        $option = $this->onBoardingQuestionOptionService->deleteOption($request->question_id, $request->value);
+        if (!$option) {
+            return response()->json(['error' => 'Opcija nije pronađena.'], 404);
+        }
+        return response()->json(['success' => 'Opcija je uspešno obrisana.']);
+    }
 }

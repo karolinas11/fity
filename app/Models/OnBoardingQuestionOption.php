@@ -13,4 +13,5 @@ class OnBoardingQuestionOption extends Model
     public function question(){
         return $this->belongsTo(OnBoardingQuestion::class, 'question_id');
     }
+
 }

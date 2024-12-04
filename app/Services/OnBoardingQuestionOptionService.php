@@ -22,4 +22,8 @@ class OnBoardingQuestionOptionService {
             'value' => $option->value,
         ];
     }
+
+    public function deleteOption($questionId, $optionValue){
+        return $this->onBoardingQuestionOptionRepository->deleteOption($questionId,$optionValue);
+    }
 }

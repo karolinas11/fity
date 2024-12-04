@@ -53,3 +53,4 @@ Route::get('/users', [UserController::class, 'showUsersList'])->name('show-users
 Route::get('/boarding-question',[OnBoardingQuestionController::class, 'index']);
 
 Route::post('api/add-option',[OnBoardingQuestionOptionController::class,'store']);
+Route::post('/api/delete-option',[OnBoardingQuestionOptionController::class, 'deleteOption']);
