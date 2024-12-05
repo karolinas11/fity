@@ -31,47 +31,45 @@ class UserService
             $calories = 655.1 + (9.563 * $user->weight) + (1.85 * $user->height) - (4.676 * $user->age);
             $weight = 45 + (0.9 * ($user->height - 152.4));
         }
+
         $calories = $calories * $user->activity;
 
         $proteins = 0;
         $fats = 0;
         if($user->goal == 'reduction') {
             $diff = $user->weight - $weight;
-//            if($diff > 15) {
-//                $calories -= 1200;
-//            } else if($diff > 10) {
-//                $calories -= 900;
-//            } else if($diff > 5) {
-//                $calories -= 700;
-//            } else {
-//                $calories -= 500;
-//            }
-            $calories -= 300;
+            if($diff > 20) {
+                $calories -= 1000;
+            } else if($diff > 15) {
+                $calories -= 600;
+            } else {
+                $calories -= 500;
+            }
             $proteins = 2 * $weight;
             $fats = $weight;
         } else if($user->goal == 'increase') {
-            $calories += 500;
+            $calories += 300;
             $proteins = 2.5 * $weight;
             $fats = 1.2 * $weight;
         } else {
             switch ($user->activity) {
-                case '1.0':
+                case '1.2':
                     $proteins = 1.6 * $weight;
                     $fats = $weight;
                     break;
-                case '1.15':
+                case '1.375':
                     $proteins = 1.8 * $weight;
                     $fats = $weight;
                     break;
-                case '1.3':
+                case '1.55':
                     $proteins = 2 * $weight;
                     $fats = $weight;
                     break;
-                case '1.5':
+                case '1.725':
                     $proteins = 2 * $weight;
                     $fats = 1.1 * $weight;
                     break;
-                case '1.75':
+                case '1.9':
                     $proteins = 2 * $weight;
                     $fats = 1.3 * $weight;
                     break;

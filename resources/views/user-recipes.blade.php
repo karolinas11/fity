@@ -45,11 +45,11 @@
                     <h3>Aktivnost</h3>
 
                     <select name="activity" id="activity" class="form-select">
-                        <option value="1.0" {{ $user->activity == 1.0 ? 'selected' : '' }}>Bez aktivnosti</option>
-                        <option value="1.15" {{ $user->activity == 1.15 ? 'selected' : '' }}>Malo aktivnosti</option>
-                        <option value="1.3" {{ $user->activity == 1.3 ? 'selected' : '' }}>Srednje aktivnosti</option>
-                        <option value="1.5" {{ $user->activity == 1.5 ? 'selected' : '' }}>Teške aktivnosti</option>
-                        <option value="1.75" {{ $user->activity == 1.75 ? 'selected' : '' }}>Jako teške aktivnosti</option>
+                        <option value="1.2" {{ $user->activity == 1.2 ? 'selected' : '' }}>Bez aktivnosti</option>
+                        <option value="1.375" {{ $user->activity == 1.375 ? 'selected' : '' }}>Malo aktivnosti</option>
+                        <option value="1.55" {{ $user->activity == 1.55 ? 'selected' : '' }}>Srednje aktivnosti</option>
+                        <option value="1.725" {{ $user->activity == 1.725 ? 'selected' : '' }}>Teške aktivnosti</option>
+                        <option value="1.95" {{ $user->activity == 1.95 ? 'selected' : '' }}>Jako teške aktivnosti</option>
                     </select>
                 </div>
                 <div class="col-md-4">

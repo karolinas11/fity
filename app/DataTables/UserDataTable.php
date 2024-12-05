@@ -44,23 +44,22 @@ class UserDataTable extends DataTable
                 return $user->age;
             })
             ->addColumn('gender', function(User $user) {
-
-                if($user->gender == 'm'){
+                if($user->gender == 'm') {
                     return 'Muški';
-                }elseif ($user->gender == 'f'){
+                }elseif ($user->gender == 'f') {
                     return 'Ženski';
                 }
             })
             ->addColumn('activity', function(User $user) {
-                if ($user->activity == 1.0){
+                if ($user->activity == 1.2) {
                     return 'Bez aktivnosti';
-                }elseif ($user->activity == 1.15){
+                } elseif ($user->activity == 1.375) {
                     return 'Malo aktivnosti';
-                }elseif($user->activity == 1.3){
+                } elseif($user->activity == 1.55) {
                     return 'Srednje aktivnosti';
-                }elseif($user->activity == 1.5){
+                } elseif($user->activity == 1.725) {
                     return 'Teške aktivnosti';
-                }elseif($user->activity == 1.75){
+                } elseif($user->activity == 1.9) {
                     return 'Jako teške aktivnosti';
                 }
               //  return $user->activity;

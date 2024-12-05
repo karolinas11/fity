@@ -39,6 +39,11 @@
                     Lista namirnica
                 </a>
             </div>
+            <div class="col-md-6 mb-4">
+                <a href="{{ route('show-users-list') }}" class="btn btn-secondary btn-lg w-100">
+                    Lista korisnika
+                </a>
+            </div>
         </div>
     </div>
 @endsection

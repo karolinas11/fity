@@ -41,6 +41,7 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('show-add-foodstuff-category') }}">Dodaj kategoriju namirnice</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('show-recipes-list') }}">Lista recepata</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('show-foodstuffs-list') }}">Lista namirnica</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('show-users-list') }}">Lista korisnika</a></li>
 
                     </ul>
                 </div>

@@ -52,11 +52,11 @@
                 <label for="activity" class="col-md-4 col-form-label">Odaberi svoj nivo kretanja i aktivnosti</label>
                 <div class="col-md-8">
                     <select name="activity" id="activity" class="form-select">
-                        <option value="1.0">Bez aktivnosti</option>
-                        <option value="1.15">Malo aktivnosti</option>
-                        <option value="1.3">Srednje aktivnosti</option>
-                        <option value="1.5">Teške aktivnosti</option>
-                        <option value="1.75">Jako teške aktivnosti</option>
+                        <option value="1.2">Bez aktivnosti</option>
+                        <option value="1.375">Malo aktivnosti</option>
+                        <option value="1.55">Srednje aktivnosti</option>
+                        <option value="1.725">Teške aktivnosti</option>
+                        <option value="1.95">Jako teške aktivnosti</option>
                     </select>
                 </div>
             </div>
