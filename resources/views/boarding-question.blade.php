@@ -29,7 +29,7 @@
         </div>
     </div>
     @foreach($questions as $question)
-            <div class="container mt-5">
+            <div  id="question-{{ $question->id }}" class="container mt-5">
 
                 <label for="{{$question->id}}" class="form-label">{{ $question->title }}</label>
 
@@ -220,6 +220,7 @@
                     alert("Molimo popunite sva polja.");
                     return;
                 }
+
                 fetch("api/add-question",{
                    method: "POST",
                    headers: {
@@ -258,8 +259,7 @@
                    }
                 });
             });
-
-            document.querySelector(".delete-question").addEventListener("click", function (){
+            document.querySelector(".delete-question").addEventListener("click", function () {
                 const selectElement = document.getElementById("questions");
                 const selectedOption = selectElement.options[selectElement.selectedIndex];
                 const questionId = selectedOption.getAttribute("data-question-id");
@@ -267,7 +267,54 @@
                 if (questionId) {
                     console.log("ID izabranog pitanja:", questionId);
 
-                    fetch("/api/delete-question", {
+                    fetch("api/delete-question", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        },
+                        body: JSON.stringify({ id: questionId })
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log("Server Response:", data);
+                            if (data.success) {
+                                alert(data.message); // Prikaz poruke sa servera (uspeh)
+
+                                // Uklanjanje izabranog pitanja iz padajuće liste i DOM-a
+                                const questionElement = document.getElementById(`question-${questionId}`);
+                                if (questionElement) {
+                                    questionElement.remove();
+                                }
+
+                                // Ukloni opciju iz select elementa
+                                selectedOption.remove();
+                            } else {
+                                alert(data.message); // Prikaz poruke sa servera (neuspeh)
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Greška:", error);
+                            alert("Došlo je do greške pri slanju zahteva: " + error.message);
+                        });
+                } else {
+                    alert("Molimo odaberite pitanje za brisanje.");
+                }
+            });
+            /*document.querySelector(".delete-question").addEventListener("click", function (){
+                const selectElement = document.getElementById("questions");
+                const selectedOption = selectElement.options[selectElement.selectedIndex];
+                const questionId = selectedOption.getAttribute("data-question-id");
+
+                if (questionId) {
+                    console.log("ID izabranog pitanja:", questionId);
+
+                    fetch("api/delete-question", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -279,7 +326,12 @@
                         .then(data => {
                             if (data.success) {
                                 alert("Pitanje uspešno izbrisano!");
-                                selectedOption.remove();
+                                /*selectedOption.remove();
+
+                                const questionElement = document.getElementById(`question-${questionId}`);
+                                if(questionElement){
+                                    questionElement.remove();
+                                }
                             } else {
                                 alert("Greška pri brisanju pitanja.");
                             }
@@ -291,7 +343,7 @@
                 } else {
                     alert("Molimo odaberite pitanje za brisanje.");
                 }
-            })
+            })*/
         });
     </script>
 @endsection

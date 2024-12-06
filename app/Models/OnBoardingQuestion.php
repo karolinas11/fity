@@ -12,7 +12,7 @@ class OnBoardingQuestion extends Model
     protected $guarded = [];
     protected $table = 'on_boarding_question';
 
-    public function options(){
+    public function options() {
         return $this->hasMany(OnBoardingQuestionOption::class,'question_id');
     }
 }

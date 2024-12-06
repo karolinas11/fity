@@ -7,23 +7,27 @@ use App\Services\OnBoardingQuestionOptionService;
 class OnBoardingQuestionOptionController {
     protected OnBoardingQuestionOptionService $onBoardingQuestionOptionService;
 
-    public function __construct(OnBoardingQuestionOptionService $onBoardingQuestionOptionService) {
-        $this->onBoardingQuestionOptionService = $onBoardingQuestionOptionService;
+    public function __construct() {
+        $this->onBoardingQuestionOptionService = new OnBoardingQuestionOptionService();
     }
 
-    public function store(Request $request){
+    public function store(Request $request) {
             $validated = $request->validate([
                 'question_id' => 'required|exists:on_boarding_question,id',
                 'name_option' => 'required|string',
                 'value' => 'required|string',
             ]);
 
-            $response=$this->onBoardingQuestionOptionService->createOption($validated);
-
-            return response()->json($response);
+            $option = $this->onBoardingQuestionOptionService->createOption($validated);
+            return response()->json([
+                'success' => true,
+                'question_name' => $option->question->name_question,
+                'name_option' => $option->name_option,
+                'value' => $option->value,
+            ]);
     }
 
-    public function deleteOption(Request $request){
+    public function deleteOption(Request $request) {
         $request->validate([
             'question_id' => 'required|exists:on_boarding_question,id',
             'value' => 'required',
