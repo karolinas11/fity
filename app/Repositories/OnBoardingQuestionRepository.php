@@ -31,6 +31,17 @@ class OnBoardingQuestionRepository{
         }catch(QueryException $e) {
             Log::error('Can\'t delete question: ' . $e->getMessage());
         }
-
+    }
+    public function updateQuestion($id, $data){
+        try{
+            $question = OnBoardingQuestion::find($id);
+            if (!$question){
+                return false;
+            }
+            $question->update($data);
+            return $question;
+        }catch(QueryException $e) {
+            Log::error('Can\'t update question: ' . $e->getMessage());
+        }
     }
 }

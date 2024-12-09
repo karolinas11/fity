@@ -20,4 +20,8 @@ class OnBoardingQuestionService{
     public function addQuestion($data) {
         return $this->onBoardingQuestionRepository->addQuestion($data);
     }
+    public function updateQuestion($id, $data) {
+        return $this->onBoardingQuestionRepository->updateQuestion($id, $data);
+    }
+
 }

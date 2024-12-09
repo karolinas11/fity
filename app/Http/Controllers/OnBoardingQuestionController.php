@@ -41,6 +41,7 @@ class OnBoardingQuestionController extends Controller {
     public function addQuestion(Request $request) {
         $validatedData = $request->validate([
             'title' => 'required|string',
+            /*'subtitle' => 'required|string',*/
             'type' => 'required|string',
             'name_question' => 'required|string|unique:on_boarding_question,name_question',
         ]);
@@ -52,4 +53,26 @@ class OnBoardingQuestionController extends Controller {
             'question' => $question,
         ]);
     }
+    public function updateQuestion(Request $request, $id) {
+      $validateData= $request->validate([
+          'title' => 'required|string|max:255',
+          'type' => 'required|string|max:255',
+          'name_question' => 'required|string|max:255',
+      ]);
+
+      $updateQuestion = $this->onBoardingQuestionService->updateQuestion($id, $validateData);
+
+      if($updateQuestion) {
+          return response()->json([
+             'success' => true,
+             'message' => 'Pitanje je uspesno azurirano!',
+             'question' => $updateQuestion,
+          ]);
+      }
+      return response()->json([
+          'success' => false,
+          'message' => 'Pitanja nije uspesno azurirano!'
+      ]);
+    }
+
 }
