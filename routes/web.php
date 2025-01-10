@@ -56,3 +56,5 @@ Route::post('api/add-option',[OnBoardingQuestionOptionController::class,'store']
 Route::post('/api/delete-option',[OnBoardingQuestionOptionController::class, 'deleteOption']);
 Route::post('api/add-question',[OnBoardingQuestionController::class, 'addQuestion']);
 Route::post('api/delete-question',[OnBoardingQuestionController::class, 'deleteQuestion']);
+Route::put('/api/update-question/{id}', [OnBoardingQuestionController::class, 'updateQuestion']);
+Route::put('/api/update-option/{id}', [OnBoardingQuestionOptionController::class, 'updateOption']);

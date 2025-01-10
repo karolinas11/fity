@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('question_id');
             $table->string('value');
+            $table->string('subtitle');
             $table->string('name_option');
             $table->timestamps();
 

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('on_boarding_questions', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            /*$table->string('subtitle');*/
             $table->string('type');
             $table->string('name_question');
             $table->timestamps();
