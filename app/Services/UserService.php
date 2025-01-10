@@ -64,7 +64,7 @@ class UserService
         } else if($user->goal == 'increase') {
             $calories += 500;
             $proteins = 2.5 * $weight;
-            $fats = 1.2 * $weight;
+            $fats = 2 * $weight;
         } else {
             switch ($user->activity) {
                 case '1.0':
