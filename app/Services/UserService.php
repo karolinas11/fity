@@ -31,45 +31,62 @@ class UserService
             $calories = 655.1 + (9.563 * $user->weight) + (1.85 * $user->height) - (4.676 * $user->age);
             $weight = 45 + (0.9 * ($user->height - 152.4));
         }
-
         $calories = $calories * $user->activity;
 
         $proteins = 0;
         $fats = 0;
         if($user->goal == 'reduction') {
             $diff = $user->weight - $weight;
-            if($diff > 20) {
-                $calories -= 1000;
-            } else if($diff > 15) {
-                $calories -= 600;
-            } else {
-                $calories -= 500;
+            $calories -= 300;
+            /*$proteins = 2 * $weight;
+            $fats = $weight;*/
+            switch ($user->activity) {
+                case '1.0':
+                    $proteins = 1.6 * $weight;
+                    $fats = $weight;
+                    break;
+                case '1.15':
+                    $proteins = 1.8 * $weight;
+                    $fats = $weight;
+                    break;
+                case '1.3':
+                    $proteins = 2 * $weight;
+                    $fats = $weight;
+                    break;
+                case '1.5':
+                    $proteins = 2 * $weight;
+                    $fats = 1.1 * $weight;
+                    break;
+                case '1.75':
+                    $proteins = 2 * $weight;
+                    $fats = 1.3 * $weight;
+                    break;
+                default:
+                    break;
             }
-            $proteins = 2 * $weight;
-            $fats = $weight;
         } else if($user->goal == 'increase') {
-            $calories += 300;
+            $calories += 500;
             $proteins = 2.5 * $weight;
             $fats = 1.2 * $weight;
         } else {
             switch ($user->activity) {
-                case '1.2':
+                case '1.0':
                     $proteins = 1.6 * $weight;
                     $fats = $weight;
                     break;
-                case '1.375':
+                case '1.15':
                     $proteins = 1.8 * $weight;
                     $fats = $weight;
                     break;
-                case '1.55':
+                case '1.3':
                     $proteins = 2 * $weight;
                     $fats = $weight;
                     break;
-                case '1.725':
+                case '1.5':
                     $proteins = 2 * $weight;
                     $fats = 1.1 * $weight;
                     break;
-                case '1.9':
+                case '1.75':
                     $proteins = 2 * $weight;
                     $fats = 1.3 * $weight;
                     break;
