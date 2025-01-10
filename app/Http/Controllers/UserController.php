@@ -43,6 +43,7 @@ class UserController extends Controller
         ];
 
         $user = $this->userService->addUser($userData);
+        /*dd($user);*/
         return redirect()->route('assign-recipes-to-user', ['userId' => $user->id]);
     }
 
@@ -154,7 +155,7 @@ class UserController extends Controller
 //        dd($target);
 
     }*/
-   /* public function assignRecipesToUser($userId) {
+  /* public function assignRecipesToUser($userId) {
 
         $user = User::find($userId);
         $target = $this->userService->getMacrosForUser($user);
@@ -181,7 +182,7 @@ class UserController extends Controller
                 foreach ($pairs as $pair) {
                     list($key, $value) = explode(' - ', $pair);
                     /* $holders[(int)$key] = (int)$value;*/
-                    /*$holderFoodStuffRecipe =RecipeFoodstuff::where('foodstuff_id', (int)$key)
+                  /*  $holderFoodStuffRecipe =RecipeFoodstuff::where('foodstuff_id', (int)$key)
                         ->where('recipe_id',$meal['same_meal_id'])->first();
 
                     if($holderFoodStuffRecipe)
