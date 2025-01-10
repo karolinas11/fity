@@ -36,10 +36,7 @@ class UserService
         $proteins = 0;
         $fats = 0;
         if($user->goal == 'reduction') {
-            $diff = $user->weight - $weight;
             $calories -= 300;
-            /*$proteins = 2 * $weight;
-            $fats = $weight;*/
             switch ($user->activity) {
                 case '1.0':
                     $proteins = 1.6 * $weight;
