@@ -37,18 +37,33 @@ class UserService
         $fats = 0;
         if($user->goal == 'reduction') {
             $diff = $user->weight - $weight;
-//            if($diff > 15) {
-//                $calories -= 1200;
-//            } else if($diff > 10) {
-//                $calories -= 900;
-//            } else if($diff > 5) {
-//                $calories -= 700;
-//            } else {
-//                $calories -= 500;
-//            }
             $calories -= 300;
-            $proteins = 2 * $weight;
-            $fats = $weight;
+            /*$proteins = 2 * $weight;
+            $fats = $weight;*/
+            switch ($user->activity) {
+                case '1.0':
+                    $proteins = 1.6 * $weight;
+                    $fats = $weight;
+                    break;
+                case '1.15':
+                    $proteins = 1.8 * $weight;
+                    $fats = $weight;
+                    break;
+                case '1.3':
+                    $proteins = 2 * $weight;
+                    $fats = $weight;
+                    break;
+                case '1.5':
+                    $proteins = 2 * $weight;
+                    $fats = 1.1 * $weight;
+                    break;
+                case '1.75':
+                    $proteins = 2 * $weight;
+                    $fats = 1.3 * $weight;
+                    break;
+                default:
+                    break;
+            }
         } else if($user->goal == 'increase') {
             $calories += 500;
             $proteins = 2.5 * $weight;
