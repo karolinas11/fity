@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Foodstuff;
 use App\Models\Recipe;
+use App\Models\RecipeFoodstuff;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Http;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
-
+use App\Services\RecipeFoodstuffService;
 class UserController extends Controller
 {
     protected UserService $userService;
@@ -155,7 +158,7 @@ class UserController extends Controller
 //        dd($target);
 
     }*/
-  /* public function assignRecipesToUser($userId) {
+  public function assignRecipesToUser($userId) {
 
         $user = User::find($userId);
         $target = $this->userService->getMacrosForUser($user);
@@ -182,7 +185,7 @@ class UserController extends Controller
                 foreach ($pairs as $pair) {
                     list($key, $value) = explode(' - ', $pair);
                     /* $holders[(int)$key] = (int)$value;*/
-                  /*  $holderFoodStuffRecipe =RecipeFoodstuff::where('foodstuff_id', (int)$key)
+                   $holderFoodStuffRecipe =RecipeFoodstuff::where('foodstuff_id', (int)$key)
                         ->where('recipe_id',$meal['same_meal_id'])->first();
 
                     if($holderFoodStuffRecipe)
@@ -215,6 +218,5 @@ class UserController extends Controller
         }
 
         return view('user-recipes', compact('user', 'target', 'data'));
-    }*/
-
+    }
 }
