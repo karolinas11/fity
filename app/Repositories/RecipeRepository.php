@@ -22,6 +22,7 @@ class RecipeRepository
             $recipe->name = $recipeData['name'];
             $recipe->description = $recipeData['description'];
             $recipe->short_description = $recipeData['short_description'];
+            $recipe->insulin = $recipeData['insulin'];
             $recipe->type = $recipeData['type'];
             $recipe->save();
             return $recipe;

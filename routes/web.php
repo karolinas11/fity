@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\FoodstuffCategoryController;
 use App\Http\Controllers\FoodstuffController;
+use App\Http\Controllers\OnBoardingQuestionController;
+use App\Http\Controllers\onBoardingQuestionOptionController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +30,8 @@ Route::get('/add-recipe-form', [RecipeController::class, 'showAddRecipe'])->name
 Route::post('/add-recipe', [RecipeController::class, 'addRecipe'])->name('add-recipe');
 
 Route::get('/user/{userId}', [UserController::class, 'assignRecipesToUser'])->name('assign-recipes-to-user');
+//user/edit preko ajaksa radimo izmeni dugme
+Route::post('/user/edit', [UserController::class, 'editUser']);
 
 Route::get('/recipes', [RecipeController::class, 'showRecipesList'])->name('show-recipes-list');
 Route::get('/foodstuffs', [FoodstuffController::class, 'showFoodstuffsList'])->name('show-foodstuffs-list');
@@ -40,5 +44,17 @@ Route::get('/recipe/{recipeId}/edit', [RecipeController::class, 'showRecipeEdit'
 Route::post('/recipe/{recipeId}/edit', [RecipeController::class, 'editRecipe'])->name('edit-recipe');
 Route::delete('/recipe/{recipeId}/delete', [RecipeController::class, 'deleteRecipe'])->name('delete-recipe');
 
-
 Route::get('/ide-gas', [RecipeController::class, 'printRecipes'])->name('ide-gas');
+Route::get('/test-curl', [RecipeController::class, 'testCurl'])->name('test-curl');
+
+Route::get('/users', [UserController::class, 'showUsersList'])->name('show-users-list');
+
+
+Route::get('/boarding-question',[OnBoardingQuestionController::class, 'index']);
+
+Route::post('api/add-option',[OnBoardingQuestionOptionController::class,'store']);
+Route::post('/api/delete-option',[OnBoardingQuestionOptionController::class, 'deleteOption']);
+Route::post('api/add-question',[OnBoardingQuestionController::class, 'addQuestion']);
+Route::post('api/delete-question',[OnBoardingQuestionController::class, 'deleteQuestion']);
+Route::put('/api/update-question/{id}', [OnBoardingQuestionController::class, 'updateQuestion']);
+Route::put('/api/update-option/{id}', [OnBoardingQuestionOptionController::class, 'updateOption']);

@@ -73,6 +73,45 @@
             </div>
 
             <div class="row mb-3">
+                <label for="meals_num" class="col-md-4 col-form-label">Broj obroka na dnevnom nivou?</label>
+                <div class="col-md-8">
+                    <select name="meals_num" id="meals_num" class="form-select">
+                        <option value="3">3</option>
+                        <option value="4" selected>4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label for="tolerance_calories" class="col-md-4 col-form-label">Tolerancija kalorija +-</label>
+                <div class="col-md-8">
+                    <input type="number" name="tolerance_calories" class="form-control" value="50">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label for="tolerance_proteins" class="col-md-4 col-form-label">Tolerancija proteina +-</label>
+                <div class="col-md-8">
+                    <input type="number" name="tolerance_proteins" class="form-control" value="5">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label for="tolerance_fats" class="col-md-4 col-form-label">Tolerancija masti +-</label>
+                <div class="col-md-8">
+                    <input type="number" name="tolerance_fats" class="form-control" value="5">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label for="days" class="col-md-4 col-form-label">Broj dana</label>
+                <div class="col-md-8">
+                    <input type="number" name="days" class="form-control" value="7">
+                </div>
+            </div>
+
+            <div class="row mb-3">
                 <div class="col-md-12 text-center">
                     <button type="submit" class="btn btn-primary">Pošalji</button>
                 </div>

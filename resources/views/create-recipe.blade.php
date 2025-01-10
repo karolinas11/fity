@@ -30,6 +30,11 @@
                 </select>
             </div>
 
+            <div class="col-md-12">
+                <label>Insulinska rezistencija</label>
+                <input type="checkbox" name="insulin" value="1">
+            </div>
+
             <div class="foodstuffs mb-4">
                 <div class="single-foodstuff row mb-3">
                     <div class="col-md-6">
@@ -156,6 +161,7 @@
                     description: document.querySelector('textarea[name="description"]').value,
                     short_description: document.querySelector('textarea[name="short_description"]').value,
                     type: document.querySelector('select[name="type"]').value,
+                    insulin: document.querySelector('input[name="insulin"]').checked ? 1: 0,
                     foodstuffs: foodstuffData
                 },
                 success: function(result) {

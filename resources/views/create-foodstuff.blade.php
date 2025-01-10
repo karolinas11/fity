@@ -80,6 +80,13 @@
             </div>
 
             <div class="row mb-3">
+                <label for="max" class="col-md-4 col-form-label">Stepen promene</label>
+                <div class="col-md-8">
+                    <input type="text" name="step" class="form-control" placeholder="Stepen promene">
+                </div>
+            </div>
+
+            <div class="row mb-3">
                 <div class="col-md-12 text-center">
                     <button type="submit" class="btn btn-primary">Pošalji</button>
                 </div>
