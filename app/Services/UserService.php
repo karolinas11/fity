@@ -36,28 +36,25 @@ class UserService
         $proteins = 0;
         $fats = 0;
         if($user->goal == 'reduction') {
-            $diff = $user->weight - $weight;
             $calories -= 300;
-            /*$proteins = 2 * $weight;
-            $fats = $weight;*/
             switch ($user->activity) {
-                case '1.0':
+                case '1.2':
                     $proteins = 1.6 * $weight;
                     $fats = $weight;
                     break;
-                case '1.15':
+                case '1.375':
                     $proteins = 1.8 * $weight;
                     $fats = $weight;
                     break;
-                case '1.3':
+                case '1.55':
                     $proteins = 2 * $weight;
                     $fats = $weight;
                     break;
-                case '1.5':
+                case '1.725':
                     $proteins = 2 * $weight;
                     $fats = 1.1 * $weight;
                     break;
-                case '1.75':
+                case '1.95':
                     $proteins = 2 * $weight;
                     $fats = 1.3 * $weight;
                     break;
@@ -66,28 +63,20 @@ class UserService
             }
         } else if($user->goal == 'increase') {
             $calories += 500;
-            $proteins = 2.5 * $weight;
-            $fats = 2 * $weight;
+            $proteins = 2 * $weight;
+            $fats = 1.2 * $weight;
         } else {
+            $proteins = 2 * $weight;
             switch ($user->activity) {
-                case '1.0':
-                    $proteins = 1.6 * $weight;
+                case '1.375':
+                case '1.55':
+                case '1.2':
                     $fats = $weight;
                     break;
-                case '1.15':
-                    $proteins = 1.8 * $weight;
-                    $fats = $weight;
-                    break;
-                case '1.3':
-                    $proteins = 2 * $weight;
-                    $fats = $weight;
-                    break;
-                case '1.5':
-                    $proteins = 2 * $weight;
+                case '1.725':
                     $fats = 1.1 * $weight;
                     break;
-                case '1.75':
-                    $proteins = 2 * $weight;
+                case '1.95':
                     $fats = 1.3 * $weight;
                     break;
                 default:
