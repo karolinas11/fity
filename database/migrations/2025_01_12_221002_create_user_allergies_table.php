@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('on_boarding_questions', function (Blueprint $table) {
+        Schema::create('user_allergies', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->text('description')->nullable();
-            $table->string('type');
-            $table->string('name_question');
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('foodstuff_id');
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('foodstuff_id')->references('id')->on('foodstuffs')->onDelete('cascade');
         });
     }
 
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('on_boarding_questions');
+        Schema::dropIfExists('user_allergies');
     }
 };

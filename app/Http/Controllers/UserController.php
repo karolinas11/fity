@@ -146,4 +146,26 @@ class UserController extends Controller
         return $dataTable->render('users-list');
     }
 
+    public function createUser(Request $request) {
+        $userData = [
+            'goal' => $request->input('goal'),
+            'height' => $request->input('height'),
+            'weight' => $request->input('weight'),
+            'age' => $request->input('age'),
+            'gender' => $request->input('gender'),
+            'activity' => $request->input('activity'),
+            'insulin_resistance' => $request->input('insulin_resistance'),
+            'meals_num' => $request->input('meals_num'),
+            'tolerance_calories' => $request->input('tolerance_calories'),
+            'tolerance_proteins' => $request->input('tolerance_proteins'),
+            'tolerance_fats' => $request->input('tolerance_fats'),
+            'days' => $request->input('days'),
+        ];
+
+        $user = $this->userService->addUser($userData);
+        $macros = $this->userService->getMacrosForUser($user);
+        //dd($user);
+        return redirect()->route('assign-recipes-to-user', ['userId' => $user->id]);
+    }
+
 }

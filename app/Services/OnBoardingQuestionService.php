@@ -24,4 +24,39 @@ class OnBoardingQuestionService{
         return $this->onBoardingQuestionRepository->updateQuestion($id, $data);
     }
 
+    public function getOnBoardingQuestionsByIndexAndLang($index, $lang) {
+        $questions = $this->getOnBoardingQuestions();
+        $finalQuestions = [];
+        foreach ($questions as $question) {
+            $answers = [];
+            foreach ($question->options as $key => $option) {
+                $singleAnswer = [
+                    'answerIndex' => $key,
+                    'answerTitle' => $option->value,
+                    'answerDetail' => $option->subtitle,
+                    'dataType' => $option->name_option
+                ];
+                array_push($answers, $singleAnswer);
+            }
+
+            $singleQuestion = [
+                'id' => $question->id,
+                'question' => $question->title,
+                'description' => $question->description,
+                'type' => $question->type == 'select' ? 'choice' : $question->type,
+                'answers' => $answers
+            ];
+            array_push($finalQuestions, $singleQuestion);
+        }
+
+        $responseQuestions = [
+            'questionsPageCount' => 4,
+            'submitForCalculationAfterId' => 4,
+            'submitForResultAfterId' => 8,
+            'questions' => $finalQuestions
+        ];
+
+        return $responseQuestions;
+    }
+
 }

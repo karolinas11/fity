@@ -76,18 +76,20 @@ document.addEventListener("DOMContentLoaded",function(){
         button.addEventListener("click", function(){
             const questionId = this.getAttribute("data-question-id");
             const container = this.closest(".new-option-container");
-            const newOptionInput = container.querySelector(".new-option-input");
+            const newTitleInput = container.querySelector(".new-title-input");
             const newSubtitleInput = container.querySelector(".new-subtitle-input");
+            const newNameInput = container.querySelector(".new-name-input");
 
-            const newOptionValue = newOptionInput.value.trim();
+            const newTitleValue = newTitleInput.value.trim();
             const newSubtitleValue = newSubtitleInput.value.trim();
+            const newNameValue = newNameInput.value.trim();
 
-            if (!newOptionValue || !newSubtitleValue) {
-                alert("Molimo popunite i naslov i podnaslov opcije!");
+            if (!newTitleValue || !newNameValue) {
+                alert("Molimo popunite sva polja!");
                 return;
             }
 
-            console.log(newOptionValue, newSubtitleValue);
+            console.log(newTitleValue, newSubtitleValue, newNameValue);
             fetch("/api/add-option", {
                 method: "POST",
                 headers: {
@@ -96,8 +98,8 @@ document.addEventListener("DOMContentLoaded",function(){
                 },
                 body: JSON.stringify({
                     question_id: questionId,
-                    name_option: newOptionValue,
-                    value: newOptionValue,
+                    name_option: newNameValue,
+                    value: newTitleValue,
                     subtitle: newSubtitleValue,
                 }),
             })
@@ -106,20 +108,20 @@ document.addEventListener("DOMContentLoaded",function(){
                     if (data.success) {
                         const selects = document.querySelectorAll(`select[name="${data.question_name}"]`);
                         const newOption = document.createElement("option");
-                        newOption.value = data.name_option;
                         newOption.setAttribute("data-subtitle", data.subtitle);
-                        newOption.setAttribute("data-value", data.value);
+                        newOption.setAttribute("data-title", data.value);
                         newOption.setAttribute("data-name", data.name_option);
 
 
-                        newOption.innerHTML = `<p id="option-title">${data.value}</p> | |  <p id="option-subtitle">${data.subtitle}</p>`;
+                        newOption.innerHTML = `<p id="option-title">${data.value}</p> | |  <p id="option-subtitle">${data.subtitle}</p> || <p id="option-name">${data.name_option}</p>`;
 
                         // Dodaj novu opciju u svaki relevantni select
                         selects.forEach(select => {
                             select.appendChild(newOption.cloneNode(true));
                         });
-                        newOptionInput.value = "";
+                        newTitleInput.value = "";
                         newSubtitleInput.value = "";
+                        newNameInput.value = "";
 
                         alert("Opcija uspešno dodata!");
                     } else {
@@ -151,7 +153,8 @@ document.addEventListener("DOMContentLoaded",function(){
         const title = document.querySelector("#new_pitanje").value;
         const type = document.querySelector("#new_type").value;
         const name_question = document.querySelector("#new_id").value;
-        console.log(title, type, name_question);
+        const description = document.querySelector("#new_description").value;
+        console.log(title, type, name_question, description);
         if (!title || !type || !name_question) {
             alert("Molimo popunite sva polja.");
             return;
@@ -167,6 +170,7 @@ document.addEventListener("DOMContentLoaded",function(){
                 title: title,
                 type: type,
                 name_question: name_question,
+                description: description
             }),
         })
         .then((response)=>response.json())
@@ -179,11 +183,13 @@ document.addEventListener("DOMContentLoaded",function(){
                 newOption.value = data.question.name_question;
                 newOption.textContent = data.question.title;
                 newOption.setAttribute('data-question-id', data.question.id);
+                newOption.setAttribute('data-question-description', data.question.description);
                 deleteQuestionSelect.appendChild(newOption);
 
                 document.querySelector("#new_pitanje").value = "";
                 document.querySelector("#new_type").value = "";
                 document.querySelector("#new_id").value = "";
+                document.querySelector("#new_description").value = "";
             }else{
                 alert("Greska prilikom dodavanja pitanja");
             }
@@ -264,10 +270,12 @@ document.addEventListener("DOMContentLoaded",function(){
                     const questionTitle = selectedOption.textContent; // Naslov pitanja
                     const questionType = selectedOption.getAttribute("data-question-type") || ""; // Pretpostavljamo da je tip pitanja opcionalan
                     const questionName = selectedOption.value; // name_question
+                    const questionDescription = selectedOption.getAttribute("data-question-description") || "";
 
                     document.getElementById("edit-question-text").value = questionTitle;
                     document.getElementById("edit-question-type").value = questionType;
                     document.getElementById("edit-question-name").value = questionName;
+                    document.getElementById("edit-question-description").value = questionDescription;
                     document.getElementById("update-question").addEventListener("click",function(){
                         updateQuestion(questionId);
                     });
@@ -281,6 +289,7 @@ document.addEventListener("DOMContentLoaded",function(){
         const updatedTitle = document.getElementById("edit-question-text").value;
         const updatedType = document.getElementById("edit-question-type").value;
         const updatedName = document.getElementById("edit-question-name").value;
+        const updatedDescription = document.getElementById("edit-question-description").value;
 
 
         fetch(`/api/update-question/${questionId}`, {
@@ -295,6 +304,7 @@ document.addEventListener("DOMContentLoaded",function(){
                 title: updatedTitle,
                 type: updatedType,
                 name_question: updatedName,
+                description: updatedDescription
             })
         })
             .then(response => response.json())

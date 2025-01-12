@@ -9,7 +9,7 @@ class OnBoardingQuestionOption extends Model
 {
     use HasFactory;
     protected $guarded = [];
-    protected $table = 'on_boarding_question_option';
+    protected $table = 'on_boarding_question_options';
     public function question() {
         return $this->belongsTo(OnBoardingQuestion::class, 'question_id');
     }

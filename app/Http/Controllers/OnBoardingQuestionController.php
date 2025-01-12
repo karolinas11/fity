@@ -41,9 +41,9 @@ class OnBoardingQuestionController extends Controller {
     public function addQuestion(Request $request) {
         $validatedData = $request->validate([
             'title' => 'required|string',
-            /*'subtitle' => 'required|string',*/
+            'description' => '',
             'type' => 'required|string',
-            'name_question' => 'required|string|unique:on_boarding_question,name_question',
+            'name_question' => 'required|string|unique:on_boarding_questions,name_question',
         ]);
 
         $question = $this->onBoardingQuestionService->addQuestion($validatedData);
@@ -58,6 +58,7 @@ class OnBoardingQuestionController extends Controller {
           'title' => 'required|string|max:255',
           'type' => 'required|string|max:255',
           'name_question' => 'required|string|max:255',
+          'description' => 'string',
       ]);
 
       $updateQuestion = $this->onBoardingQuestionService->updateQuestion($id, $validateData);
@@ -74,5 +75,11 @@ class OnBoardingQuestionController extends Controller {
           'message' => 'Pitanja nije uspesno azurirano!'
       ]);
     }
+
+    public function getOnboardingQuestions($questionSetIndex, $language) {
+        $data = $this->onBoardingQuestionService->getOnBoardingQuestionsByIndexAndLang($questionSetIndex, $language);
+        return response()->json($data, '200');
+    }
+
 
 }
