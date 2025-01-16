@@ -164,7 +164,7 @@ class UserController extends Controller
 
         $user = $this->userService->addUser($userData);
         $macros = $this->userService->getMacrosForUser($user);
-        //dd($user);
+        
         return redirect()->route('assign-recipes-to-user', ['userId' => $user->id]);
     }
 
