@@ -158,7 +158,7 @@ class RecipeController
                     'proteins' => $proteins,
                     'fats' => $fats,
                     'carbohydrates' => $carbohydrates,
-                    'holders' => ''
+                    'holders' => '',
                 ];
                 array_push($recipesFinal, $recipeFinal);
             }
