@@ -109,6 +109,17 @@ class RecipeController
         $recipesFinal = [];
         foreach ($recipes as $recipe) {
             $recipeFoodstuffs = $this->recipeFoodstuffService->getRecipeFoodstuffs($recipe->id);
+            $tunaContain = false;
+            $whey = 0;
+            foreach ($recipeFoodstuffs as $recipeFoodstuff) {
+                if($recipeFoodstuff->foodstuff_id == 17 ){
+                    $tunaContain = true;
+                }
+                if($recipeFoodstuff->foodstuff_id == 105 ){
+                    $whey = $recipeFoodstuff->amount;
+                }
+            }
+
             $calories = 0;
             $proteins = 0;
             $fats = 0;
@@ -158,7 +169,9 @@ class RecipeController
                     'proteins' => $proteins,
                     'fats' => $fats,
                     'carbohydrates' => $carbohydrates,
-                    'holders' => ''
+                    'holders' => '',
+                    'tuna' => $tunaContain ? 1 : 0,
+                    'whey' => $whey
                 ];
                 array_push($recipesFinal, $recipeFinal);
             }
@@ -183,7 +196,9 @@ class RecipeController
                         'proteins' => $prot,
                         'fats' => $fat,
                         'carbohydrates' => $carb,
-                        'holders' => $holder->foodstuff_id . ' - ' . $i
+                        'holders' => $holder->foodstuff_id . ' - ' . $i,
+                        'tuna' => $tunaContain ? 1 : 0,
+                        'whey' => $whey
                     ];
                     array_push($recipesFinal, $recipeFinal);
                 }
@@ -221,7 +236,9 @@ class RecipeController
                             'proteins' => $protF,
                             'fats' => $fatF,
                             'carbohydrates' => $carbF,
-                            'holders' => $holder->foodstuff_id . ' - ' . $i . ' | ' . $holder2->foodstuff_id . ' - ' . $j
+                            'holders' => $holder->foodstuff_id . ' - ' . $i . ' | ' . $holder2->foodstuff_id . ' - ' . $j,
+                            'tuna' => $tunaContain ? 1 : 0,
+                            'whey' => $whey
                         ];
                         array_push($recipesFinal, $recipeFinal);
                     }
@@ -273,7 +290,9 @@ class RecipeController
                                 'proteins' => $protF,
                                 'fats' => $fatF,
                                 'carbohydrates' => $carbF,
-                                'holders' => $holder->foodstuff_id . ' - ' . $i . ' | ' . $holder2->foodstuff_id . ' - ' . $j . ' | ' . $holder3->foodstuff_id . ' - ' . $k
+                                'holders' => $holder->foodstuff_id . ' - ' . $i . ' | ' . $holder2->foodstuff_id . ' - ' . $j . ' | ' . $holder3->foodstuff_id . ' - ' . $k,
+                                'tuna' => $tunaContain ? 1 : 0,
+                                'whey' => $whey
                             ];
                             array_push($recipesFinal, $recipeFinal);
                         }
@@ -301,7 +320,9 @@ class RecipeController
                         'proteins' => $prot,
                         'fats' => $fat,
                         'carbohydrates' => $carb,
-                        'holders' => $holder->foodstuff_id . ' - ' . $j
+                        'holders' => $holder->foodstuff_id . ' - ' . $j,
+                        'tuna' => $tunaContain ? 1 : 0,
+                        'whey' => $whey
                     ];
                     array_push($recipesFinal, $recipeFinal);
                 }
@@ -339,7 +360,9 @@ class RecipeController
                             'proteins' => $protF,
                             'fats' => $fatF,
                             'carbohydrates' => $carbF,
-                            'holders' => $holder->foodstuff_id . ' - ' . $i . ' | ' . $holder2->foodstuff_id . ' - ' . $j
+                            'holders' => $holder->foodstuff_id . ' - ' . $i . ' | ' . $holder2->foodstuff_id . ' - ' . $j,
+                            'tuna' => $tunaContain ? 1 : 0,
+                            'whey' => $whey
                         ];
                         array_push($recipesFinal, $recipeFinal);
                     }
@@ -366,7 +389,9 @@ class RecipeController
                         'proteins' => $prot,
                         'fats' => $fat,
                         'carbohydrates' => $carb,
-                        'holders' => $holder->foodstuff_id . ' - ' . $j
+                        'holders' => $holder->foodstuff_id . ' - ' . $j,
+                        'tuna' => $tunaContain ? 1 : 0,
+                        'whey' => $whey
                     ];
                     array_push($recipesFinal, $recipeFinal);
                 }
@@ -404,7 +429,9 @@ class RecipeController
                             'proteins' => $protF,
                             'fats' => $fatF,
                             'carbohydrates' => $carbF,
-                            'holders' => $holder->foodstuff_id . ' - ' . $i . ' | ' . $holder2->foodstuff_id . ' - ' . $j
+                            'holders' => $holder->foodstuff_id . ' - ' . $i . ' | ' . $holder2->foodstuff_id . ' - ' . $j,
+                            'tuna' => $tunaContain ? 1 : 0,
+                            'whey' => $whey
                         ];
                         array_push($recipesFinal, $recipeFinal);
                     }
@@ -423,4 +450,5 @@ class RecipeController
     private function calculateCalories($proteins, $fats, $carbohydrates) {
         return $proteins * 4 + $fats * 9 + $carbohydrates * 4;
     }
+
 }
