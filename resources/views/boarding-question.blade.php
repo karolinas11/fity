@@ -52,6 +52,7 @@
                             <option data-subtitle="{{ $option->subtitle }}" data-title="{{ $option->value }}" data-name="{{ $option->name_option }}">
                                 <p id="option-title">{{ $option->value }}</p> |
                                 <p id="option-subtitle">{{ $option->subtitle }}</p> |
+                                <p id="option-data-value">{{$option->data_value}}</p> |
                                 <p id="option-name">{{ $option->name_option }}</p>
                             </option>
                         @endforeach
@@ -67,9 +68,10 @@
                         <p class="mt-4">Izaberi sta zelis da izmenis!</p>
                         <select data-question-id="{{ $question->id }}" name="{{ $question->name_question }}" id="{{ $question->name_question }}" class="form-select mb-4">
                             @foreach($question->options as $option)
-                                <option data-option-id="{{ $option->id }}" data-title="{{ $option->value }}" data-subtitle="{{ $option->subtitle }}" data-name="{{ $option->name_option }}">
+                                <option data-option-id="{{ $option->id }}" data-datavalue="{{ $option->data_value }}" data-title="{{ $option->value }}" data-subtitle="{{ $option->subtitle }}" data-name="{{ $option->name_option }}">
                                     <p id="option-title">{{ $option->value }}</p> |
                                     <p id="option-subtitle">{{ $option->subtitle }}</p> |
+                                    <p id="option-datavalue">{{ $option->data_value }}</p> |
                                     <p id="option-name"> {{ $option->name_option }}</p>
                                 </option>
                             @endforeach
@@ -78,13 +80,15 @@
                         <input id="id-option" type="text" class="form-control">
                         <input type="text" id="title_option" class="form-control">
                         <input type="text" id="subtitle_option" class="form-control">
-                        <input type="text" id="name_option" class="form-control">
+                        <input type="text" id="data_value" class="form-control">
+                        <input type="text" id="name_option"  class="form-control">
                         <button type="button" class="btn btn-success mt-2 update-option" data-question-id="{{ $question->id }}">Sacuvaj izmene</button>
                     </div>
 
                     <div class="new-option-container create-container mt-2" style="display: none;">
                         <input type="text" class="form-control new-title-input" placeholder="Naziv nove opcije">
                         <input type="text" class="form-control new-subtitle-input" placeholder="Unesite subtitle">
+                        <input type="text" class="form-control new-datavalue-input" placeholder="Unesite data-value">
                         <input type="text" class="form-control new-name-input" placeholder="Unesite type">
                         <button type="button" class="btn btn-success mt-2 save-option-btn" data-question-id="{{ $question->id }}">
                             Sačuvaj opciju
@@ -94,10 +98,16 @@
                     <div class="new-option-container delete-container mt-2" style="display: none;">
                         <select name="{{ $question->name_question }}" id="{{ $question->name_question }}" class="form-select">
                             @foreach($question->options as $option)
-                                <option value="{{ $option->name_option }}">{{ $option->value }}</option>
+                                <option data-subtitle="{{ $option->subtitle }}" data-title="{{ $option->value }}" data-name="{{ $option->name_option }}" value="{{ $option->id }}" data-datavalue="{{ $option->data_value }}">
+                                    <p id="option-title">{{ $option->value }}</p> |
+                                    <p id="option-subtitle">{{ $option->subtitle }}</p> |
+                                    <p id="option-data-value">{{ $option->data_value }} |
+                                    <p id="option-name"> {{ $option->name_option }}</p>
+                                </option>
+
                             @endforeach
                         </select>
-                        <button type="button" class="btn btn-danger mt-2 remove-option-btn" data-question-id="{{ $question->id }}">
+                        <button type="button" class="btn btn-danger mt-2 remove-option-btn" data-option-id="{{ $option->id }}">
                             Sačuvaj promene
                         </button>
                     </div>

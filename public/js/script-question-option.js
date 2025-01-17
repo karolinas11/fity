@@ -22,53 +22,41 @@ document.addEventListener("DOMContentLoaded",function(){
         });
     });
     document.querySelectorAll(".remove-option-btn").forEach(button =>{
-        button.addEventListener("click", function(){
-        const questionId = this.getAttribute("data-question-id");
-        console.log(`Question ID: ${questionId}`);
-        const container = this.closest(".delete-container");
-        if (container) {
-            const selectElement = container.querySelector("select");
-            const selectedOption = selectElement ? selectElement.value : null;
+       button.addEventListener("click", function(){
+           const option_id = this.getAttribute("data-option-id");
+           console.log(`Option ID: ${option_id}`);
+           if(option_id){
+               fetch("api/delete-option",{
+                   method: "POST",
+                   headers:{
+                       "Content-Type": "application/json",
+                       "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                   },
+                   body: JSON.stringify({
+                       option_id: option_id
+                   })
+               })
+               .then(response => response.json())
+               .then(data=>{
+                   if(data.success)
+                   {
+                       alert("Opcija je uspesno izbrisana");
+                       document.querySelectorAll(`option[value="${option_id}"]`).forEach(optionToRemove => {
+                           optionToRemove.remove();
+                       });
+                   }else {
+                       alert("Opcija nije izbrisana"+ (data.error || "Nepoznata greška."));
+                   }
+               })
+               .catch(error=>{
+                   console.error("Greska u Api zahtevu:", error);
+                   alert("Došlo je do greške. Pogledajte konzolu za više informacija.");
+               });
+           }else{
+               alert("ID opcije nije pronadjen");
+           }
 
-            if (selectedOption) {
-                fetch("/api/delete-option", {
-                method: "POST",
-                headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                },
-                body: JSON.stringify({
-                    question_id: questionId,
-                    value: selectedOption
-                })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert("Opcija je uspešno izbrisana");
 
-                        document.querySelectorAll(`select[name="${selectElement.name}"]`).forEach(select => {
-
-                            const optionToRemove = select.querySelector(`option[value="${selectedOption}"]`);
-                            if (optionToRemove) {
-                                optionToRemove.remove();
-                            }
-                        });
-                    }
-                     else {
-                        alert("Opcija nije izbrisana");
-                     }
-                 })
-                .catch(error => {
-                    console.error("Greška u API zahtevu:", error);
-                    alert("Došlo je do greške. Pogledajte konzolu za više informacija.");
-                });
-            } else {
-                    alert("Molimo odaberite opciju koju želite da obrišete.");
-            }
-        } else {
-                console.error("Kontejner za brisanje nije pronađen.");
-        }
     });
 });
 
@@ -79,17 +67,19 @@ document.addEventListener("DOMContentLoaded",function(){
             const newTitleInput = container.querySelector(".new-title-input");
             const newSubtitleInput = container.querySelector(".new-subtitle-input");
             const newNameInput = container.querySelector(".new-name-input");
+            const newDataValueInput= container.querySelector(".new-datavalue-input");
 
             const newTitleValue = newTitleInput.value.trim();
             const newSubtitleValue = newSubtitleInput.value.trim();
             const newNameValue = newNameInput.value.trim();
+            const newDataValue = newDataValueInput.value.trim();
 
             if (!newTitleValue || !newNameValue) {
                 alert("Molimo popunite sva polja!");
                 return;
             }
 
-            console.log(newTitleValue, newSubtitleValue, newNameValue);
+            console.log(newTitleValue, newSubtitleValue, newNameValue, newDataValue);
             fetch("/api/add-option", {
                 method: "POST",
                 headers: {
@@ -101,6 +91,7 @@ document.addEventListener("DOMContentLoaded",function(){
                     name_option: newNameValue,
                     value: newTitleValue,
                     subtitle: newSubtitleValue,
+                    data_value: newDataValue,
                 }),
             })
             .then(response => response.json())
@@ -111,9 +102,9 @@ document.addEventListener("DOMContentLoaded",function(){
                         newOption.setAttribute("data-subtitle", data.subtitle);
                         newOption.setAttribute("data-title", data.value);
                         newOption.setAttribute("data-name", data.name_option);
+                        newOption.setAttribute("data-datavalue", data.data_value);
 
-
-                        newOption.innerHTML = `<p id="option-title">${data.value}</p> | |  <p id="option-subtitle">${data.subtitle}</p> || <p id="option-name">${data.name_option}</p>`;
+                        newOption.innerHTML = `<p id="option-title">${data.value}</p> | <p id="option-subtitle">${data.subtitle}</p> | <p id="option-datavalue">${data.data_value}</p> | <p id="option-name">${data.name_option}</p>`;
 
                         // Dodaj novu opciju u svaki relevantni select
                         selects.forEach(select => {
@@ -122,7 +113,7 @@ document.addEventListener("DOMContentLoaded",function(){
                         newTitleInput.value = "";
                         newSubtitleInput.value = "";
                         newNameInput.value = "";
-
+                        newDataValueInput.value = "";
                         alert("Opcija uspešno dodata!");
                     } else {
                     alert("Došlo je do greške. Pokušajte ponovo.");
@@ -343,13 +334,15 @@ document.addEventListener("DOMContentLoaded",function(){
             const selectedOption = selectElement.options[selectElement.selectedIndex];
 
             const id = selectedOption.getAttribute('data-option-id');
-            const value = selectedOption.getAttribute('data-value');
+            const value1 = selectedOption.getAttribute('data-title');
             const subtitle = selectedOption.getAttribute('data-subtitle');
+            const data_value = selectedOption.getAttribute('data-datavalue');
             const name = selectedOption.getAttribute('data-name');
-
+            console.log(id, value1, subtitle, data_value, name);
             container.querySelector('#id-option').value = id;
-            container.querySelector('#value_option').value = value;
+            container.querySelector('#value_option').value = value1;
             container.querySelector('#subtitle_option').value = subtitle;
+            container.querySelector('#data_value').value = data_value;
             container.querySelector('#name_option').value = name;
         });
     });

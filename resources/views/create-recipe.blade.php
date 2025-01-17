@@ -5,6 +5,17 @@
         <h2 class="mb-4">Dodaj recept</h2>
         <form id="recipe-form">
             @csrf
+
+            <div class="form-group mb-3">
+                <label for="featured_image">Glavna slika recepta</label>
+                <input type="file" name="featured_image" class="form-control">
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <img id="preview-image" src="" alt="Glavna slika" style="width: 100px; height: auto; display: none;">
+
+                </div>
+            </div>
             <div class="form-group mb-3">
                 <label for="name">Naziv recepta</label>
                 <input type="text" name="name" class="form-control" placeholder="Unesite naziv recepta">
@@ -151,25 +162,55 @@
                     carbohydrates_holder: carbohydratesHolder,
                 });
             });
+            /**/
+            let imageInput = document.querySelector('input[name="featured_image"]');
+            let formData= new FormData();
+            if (imageInput.files.length > 0 ){
+                formData.append('featured_image', imageInput.files[0]);
 
+            }
+            formData.append('_token', " {{csrf_token() }}");
+            formData.append('name', document.querySelector('input[name="name"]').value);
+            formData.append('description', document.querySelector('textarea[name="description"]').value);
+            formData.append('short_description', document.querySelector('textarea[name="short_description"]').value);
+            formData.append('type', document.querySelector('select[name="type"]').value);
+            formData.append('insulin', document.querySelector('input[name="insulin"]').checked ? 1 : 0);
+            formData.append('foodstuffs', JSON.stringify(foodstuffData));
+            /**/
             jQuery.ajax({
                 url: "{{ route('add-recipe') }}",
                 method: "POST",
-                data: {
-                    _token: "{{ csrf_token() }}",
+                data:
+                    /*_token: ",
                     name: document.querySelector('input[name="name"]').value,
                     description: document.querySelector('textarea[name="description"]').value,
                     short_description: document.querySelector('textarea[name="short_description"]').value,
                     type: document.querySelector('select[name="type"]').value,
                     insulin: document.querySelector('input[name="insulin"]').checked ? 1: 0,
-                    foodstuffs: foodstuffData
-                },
+                    foodstuffs: foodstuffData*/
+                    formData,
+
+               processData: false,
+                contentType: false,
                 success: function(result) {
                     alert('Recept uspešno dodat!');
                     window.location.href = window.origin + '/add-recipe-form/';
+                },
+                error: function(xhr, status, error) {
+                    console.log("Greška: ", status, error);
                 }
             });
         });
-
+        /**/
+        document.querySelector('input[name="featured_image"]').addEventListener('change', function(event) {
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let img = document.getElementById('preview-image');
+                img.src = e.target.result;
+                img.style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        });
+        /***/
     </script>
 @endsection

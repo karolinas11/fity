@@ -58,5 +58,5 @@ Route::post('/api/add-question',[OnBoardingQuestionController::class, 'addQuesti
 Route::post('/api/delete-question',[OnBoardingQuestionController::class, 'deleteQuestion'])->name('api.delete-question');
 Route::put('/api/update-question/{id}', [OnBoardingQuestionController::class, 'updateQuestion'])->name('api.update-question');
 Route::put('/api/update-option/{id}', [OnBoardingQuestionOptionController::class, 'updateOption'])->name('api.update-option');
-Route::post('/api/create-user',[UserController::class, 'createUser'])->name('api.create-user');
+Route::get('/api/create-user',[UserController::class, 'createUser'])->name('api.create-user');
 Route::get('/api/onboarding/questions/{questionSetIndex}/{language}', [OnBoardingQuestionController::class, 'getOnboardingQuestions'])->name('api.onboarding-questions');

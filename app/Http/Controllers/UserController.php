@@ -9,6 +9,7 @@ use App\Models\RecipeFoodstuff;
 use App\Models\User;
 use App\Services\RecipeFoodstuffService;
 use App\Services\UserService;
+use App\Services\FoodstuffCategoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
@@ -19,10 +20,12 @@ class UserController extends Controller
 {
     protected UserService $userService;
     protected RecipeFoodstuffService $recipefoodstuffService;
+    protected FoodstuffCategoryService $foodstuffCategoryService;
 
     public function __construct() {
         $this->userService = new UserService();
         $this->recipefoodstuffService= new RecipeFoodstuffService();
+        $this->foodstuffCategoryService= new FoodstuffCategoryService();
     }
 
     public function showAddUser()
@@ -147,24 +150,92 @@ class UserController extends Controller
     }
 
     public function createUser(Request $request) {
-        $userData = [
-            'goal' => $request->input('goal'),
-            'height' => $request->input('height'),
-            'weight' => $request->input('weight'),
-            'age' => $request->input('age'),
-            'gender' => $request->input('gender'),
-            'activity' => $request->input('activity'),
-            'insulin_resistance' => $request->input('insulin_resistance'),
-            'meals_num' => $request->input('meals_num'),
-            'tolerance_calories' => $request->input('tolerance_calories'),
-            'tolerance_proteins' => $request->input('tolerance_proteins'),
-            'tolerance_fats' => $request->input('tolerance_fats'),
-            'days' => $request->input('days'),
-        ];
+        $answers = '{
+	"answers": [
+		{
+			"index": 0,
+			"dataType": "choice",
+			"value": "Redukcija telesne mase",
+			"detail": null,
+			"dataValue": "reduction"
 
+		},
+		{
+			"index": 0,
+			"dataType": "height",
+			"value": "100",
+			"detail": null,
+			"dataValue": "null"
+		},
+		{
+			"index": 1,
+			"dataType": "weight",
+			"value": "66.0",
+			"detail": null,
+			"dataValue": "null"
+		},
+		{
+			"index": 2,
+			"dataType": "age",
+			"value": "40",
+			"detail": null,
+			"dataValue": "null"
+		},
+		{
+			"index": 3,
+			"dataType": "gender",
+			"value": "Žensko",
+			"detail": null,
+			"dataValue": "f"
+		},
+		{
+			"index": 0,
+			"dataType": "choice",
+			"value": "Nimalo aktivni",
+			"detail": null,
+			"dataValue": "1.2"
+		},
+		{
+			"index": 1,
+			"dataType": "choice",
+			"value": "Ne",
+			"detail": null,
+			"dataValue": "No"
+		}
+	]
+}';
+
+        $anwsers = json_decode($answers);
+        /*$userAnswers = [];*/
+        /*dd($anwsers);*/
+        $userData = [
+            'goal' =>$anwsers->answers[0]->dataValue,
+            'height' => $anwsers->answers[1]->value,
+            'weight' => $anwsers->answers[2]->value,
+            'age' => $anwsers->answers[3]->value,
+            'gender' => $anwsers->answers[4]->dataValue,
+            'activity' => $anwsers->answers[5]->dataValue,
+            'insulin_resistance' => $anwsers->answers[6]->dataValue,
+            'meals_num' => 3,
+            'tolerance_calories' => 50,
+            'tolerance_proteins' => 5,
+            'tolerance_fats' => 5,
+            'days' => 7,
+        ];
+        dd($userData);
         $user = $this->userService->addUser($userData);
-        $macros = $this->userService->getMacrosForUser($user);
-        //dd($user);
+       /* $macros = $this->userService->getMacrosForUser($user);*/
+        $foodstuff_category = $this->foodstuffCategoryService->getFoodstuffCategories();
+
+       /* dd($foodstuff_category);*/
+        foreach ($foodstuff_category as  $category){
+            echo "Kategorijae " .$category->name."<br>";
+            foreach($category->foodstuffsOption as $foodstuff){
+                echo "Namirnice: " . $foodstuff->name . "<br>";
+            }
+            echo "------------------------<br><br>";
+        }
+        /*dd($user);*/
         return redirect()->route('assign-recipes-to-user', ['userId' => $user->id]);
     }
 

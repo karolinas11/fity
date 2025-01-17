@@ -29,6 +29,7 @@ class RecipeController
     }
 
     public function addRecipe(Request $request) {
+
         $recipeData = [
             'name' => $request->input('name'),
             'description' => $request->input('description'),
@@ -36,8 +37,21 @@ class RecipeController
             'type' => $request->input('type'),
             'insulin'=> $request->input('insulin')
         ];
+
+        if ($request->hasFile('featured_image')) {
+            $image = $request->file('featured_image');
+            $imageName = $image->getClientOriginalName();
+            /*$imagePath = 'images/recipes/' . $imageName;*/
+            $image->storeAs('public/featured_recipes', $imageName);
+            $recipeData['featured_image'] = $imageName;
+        }
+
         $recipe = $this->recipeService->addRecipe($recipeData);
-        $this->recipeFoodstuffService->addRecipeFoodstuff($recipe->id, $request->input('foodstuffs'));
+        $foodstuffs = json_decode($request->input('foodstuffs'), true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return response()->json(['error' => 'Nevalidan JSON za foodstuffs'], 400);
+        }
+        $this->recipeFoodstuffService->addRecipeFoodstuff($recipe->id, $foodstuffs);
         return response()->json($recipe);
     }
 
