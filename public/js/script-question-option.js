@@ -334,13 +334,13 @@ document.addEventListener("DOMContentLoaded",function(){
             const selectedOption = selectElement.options[selectElement.selectedIndex];
 
             const id = selectedOption.getAttribute('data-option-id');
-            const value1 = selectedOption.getAttribute('data-title');
+            const title = selectedOption.getAttribute('data-title');
             const subtitle = selectedOption.getAttribute('data-subtitle');
             const data_value = selectedOption.getAttribute('data-datavalue');
             const name = selectedOption.getAttribute('data-name');
-            console.log(id, value1, subtitle, data_value, name);
+           // console.log(id, title, subtitle, data_value, name);
             container.querySelector('#id-option').value = id;
-            container.querySelector('#value_option').value = value1;
+            container.querySelector('#title_option').value = title;
             container.querySelector('#subtitle_option').value = subtitle;
             container.querySelector('#data_value').value = data_value;
             container.querySelector('#name_option').value = name;
@@ -351,9 +351,10 @@ document.addEventListener("DOMContentLoaded",function(){
             const container = button.closest('.update-option-container');
             const optionId=container.querySelector("#id-option").value;
             const newName = container.querySelector("#name_option").value;
-            const newValue = container.querySelector("#value_option").value;
+            const newValue = container.querySelector("#title_option").value;
             const newSubtitle = container.querySelector("#subtitle_option").value;
-            console.log(optionId);
+            const newDataValue= container.querySelector("#data_value").value;
+            console.log(optionId, newName, newValue, newSubtitle,newDataValue);
                 if (newName && newValue && newSubtitle) {
                     fetch(`/api/update-option/${optionId}`, {
                         method: 'PUT',
@@ -365,6 +366,7 @@ document.addEventListener("DOMContentLoaded",function(){
                             name_option: newName,
                             value: newValue,
                             subtitle: newSubtitle,
+                            data_value: newDataValue,
                         })
                     })
                         .then(response => response.json())

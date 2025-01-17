@@ -47,6 +47,7 @@ class OnBoardingQuestionOptionController {
             'name_option'=> 'required|string',
             'value'=> 'required|string',
             'subtitle'=> 'required|string',
+            'data_value' => '',
         ]);
         $updateOption = $this->onBoardingQuestionOptionService->updateOption($id, $validateData);
 
