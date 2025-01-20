@@ -6,22 +6,24 @@ use App\DataTables\RecipeDataTable;
 use App\DataTables\RecipesDataTable;
 use App\Models\Foodstuff;
 use App\Models\Recipe;
+use App\Services\ImagesService;
 use App\Services\RecipeFoodstuffService;
 use App\Services\RecipeService;
 use Dotenv\Parser\Parser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class RecipeController
 {
     protected RecipeService $recipeService;
     protected RecipeFoodstuffService $recipeFoodstuffService;
-
+    protected ImagesService $imagesService;
 
     public function __construct() {
         $this->recipeService = new RecipeService();
         $this->recipeFoodstuffService = new RecipeFoodstuffService();
-
+        $this->imagesService = new ImagesService();
     }
     public function showAddRecipe() {
         $foodstuffs = Foodstuff::all();
@@ -40,18 +42,30 @@ class RecipeController
 
         if ($request->hasFile('featured_image')) {
             $image = $request->file('featured_image');
+
             $imageName = $image->getClientOriginalName();
             /*$imagePath = 'images/recipes/' . $imageName;*/
             $image->storeAs('public/featured_recipes', $imageName);
             $recipeData['featured_image'] = $imageName;
         }
-
         $recipe = $this->recipeService->addRecipe($recipeData);
+
         $foodstuffs = json_decode($request->input('foodstuffs'), true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             return response()->json(['error' => 'Nevalidan JSON za foodstuffs'], 400);
         }
         $this->recipeFoodstuffService->addRecipeFoodstuff($recipe->id, $foodstuffs);
+
+
+        if ($request->hasFile('gallery_images')) {
+            $galleryImages = $request->file('gallery_images');
+            Log::info('Broj slika koje se šalju: ' . count($galleryImages));  // Ovo će prikazati broj slika koje Laravel prima
+            foreach ($galleryImages as $image) {
+                $imageName = $image->getClientOriginalName();
+                $image->storeAs('public/gallery_recipes', $imageName);
+                $this->imagesService->addImages($recipe->id, $imageName);
+            }
+        }
         return response()->json($recipe);
     }
 

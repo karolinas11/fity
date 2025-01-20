@@ -13,9 +13,18 @@
             <div class="row">
                 <div class="col-md-2">
                     <img id="preview-image" src="" alt="Glavna slika" style="width: 100px; height: auto; display: none;">
-
                 </div>
             </div>
+            <div class="row">
+                <hr>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="gallery_images">Galerija slika</label>
+                <input type="file" id="gallery_images" name="gallery_images[]" class="form-control" multiple>
+            </div>
+            <div id="imagePreviewContainer" class="d-flex flex-wrap gap-2"></div>
+
             <div class="form-group mb-3">
                 <label for="name">Naziv recepta</label>
                 <input type="text" name="name" class="form-control" placeholder="Unesite naziv recepta">
@@ -169,6 +178,18 @@
                 formData.append('featured_image', imageInput.files[0]);
 
             }
+
+            let galleryInput = document.querySelector('input[name="gallery_images[]"]');
+            let galleryFiles = galleryInput.files;
+            console.log(galleryFiles);
+            if(galleryFiles.length > 0){
+               /* for(let file of galleryFiles){
+                    formData.append('gallery_images[]', file);
+                }*/
+                for (let i = 0; i < galleryFiles.length; i++) {
+                    formData.append(`gallery_images[]`, galleryFiles[i]);
+                }
+            }
             formData.append('_token', " {{csrf_token() }}");
             formData.append('name', document.querySelector('input[name="name"]').value);
             formData.append('description', document.querySelector('textarea[name="description"]').value);
@@ -177,19 +198,14 @@
             formData.append('insulin', document.querySelector('input[name="insulin"]').checked ? 1 : 0);
             formData.append('foodstuffs', JSON.stringify(foodstuffData));
             /**/
+            // Provera sadržaja FormData
+            formData.forEach((value, key) => {
+                console.log(key, value);
+            });
             jQuery.ajax({
                 url: "{{ route('add-recipe') }}",
                 method: "POST",
-                data:
-                    /*_token: ",
-                    name: document.querySelector('input[name="name"]').value,
-                    description: document.querySelector('textarea[name="description"]').value,
-                    short_description: document.querySelector('textarea[name="short_description"]').value,
-                    type: document.querySelector('select[name="type"]').value,
-                    insulin: document.querySelector('input[name="insulin"]').checked ? 1: 0,
-                    foodstuffs: foodstuffData*/
-                    formData,
-
+                data: formData,
                processData: false,
                 contentType: false,
                 success: function(result) {
@@ -210,6 +226,30 @@
                 img.style.display = 'block';
             };
             reader.readAsDataURL(event.target.files[0]);
+        });
+        document.getElementById('gallery_images').addEventListener('change', function(event) {
+            let container = document.getElementById('imagePreviewContainer');
+            for (let i=0; i< event.target.files.length;i++) {
+                let file=event.target.files[i];
+                if (file.type.startsWith('image/')) {
+                    let reader = new FileReader();
+                    reader.onload = function(e) {
+                        let img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.width = '100px';
+                        img.style.height = '100px';
+                        img.style.objectFit = 'cover';
+                        img.style.marginRight = '10px';
+                        img.classList.add('preview-image');
+
+                        container.appendChild(img);
+
+                    };
+                    reader.readAsDataURL(file);
+
+                }
+            }
+
         });
         /***/
     </script>
