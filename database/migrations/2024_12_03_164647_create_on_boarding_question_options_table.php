@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('question_id');
             $table->string('value');
             $table->string('subtitle')->nullable();
+            $table->string('data_value')->nullable();
             $table->string('name_option');
             $table->timestamps();
             $table->foreign('question_id')->references('id')->on('on_boarding_questions')->onDelete('cascade');

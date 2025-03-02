@@ -16,19 +16,15 @@ class OnBoardingQuestionOptionRepository{
            Log::error('Can\'t add option: ' . $e->getMessage());
        }
     }
-    public function deleteOption($questionId,$optionValue) {
-        try {
-            $question = OnBoardingQuestion::find($questionId);
-            if(!$question){
-                return null;
-            }
-            $option = $question->options()->where('name_option', $optionValue)->first();
+    public function deleteOption($optionId) {
+        try{
+            $option = OnBoardingQuestionOption::find($optionId);
             if(!$option){
                 return null;
             }
             $option->delete();
             return $option;
-        }catch(QueryException $e) {
+        }catch(QueryException $e){
             Log::error('Can\'t delete option: ' . $e->getMessage());
         }
     }

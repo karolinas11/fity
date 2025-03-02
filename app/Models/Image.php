@@ -5,11 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class FoodstuffCategory extends Model
+class Image extends Model
 {
     use HasFactory;
     protected $guarded = [];
-    public function foodstuffsOption() {
-        return $this->hasMany(Foodstuff::class, 'foodstuff_category_id');
+    protected $table = 'images';
+
+    public function recipe_images()
+    {
+        return $this->belongsTo(Recipe::class, 'recipes_id', 'id');
     }
 }

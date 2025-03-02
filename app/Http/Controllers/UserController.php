@@ -13,6 +13,7 @@ use App\Services\UserAllergyService;
 use App\Services\UserService;
 use App\Services\UserWaterService;
 use App\Services\UserRecipeService;
+use App\Services\FoodstuffCategoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
@@ -26,6 +27,8 @@ class UserController extends Controller
     protected UserWaterService $userWaterService;
     protected UserRecipeService $userRecipeService;
     protected UserAllergyService $userAllergyService;
+    protected RecipeFoodstuffService $recipefoodstuffService;
+    protected FoodstuffCategoryService $foodstuffCategoryService;
 
     public function __construct() {
         $this->userService = new UserService();
@@ -33,6 +36,8 @@ class UserController extends Controller
         $this->userWaterService= new UserWaterService();
         $this->userRecipeService= new UserRecipeService();
         $this->userAllergyService= new UserAllergyService();
+        $this->recipefoodstuffService= new RecipeFoodstuffService();
+        $this->foodstuffCategoryService= new FoodstuffCategoryService();
     }
 
     public function showAddUser()
