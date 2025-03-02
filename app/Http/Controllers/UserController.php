@@ -7,8 +7,12 @@ use App\Models\Foodstuff;
 use App\Models\Recipe;
 use App\Models\RecipeFoodstuff;
 use App\Models\User;
+use App\Models\UserRecipe;
 use App\Services\RecipeFoodstuffService;
+use App\Services\UserAllergyService;
 use App\Services\UserService;
+use App\Services\UserWaterService;
+use App\Services\UserRecipeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
@@ -18,11 +22,17 @@ use Symfony\Component\Process\Process;
 class UserController extends Controller
 {
     protected UserService $userService;
-    protected RecipeFoodstuffService $recipefoodstuffService;
+    protected RecipeFoodstuffService $recipeFoodstuffService;
+    protected UserWaterService $userWaterService;
+    protected UserRecipeService $userRecipeService;
+    protected UserAllergyService $userAllergyService;
 
     public function __construct() {
         $this->userService = new UserService();
-        $this->recipefoodstuffService= new RecipeFoodstuffService();
+        $this->recipeFoodstuffService= new RecipeFoodstuffService();
+        $this->userWaterService= new UserWaterService();
+        $this->userRecipeService= new UserRecipeService();
+        $this->userAllergyService= new UserAllergyService();
     }
 
     public function showAddUser()
@@ -164,8 +174,25 @@ class UserController extends Controller
 
         $user = $this->userService->addUser($userData);
         $macros = $this->userService->getMacrosForUser($user);
-        
+
         return redirect()->route('assign-recipes-to-user', ['userId' => $user->id]);
     }
+
+    public function updateUserWater(Request $request) {
+        $this->userWaterService->updateUserWater($request->userId, $request->water);
+    }
+
+    public function updateUserRecipeStatus(Request $request) {
+        $this->userRecipeService->updateUserRecipeStatus($request->userId, $request->recipeId, $request->status);
+    }
+
+    public function addAllergyData(Request $request) {
+        $allergyData = [
+           'user_id' => $request->input('userId'),
+           'foodstuff_id' => $request->input('foodstuffId')
+        ];
+        $this->userAllergyService->addUserAllergy($allergyData);
+    }
+
 
 }
