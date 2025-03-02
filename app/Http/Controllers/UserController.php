@@ -115,42 +115,43 @@ class UserController extends Controller
         foreach($data['daily_plans'] as &$day){
             foreach( $day['meals'] as &$meal){
                 $foodstuffs = $this->recipefoodstuffService->getRecipeFoodstuffs($meal['same_meal_id']);
-                $foodstuffsData = [];
-                $input = $meal['holders'];
-                $pairs = explode(' | ', $input);
-                $holders = [];
-                foreach ($pairs as $pair) {
-                    list($key, $value) = explode(' - ', $pair);
-                    /* $holders[(int)$key] = (int)$value;*/
-                    $holderFoodStuffRecipe =RecipeFoodstuff::where('foodstuff_id', (int)$key)
-                        ->where('recipe_id',$meal['same_meal_id'])->first();
-
-                    if($holderFoodStuffRecipe)
-                    {
-                        $singleHolder = [
-                            'id' => (int)$key,
-                            'name' =>Foodstuff::find((int)$key)->name,
-                            'amount' => (int)$value,
-                            'p' => $holderFoodStuffRecipe->proteins_holder,
-                            'f' => $holderFoodStuffRecipe->fats_holder,
-                            'c' => $holderFoodStuffRecipe->carbohydrates_holder
-                        ];
-
-                        array_push($holders,$singleHolder);
-                    }
-                }
-
-                foreach ($foodstuffs as $foodstuff){
-                    if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->carbohydrates_holder == 0) {
-                        $foodstuffData = [];
-                        $foodstuffData['amount'] = $foodstuff['amount'];
-                        $foodstuffData['name'] = Foodstuff::find($foodstuff->foodstuff_id)->name;
-                        array_push($foodstuffsData,$foodstuffData);
-                    }
-
-                }
-                $meal['foodstuffs'] = $foodstuffsData;
-                $meal['holders'] = $holders;
+                $meal['foodstuffs'] = $foodstuffs;
+                //                $foodstuffsData = [];
+//                $input = $meal['holders'];
+//                $pairs = explode(' | ', $input);
+//                $holders = [];
+//                foreach ($pairs as $pair) {
+//                    list($key, $value) = explode(' - ', $pair);
+//                    /* $holders[(int)$key] = (int)$value;*/
+//                    $holderFoodStuffRecipe =RecipeFoodstuff::where('foodstuff_id', (int)$key)
+//                        ->where('recipe_id',$meal['same_meal_id'])->first();
+//
+//                    if($holderFoodStuffRecipe)
+//                    {
+//                        $singleHolder = [
+//                            'id' => (int)$key,
+//                            'name' =>Foodstuff::find((int)$key)->name,
+//                            'amount' => (int)$value,
+//                            'p' => $holderFoodStuffRecipe->proteins_holder,
+//                            'f' => $holderFoodStuffRecipe->fats_holder,
+//                            'c' => $holderFoodStuffRecipe->carbohydrates_holder
+//                        ];
+//
+//                        array_push($holders,$singleHolder);
+//                    }
+//                }
+//
+//                foreach ($foodstuffs as $foodstuff){
+//                    if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->carbohydrates_holder == 0) {
+//                        $foodstuffData = [];
+//                        $foodstuffData['amount'] = $foodstuff['amount'];
+//                        $foodstuffData['name'] = Foodstuff::find($foodstuff->foodstuff_id)->name;
+//                        array_push($foodstuffsData,$foodstuffData);
+//                    }
+//
+//                }
+//                $meal['foodstuffs'] = $foodstuffsData;
+//                $meal['holders'] = $holders;
             }
         }
 

@@ -45,6 +45,7 @@ Route::post('/recipe/{recipeId}/edit', [RecipeController::class, 'editRecipe'])-
 Route::delete('/recipe/{recipeId}/delete', [RecipeController::class, 'deleteRecipe'])->name('delete-recipe');
 
 Route::get('/ide-gas', [RecipeController::class, 'printRecipes'])->name('ide-gas');
+Route::get('/ide-gas2', [RecipeController::class, 'printFoodstuffs'])->name('ide-gas');
 Route::get('/test-curl', [RecipeController::class, 'testCurl'])->name('test-curl');
 
 Route::get('/users', [UserController::class, 'showUsersList'])->name('show-users-list');

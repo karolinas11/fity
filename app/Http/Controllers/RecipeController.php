@@ -117,7 +117,7 @@ class RecipeController
     }
 
     public function testCurl() {
-        $response = Http::timeout(240)->post('https://fity-algorithm.fly.dev//meal-plan', [
+        $response = Http::timeout(240)->post('http://127.0.0.1:8000/meal-plan', [
             'target_calories' => 2405,
             'target_protein' => 141,
             'target_fat' => 84,
@@ -132,6 +132,21 @@ class RecipeController
         }
     }
 
+    public function printFoodstuffs() {
+        $foodstuffs = Foodstuff::all();
+        foreach ($foodstuffs as $foodstuff) {
+            $step = 1;
+            if($foodstuff->name == 'Jaja') {
+                $step = 50;
+            } else if($foodstuff->name == 'Whey protein') {
+                $step = 16;
+            }
+            if($foodstuff->min != null && $foodstuff->max != null) {
+                echo $foodstuff->id . ',' . $foodstuff->calories . ',' . $foodstuff->proteins . ',' . $foodstuff->fats . ',' . $foodstuff->carbohydrates . ',' . $foodstuff->min . ',' . $foodstuff->max . ',' . $step . '<br/>';
+            }
+        }
+    }
+
     public function printRecipes() {
         $recipes = Recipe::all();
         $recipesFinal = [];
@@ -140,10 +155,10 @@ class RecipeController
             $tunaContain = false;
             $whey = 0;
             foreach ($recipeFoodstuffs as $recipeFoodstuff) {
-                if($recipeFoodstuff->foodstuff_id == 17 ){
+                if($recipeFoodstuff->foodstuff_id == 17 ) {
                     $tunaContain = true;
                 }
-                if($recipeFoodstuff->foodstuff_id == 105 ){
+                if($recipeFoodstuff->foodstuff_id == 105 ) {
                     $whey = $recipeFoodstuff->amount;
                 }
             }
@@ -165,6 +180,10 @@ class RecipeController
                     array_push($holders, $recipeFoodstuff);
                 }
             }
+
+            $fixedCalories = $calories;
+            $fixedProteins = $proteins;
+            $fixedFats = $fats;
 
             $holdersMap = [
                 'pHolder' => null,
@@ -191,15 +210,21 @@ class RecipeController
                 $name = $recipe->name . ' - Calories ' . $calories . ' - Proteins ' . $proteins . ' - Fats ' . $fats . ' - Carbohydrates ' . $carbohydrates;
                 $recipeFinal = [
                     'id' => $recipe->id,
-                    'name' => $name,
                     'category' => $recipe->type,
-                    'calories' => $calories,
-                    'proteins' => $proteins,
-                    'fats' => $fats,
-                    'carbohydrates' => $carbohydrates,
-                    'holders' => '',
+                    'calories_min' => $calories,
+                    'proteins_min' => $proteins,
+                    'fats_min' => $fats,
+                    'carbohydrates_min' => $carbohydrates,
+                    'calories_max' => $calories,
+                    'proteins_max' => $proteins,
+                    'fats_max' => $fats,
+                    'carbohydrates_max' => $carbohydrates,
                     'tuna' => $tunaContain ? 1 : 0,
-                    'whey' => $whey
+                    'whey' => $whey,
+                    'holders' => '',
+                    'fixedCalories' => $fixedCalories,
+                    'fixedProteins' => $fixedProteins,
+                    'fixedFats' => $fixedFats,
                 ];
                 array_push($recipesFinal, $recipeFinal);
             }
@@ -209,27 +234,55 @@ class RecipeController
                 $holderFoodstuff = Foodstuff::find($holder->foodstuff_id);
                 $min = $holderFoodstuff->min != null? $holderFoodstuff->min : 100;
                 $max = $holderFoodstuff->max != null? $holderFoodstuff->max : 500;
-                $step = $holderFoodstuff->step != null? $holderFoodstuff->step : 25;
+                $step = $max - $min;
+
+                $cal_min = $cal_max = $prot_min = $prot_max = $fat_min = $fat_max = $carb_min = $carb_max = 0;
                 for($i = $min; $i <= $max; $i += $step) {
                     $prot = $proteins + ($i * $holderFoodstuff->proteins / 100);
                     $fat = $fats + ($i * $holderFoodstuff->fats / 100);
                     $carb = $carbohydrates + ($i * $holderFoodstuff->carbohydrates / 100);
                     $cal = $calories + ($i * $holderFoodstuff->calories / 100);
                     $name = $recipe->name . ' - Calories ' . $cal . ' - Proteins ' . $prot . ' - Fats ' . $fat . ' - Carbohydrates ' . $carb;
-                    $recipeFinal = [
-                        'id' => $recipe->id,
-                        'name' => $name,
-                        'category' => $recipe->type,
-                        'calories' => $cal,
-                        'proteins' => $prot,
-                        'fats' => $fat,
-                        'carbohydrates' => $carb,
-                        'holders' => $holder->foodstuff_id . ' - ' . $i,
-                        'tuna' => $tunaContain ? 1 : 0,
-                        'whey' => $whey
-                    ];
-                    array_push($recipesFinal, $recipeFinal);
+                    if($holder->foodstuff_id == 105) {
+                        $whey = $i;
+                    }
+
+                    if($i == $min) {
+                        $cal_min = $cal;
+                        $prot_min = $prot;
+                        $fat_min = $fat;
+                        $carb_min = $carb;
+                    }
+
+                    if($i == $max) {
+                        $cal_max = $cal;
+                        $prot_max = $prot;
+                        $fat_max = $fat;
+                        $carb_max = $carb;
+                    }
                 }
+
+                $recipeFinal = [
+                    'id' => $recipe->id,
+                    'category' => $recipe->type,
+                    'calories_min' => $cal_min,
+                    'proteins_min' => $prot_min,
+                    'fats_min' => $fat_min,
+                    'carbohydrates_min' => $carb_min,
+                    'calories_max' => $cal_max,
+                    'proteins_max' => $prot_max,
+                    'fats_max' => $fat_max,
+                    'carbohydrates_max' => $carb_max,
+                    'tuna' => $tunaContain ? 1 : 0,
+                    'whey' => $whey,
+                    'holders' => $holder->foodstuff_id,
+                    'fixedCalories' => $fixedCalories,
+                    'fixedProteins' => $fixedProteins,
+                    'fixedFats' => $fixedFats,
+                ];
+
+                array_push($recipesFinal, $recipeFinal);
+
             }
 
             if($holdersMap['pHolder'] != null && $holdersMap['fHolder'] != null && $holdersMap['uHolder'] == null) {
@@ -237,14 +290,15 @@ class RecipeController
                 $holderFoodstuff = Foodstuff::find($holder->foodstuff_id);
                 $min = $holderFoodstuff->min != null? $holderFoodstuff->min : 100;
                 $max = $holderFoodstuff->max != null? $holderFoodstuff->max : 500;
-                $step = $holderFoodstuff->step != null? $holderFoodstuff->step : 25;
+                $step = $max - $min;
 
                 $holder2 = $holdersMap['fHolder'];
                 $holderFoodstuff2 = Foodstuff::find($holder2->foodstuff_id);
                 $min2 = $holderFoodstuff2->min != null? $holderFoodstuff2->min : 100;
                 $max2 = $holderFoodstuff2->max != null? $holderFoodstuff2->max : 500;
-                $step2 = $holderFoodstuff2->step != null? $holderFoodstuff2->step : 25;
+                $step2 = $max2 - $min2;
 
+                $cal_min = $cal_max = $prot_min = $prot_max = $fat_min = $fat_max = $carb_min = $carb_max = 0;
                 for($i = $min; $i <= $max; $i += $step) {
                     $prot = $proteins + ($i * $holderFoodstuff->proteins / 100);
                     $fat = $fats + ($i * $holderFoodstuff->fats / 100);
@@ -256,21 +310,47 @@ class RecipeController
                         $carbF = $carb + ($j * $holderFoodstuff2->carbohydrates / 100);
                         $calF = $cal + ($j * $holderFoodstuff2->calories / 100);
                         $name = $recipe->name . ' - Calories ' . $calF . ' - Proteins ' . $protF . ' - Fats ' . $fatF . ' - Carbohydrates ' . $carbF;
-                        $recipeFinal = [
-                            'id' => $recipe->id,
-                            'name' => $name,
-                            'category' => $recipe->type,
-                            'calories' => $calF,
-                            'proteins' => $protF,
-                            'fats' => $fatF,
-                            'carbohydrates' => $carbF,
-                            'holders' => $holder->foodstuff_id . ' - ' . $i . ' | ' . $holder2->foodstuff_id . ' - ' . $j,
-                            'tuna' => $tunaContain ? 1 : 0,
-                            'whey' => $whey
-                        ];
-                        array_push($recipesFinal, $recipeFinal);
+                        if($holder->foodstuff_id == 105) {
+                            $whey = $i;
+                        }
+                        if($holder2->foodstuff_id == 105) {
+                            $whey = $j;
+                        }
+
+                        if($i == $min && $j == $min2) {
+                            $cal_min = $cal;
+                            $prot_min = $prot;
+                            $fat_min = $fat;
+                            $carb_min = $carb;
+                        } else if($i == $max && $j == $max2) {
+                            $cal_max = $cal;
+                            $prot_max = $prot;
+                            $fat_max = $fat;
+                            $carb_max = $carb;
+                        }
                     }
                 }
+
+                $recipeFinal = [
+                    'id' => $recipe->id,
+                    'category' => $recipe->type,
+                    'calories_min' => $cal_min,
+                    'proteins_min' => $prot_min,
+                    'fats_min' => $fat_min,
+                    'carbohydrates_min' => $carb_min,
+                    'calories_max' => $cal_max,
+                    'proteins_max' => $prot_max,
+                    'fats_max' => $fat_max,
+                    'carbohydrates_max' => $carb_max,
+                    'tuna' => $tunaContain ? 1 : 0,
+                    'whey' => $whey,
+                    'holders' => $holder->foodstuff_id . '-' . $holder2->foodstuff_id,
+                    'fixedCalories' => $fixedCalories,
+                    'fixedProteins' => $fixedProteins,
+                    'fixedFats' => $fixedFats,
+                ];
+
+                array_push($recipesFinal, $recipeFinal);
             }
 
             if($holdersMap['pHolder'] != null && $holdersMap['fHolder'] != null && $holdersMap['uHolder'] != null) {
@@ -278,20 +358,21 @@ class RecipeController
                 $holderFoodstuff = Foodstuff::find($holder->foodstuff_id);
                 $min = $holderFoodstuff->min != null? $holderFoodstuff->min : 100;
                 $max = $holderFoodstuff->max != null? $holderFoodstuff->max : 500;
-                $step = $holderFoodstuff->step != null? $holderFoodstuff->step : 25;
+                $step = $max - $min;
 
                 $holder2 = $holdersMap['fHolder'];
                 $holderFoodstuff2 = Foodstuff::find($holder2->foodstuff_id);
                 $min2 = $holderFoodstuff2->min != null? $holderFoodstuff2->min : 100;
                 $max2 = $holderFoodstuff2->max != null? $holderFoodstuff2->max : 500;
-                $step2 = $holderFoodstuff2->step != null? $holderFoodstuff2->step : 25;
+                $step2 = $max2 - $min2;
 
                 $holder3 = $holdersMap['uHolder'];
                 $holderFoodstuff3 = Foodstuff::find($holder3->foodstuff_id);
                 $min3 = $holderFoodstuff3->min != null? $holderFoodstuff3->min : 100;
                 $max3 = $holderFoodstuff3->max != null? $holderFoodstuff3->max : 500;
-                $step3 = $holderFoodstuff3->step != null? $holderFoodstuff3->step : 25;
+                $step3 = $max3 - $min3;
 
+                $cal_min = $cal_max = $prot_min = $prot_max = $fat_min = $fat_max = $carb_min = $carb_max = 0;
                 for($i = $min; $i <= $max; $i += $step) {
                     $prot = $proteins + ($i * $holderFoodstuff->proteins / 100);
                     $fat = $fats + ($i * $holderFoodstuff->fats / 100);
@@ -304,28 +385,59 @@ class RecipeController
                         $carb2 = ($j * $holderFoodstuff2->carbohydrates / 100);
                         $cal2 = ($j * $holderFoodstuff2->calories / 100);
 
-                        for($k = $min3 + 25; $k <= $max3; $k += $step3) {
+                        for($k = $min3; $k <= $max3; $k += $step3) {
                             $protF = $prot + $prot2 + ($k * $holderFoodstuff3->proteins / 100);
                             $fatF = $fat + $fat2 + ($k * $holderFoodstuff3->fats / 100);
                             $carbF = $carb + $carb2 + ($k * $holderFoodstuff3->carbohydrates / 100);
                             $calF = $cal + $cal2 + ($k * $holderFoodstuff3->calories / 100);
                             $name = $recipe->name . ' - Calories ' . $calF . ' - Proteins ' . $protF . ' - Fats ' . $fatF . ' - Carbohydrates ' . $carbF;
-                            $recipeFinal = [
-                                'id' => $recipe->id,
-                                'name' => $name,
-                                'category' => $recipe->type,
-                                'calories' => $calF,
-                                'proteins' => $protF,
-                                'fats' => $fatF,
-                                'carbohydrates' => $carbF,
-                                'holders' => $holder->foodstuff_id . ' - ' . $i . ' | ' . $holder2->foodstuff_id . ' - ' . $j . ' | ' . $holder3->foodstuff_id . ' - ' . $k,
-                                'tuna' => $tunaContain ? 1 : 0,
-                                'whey' => $whey
-                            ];
-                            array_push($recipesFinal, $recipeFinal);
+                            if($holder->foodstuff_id == 105) {
+                                $whey = $i;
+                            }
+                            if($holder2->foodstuff_id == 105) {
+                                $whey = $j;
+                            }
+                            if($holder3->foodstuff_id == 105) {
+                                $whey = $k;
+                            }
+
+                            if($i == $min && $j == $min2 && $k == $min3) {
+                                $cal_min = $calF;
+                                $prot_min = $protF;
+                                $fat_min = $fatF;
+                                $carb_min = $carbF;
+                            }
+
+                            if($i == $max && $j == $max2 && $k == $max3) {
+                                $cal_max = $calF;
+                                $prot_max = $protF;
+                                $fat_max = $fatF;
+                                $carb_max = $carbF;
+                            }
                         }
                     }
                 }
+
+                $recipeFinal = [
+                    'id' => $recipe->id,
+                    'category' => $recipe->type,
+                    'calories_min' => $cal_min,
+                    'proteins_min' => $prot_min,
+                    'fats_min' => $fat_min,
+                    'carbohydrates_min' => $carb_min,
+                    'calories_max' => $cal_max,
+                    'proteins_max' => $prot_max,
+                    'fats_max' => $fat_max,
+                    'carbohydrates_max' => $carb_max,
+                    'tuna' => $tunaContain ? 1 : 0,
+                    'whey' => $whey,
+                    'holders' => $holder->foodstuff_id . '-' . $holder2->foodstuff_id . '-' . $holder3->foodstuff_id,
+                    'fixedCalories' => $fixedCalories,
+                    'fixedProteins' => $fixedProteins,
+                    'fixedFats' => $fixedFats,
+                ];
+
+                array_push($recipesFinal, $recipeFinal);
             }
 
             if($holdersMap['pHolder'] == null && $holdersMap['fHolder'] != null && $holdersMap['uHolder'] == null) {
@@ -333,27 +445,54 @@ class RecipeController
                 $holderFoodstuff = Foodstuff::find($holder->foodstuff_id);
                 $fMin = $holderFoodstuff->min != null? $holderFoodstuff->min : 100;
                 $fMax = $holderFoodstuff->max != null? $holderFoodstuff->max : 500;
-                $step = $holderFoodstuff->step != null? $holderFoodstuff->step : 25;
+                $step = $fMax - $fMin;
+
+                $cal_min = $cal_max = $prot_min = $prot_max = $fat_min = $fat_max = $carb_min = $carb_max = 0;
                 for($j = $fMin; $j <= $fMax; $j += $step) {
                     $fat = $fats + ($j * $holderFoodstuff->fats / 100);
                     $prot = $proteins + ($j * $holderFoodstuff->proteins / 100);
                     $carb = $carbohydrates + ($j * $holderFoodstuff->carbohydrates / 100);
                     $cal = $calories + ($j * $holderFoodstuff->calories / 100);
                     $name = $recipe->name . ' - Calories ' . $cal . ' - Proteins ' . $prot . ' - Fats ' . $fat . ' - Carbohydrates ' . $carb;
-                    $recipeFinal = [
-                        'id' => $recipe->id,
-                        'name' => $name,
-                        'category' => $recipe->type,
-                        'calories' => $cal,
-                        'proteins' => $prot,
-                        'fats' => $fat,
-                        'carbohydrates' => $carb,
-                        'holders' => $holder->foodstuff_id . ' - ' . $j,
-                        'tuna' => $tunaContain ? 1 : 0,
-                        'whey' => $whey
-                    ];
-                    array_push($recipesFinal, $recipeFinal);
+                    if($holder->foodstuff_id == 105) {
+                        $whey = $j;
+                    }
+
+                    if($j == $fMin) {
+                        $cal_min = $cal;
+                        $prot_min = $prot;
+                        $fat_min = $fat;
+                        $carb_min = $carb;
+                    }
+
+                    if($j == $fMax) {
+                        $cal_max = $cal;
+                        $prot_max = $prot;
+                        $fat_max = $fat;
+                        $carb_max = $carb;
+                    }
                 }
+
+                $recipeFinal = [
+                    'id' => $recipe->id,
+                    'category' => $recipe->type,
+                    'calories_min' => $cal_min,
+                    'proteins_min' => $prot_min,
+                    'fats_min' => $fat_min,
+                    'carbohydrates_min' => $carb_min,
+                    'calories_max' => $cal_max,
+                    'proteins_max' => $prot_max,
+                    'fats_max' => $fat_max,
+                    'carbohydrates_max' => $carb_max,
+                    'tuna' => $tunaContain ? 1 : 0,
+                    'whey' => $whey,
+                    'holders' => $holder->foodstuff_id,
+                    'fixedCalories' => $fixedCalories,
+                    'fixedProteins' => $fixedProteins,
+                    'fixedFats' => $fixedFats,
+                ];
+
+                array_push($recipesFinal, $recipeFinal);
             }
 
             if($holdersMap['pHolder'] == null && $holdersMap['fHolder'] != null && $holdersMap['uHolder'] != null) {
@@ -361,14 +500,15 @@ class RecipeController
                 $holderFoodstuff = Foodstuff::find($holder->foodstuff_id);
                 $min = $holderFoodstuff->min != null? $holderFoodstuff->min : 100;
                 $max = $holderFoodstuff->max != null? $holderFoodstuff->max : 500;
-                $step = $holderFoodstuff->step != null? $holderFoodstuff->step : 25;
+                $step = $max - $min;
 
                 $holder2 = $holdersMap['uHolder'];
                 $holderFoodstuff2 = Foodstuff::find($holder2->foodstuff_id);
                 $min2 = $holderFoodstuff2->min != null? $holderFoodstuff2->min : 100;
                 $max2 = $holderFoodstuff2->max != null? $holderFoodstuff2->max : 500;
-                $step = $holderFoodstuff2->step != null? $holderFoodstuff2->step : 25;
+                $step2 = $max2 - $min2;
 
+                $cal_min = $cal_max = $prot_min = $prot_max = $fat_min = $fat_max = $carb_min = $carb_max = 0;
                 for($i = $min; $i <= $max; $i += $step) {
                     $prot = $proteins + ($i * $holderFoodstuff->proteins / 100);
                     $fat = $fats + ($i * $holderFoodstuff->fats / 100);
@@ -380,21 +520,49 @@ class RecipeController
                         $carbF = $carb + ($j * $holderFoodstuff2->carbohydrates / 100);
                         $calF = $cal + ($j * $holderFoodstuff2->calories / 100);
                         $name = $recipe->name . ' - Calories ' . $calF . ' - Proteins ' . $protF . ' - Fats ' . $fatF . ' - Carbohydrates ' . $carbF;
-                        $recipeFinal = [
-                            'id' => $recipe->id,
-                            'name' => $name,
-                            'category' => $recipe->type,
-                            'calories' => $calF,
-                            'proteins' => $protF,
-                            'fats' => $fatF,
-                            'carbohydrates' => $carbF,
-                            'holders' => $holder->foodstuff_id . ' - ' . $i . ' | ' . $holder2->foodstuff_id . ' - ' . $j,
-                            'tuna' => $tunaContain ? 1 : 0,
-                            'whey' => $whey
-                        ];
-                        array_push($recipesFinal, $recipeFinal);
+                        if($holder->foodstuff_id == 105) {
+                            $whey = $i;
+                        }
+                        if($holder2->foodstuff_id == 105) {
+                            $whey = $j;
+                        }
+
+                        if($i == $min && $j == $min2) {
+                            $cal_min = $cal;
+                            $prot_min = $prot;
+                            $fat_min = $fat;
+                            $carb_min = $carb;
+                        }
+
+                        if($i == $max && $j == $max2) {
+                            $cal_max = $cal;
+                            $prot_max = $prot;
+                            $fat_max = $fat;
+                            $carb_max = $carb;
+                        }
                     }
                 }
+
+                $recipeFinal = [
+                    'id' => $recipe->id,
+                    'category' => $recipe->type,
+                    'calories_min' => $cal_min,
+                    'proteins_min' => $prot_min,
+                    'fats_min' => $fat_min,
+                    'carbohydrates_min' => $carb_min,
+                    'calories_max' => $cal_max,
+                    'proteins_max' => $prot_max,
+                    'fats_max' => $fat_max,
+                    'carbohydrates_max' => $carb_max,
+                    'tuna' => $tunaContain ? 1 : 0,
+                    'whey' => $whey,
+                    'holders' => $holder->foodstuff_id . '-' . $holder2->foodstuff_id,
+                    'fixedCalories' => $fixedCalories,
+                    'fixedProteins' => $fixedProteins,
+                    'fixedFats' => $fixedFats,
+                ];
+
+                array_push($recipesFinal, $recipeFinal);
             }
 
             if($holdersMap['pHolder'] == null && $holdersMap['fHolder'] == null && $holdersMap['uHolder'] != null) {
@@ -402,27 +570,54 @@ class RecipeController
                 $holderFoodstuff = Foodstuff::find($holder->foodstuff_id);
                 $fMin = $holderFoodstuff->min != null? $holderFoodstuff->min : 100;
                 $fMax = $holderFoodstuff->max != null? $holderFoodstuff->max : 500;
-                $step = $holderFoodstuff->step != null? $holderFoodstuff->step : 25;
+                $step = $fMax - $fMin;
+
+                $cal_min = $cal_max = $prot_min = $prot_max = $fat_min = $fat_max = $carb_min = $carb_max = 0;
                 for($j = $fMin; $j <= $fMax; $j += $step) {
                     $fat = $fats + ($j * $holderFoodstuff->fats / 100);
                     $prot = $proteins + ($j * $holderFoodstuff->proteins / 100);
                     $carb = $carbohydrates + ($j * $holderFoodstuff->carbohydrates / 100);
                     $cal = $calories + ($j * $holderFoodstuff->calories / 100);
                     $name = $recipe->name . ' - Calories ' . $cal . ' - Proteins ' . $prot . ' - Fats ' . $fat . ' - Carbohydrates ' . $carb;
-                    $recipeFinal = [
-                        'id' => $recipe->id,
-                        'name' => $name,
-                        'category' => $recipe->type,
-                        'calories' => $cal,
-                        'proteins' => $prot,
-                        'fats' => $fat,
-                        'carbohydrates' => $carb,
-                        'holders' => $holder->foodstuff_id . ' - ' . $j,
-                        'tuna' => $tunaContain ? 1 : 0,
-                        'whey' => $whey
-                    ];
-                    array_push($recipesFinal, $recipeFinal);
+                    if($holder->foodstuff_id == 105) {
+                        $whey = $j;
+                    }
+
+                    if($j == $fMax) {
+                        $cal_max = $cal;
+                        $prot_max = $prot;
+                        $fat_max = $fat;
+                        $carb_max = $carb;
+                    }
+
+                    if($j == $fMin) {
+                        $cal_min = $cal;
+                        $prot_min = $prot;
+                        $fat_min = $fat;
+                        $carb_min = $carb;
+                    }
                 }
+
+                $recipeFinal = [
+                    'id' => $recipe->id,
+                    'category' => $recipe->type,
+                    'calories_min' => $cal_min,
+                    'proteins_min' => $prot_min,
+                    'fats_min' => $fat_min,
+                    'carbohydrates_min' => $carb_min,
+                    'calories_max' => $cal_max,
+                    'proteins_max' => $prot_max,
+                    'fats_max' => $fat_max,
+                    'carbohydrates_max' => $carb_max,
+                    'tuna' => $tunaContain ? 1 : 0,
+                    'whey' => $whey,
+                    'holders' => $holder->foodstuff_id,
+                    'fixedCalories' => $fixedCalories,
+                    'fixedProteins' => $fixedProteins,
+                    'fixedFats' => $fixedFats,
+                ];
+
+                array_push($recipesFinal, $recipeFinal);
             }
 
             if($holdersMap['pHolder'] != null && $holdersMap['fHolder'] == null && $holdersMap['uHolder'] != null) {
@@ -430,14 +625,15 @@ class RecipeController
                 $holderFoodstuff = Foodstuff::find($holder->foodstuff_id);
                 $min = $holderFoodstuff->min != null? $holderFoodstuff->min : 100;
                 $max = $holderFoodstuff->max != null? $holderFoodstuff->max : 500;
-                $step = $holderFoodstuff->step != null? $holderFoodstuff->step : 25;
+                $step = $max - $min;
 
                 $holder2 = $holdersMap['uHolder'];
                 $holderFoodstuff2 = Foodstuff::find($holder2->foodstuff_id);
                 $min2 = $holderFoodstuff2->min != null? $holderFoodstuff2->min : 100;
                 $max2 = $holderFoodstuff2->max != null? $holderFoodstuff2->max : 500;
-                $step2 = $holderFoodstuff2->step != null? $holderFoodstuff2->step : 25;
+                $step2 = $max2 - $min2;
 
+                $cal_min = $cal_max = $prot_min = $prot_max = $fat_min = $fat_max = $carb_min = $carb_max = 0;
                 for($i = $min; $i <= $max; $i += $step) {
                     $prot = $proteins + ($i * $holderFoodstuff->proteins / 100);
                     $fat = $fats + ($i * $holderFoodstuff->fats / 100);
@@ -449,29 +645,57 @@ class RecipeController
                         $carbF = $carb + ($j * $holderFoodstuff2->carbohydrates / 100);
                         $calF = $cal + ($j * $holderFoodstuff2->calories / 100);
                         $name = $recipe->name . ' - Calories ' . $calF . ' - Proteins ' . $protF . ' - Fats ' . $fatF . ' - Carbohydrates ' . $carbF;
-                        $recipeFinal = [
-                            'id' => $recipe->id,
-                            'name' => $name,
-                            'category' => $recipe->type,
-                            'calories' => $calF,
-                            'proteins' => $protF,
-                            'fats' => $fatF,
-                            'carbohydrates' => $carbF,
-                            'holders' => $holder->foodstuff_id . ' - ' . $i . ' | ' . $holder2->foodstuff_id . ' - ' . $j,
-                            'tuna' => $tunaContain ? 1 : 0,
-                            'whey' => $whey
-                        ];
-                        array_push($recipesFinal, $recipeFinal);
+                        if($holder->foodstuff_id == 105) {
+                            $whey = $i;
+                        }
+                        if($holder2->foodstuff_id == 105) {
+                            $whey = $j;
+                        }
+
+                        if($i == $min && $j == $min2) {
+                            $cal_min = $cal;
+                            $prot_min = $prot;
+                            $fat_min = $fat;
+                            $carb_min = $carb;
+                        }
+
+                        if($i == $max && $j == $max2) {
+                            $cal_max = $cal;
+                            $prot_max = $prot;
+                            $fat_max = $fat;
+                            $carb_max = $carb;
+                        }
                     }
                 }
+
+                $recipeFinal = [
+                    'id' => $recipe->id,
+                    'category' => $recipe->type,
+                    'calories_min' => $cal_min,
+                    'proteins_min' => $prot_min,
+                    'fats_min' => $fat_min,
+                    'carbohydrates_min' => $carb_min,
+                    'calories_max' => $cal_max,
+                    'proteins_max' => $prot_max,
+                    'fats_max' => $fat_max,
+                    'carbohydrates_max' => $carb_max,
+                    'tuna' => $tunaContain ? 1 : 0,
+                    'whey' => $whey,
+                    'holders' => $holder->foodstuff_id . '-' . $holder2->foodstuff_id,
+                    'fixedCalories' => $fixedCalories,
+                    'fixedProteins' => $fixedProteins,
+                    'fixedFats' => $fixedFats,
+                ];
+
+                 array_push($recipesFinal, $recipeFinal);
             }
 
         }
 
+        //dd($recipesFinal);
 
         foreach ($recipesFinal as $key => $recipe) {
-            $innerHolders = $recipe['holders']? $recipe['holders'] : 'null';
-            echo $key . ',' . $recipe['id'] . ',' . $recipe['name'] . ',' . $recipe['category'] . ',' . $recipe['calories'] . ',' . $recipe['proteins'] . ',' . $recipe['fats'] . ',' . $recipe['carbohydrates'] . ',' . $innerHolders ."<br>";
+            echo $key . ',' . $recipe['id'] . ',' . $recipe['category'] . ',' . $recipe['calories_min'] . ',' . $recipe['proteins_min'] . ',' . $recipe['fats_min'] . ',' . $recipe['carbohydrates_min'] . ',' . $recipe['calories_max'] . ',' . $recipe['proteins_max'] . ',' . $recipe['fats_max'] . ',' . $recipe['carbohydrates_max'] . ',' . $recipe['tuna'] . ',' . $recipe['whey'] . ',' . $recipe['holders'] . ',' . $recipe['fixedCalories'] . ',' . $recipe['fixedProteins'] . ',' . $recipe['fixedFats'] . "<br>";
         }
     }
 

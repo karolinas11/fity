@@ -121,51 +121,53 @@
                                 <h4>{{ \App\Models\Recipe::find($meal['same_meal_id'])->name }}</h4>
                                 <div class="divider"></div>
                                 <p>Kalorije - {{ $meal['calories'] }}</p>
-                                <p>Proteini - {{ $meal['protein'] }}g</p>
-                                <p>Masti - {{ $meal['fat'] }}g</p>
-                                <p>Ugljeni hidrati - {{ $meal['carbs'] }}g</p>
+                                <p>Proteini - {{ $meal['proteins'] }}g</p>
+                                <p>Masti - {{ $meal['fats'] }}g</p>
+{{--                                <p>Ugljeni hidrati - {{ $meal['carbs'] }}g</p>--}}
                                 <div class="divider"></div>
 
 
-                                @foreach($meal['holders'] as $holder)
+                                @foreach($meal['holder_quantities'] as $key => $holder)
                                     @php
-                                        $foodstuff = \App\Models\Foodstuff::find($holder['id']);
+                                        $foodstuff = \App\Models\Foodstuff::find($key);
                                     @endphp
 
                                     @if($foodstuff)
                                         <p>
                                             {{ $foodstuff->name }} -
-                                            {{ $holder['amount'] }}g
+                                            {{ $holder }}g
 
-                                            @if($holder['p'] == 1)
-                                                - p
-                                            @endif
+{{--                                            @if($holder['p'] == 1)--}}
+{{--                                                - p--}}
+{{--                                            @endif--}}
 
-                                            @if($holder['f'] == 1)
-                                                - m
-                                            @endif
+{{--                                            @if($holder['f'] == 1)--}}
+{{--                                                - m--}}
+{{--                                            @endif--}}
 
-                                            @if($holder['c'] == 1)
-                                                - u
-                                            @endif
+{{--                                            @if($holder['c'] == 1)--}}
+{{--                                                - u--}}
+{{--                                            @endif--}}
                                         </p>
                                     @else
-                                        <p>Namirnica nije pronađena za ID {{ $holder['id'] }}.</p>
+                                        <p>Namirnica nije pronađena za ID {{ $key }}.</p>
                                     @endif
                                 @endforeach
                                 @foreach($meal['foodstuffs'] as $foodstuff)
-                                    <p>{{ $foodstuff['name'] }} - {{ $foodstuff['amount']}}g   </p>
+                                    @if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->carbohydrates_holder == 0)
+                                        <p>{{ \App\Models\Foodstuff::where('id', $foodstuff['foodstuff_id'])->get()[0]->name }} - {{ $foodstuff['amount']}}g</p>
+                                    @endif
                                 @endforeach
                             </div>
                         @endforeach
                         <div class="col-md-1">
-                            <h6>Kalorije - {{ $day['total_calories'] }}g</h6>
-                            <h6>Proteini - {{ $day['total_protein'] }}g</h6>
-                            <h6>Masti - {{ $day['total_fat'] }}g</h6>
-                            <h4>Razlika</h4>
-                            <h6>Kalorije  {{ $day['total_calories'] - $target['calories'] }}g</h6>
-                            <h6>Proteini  {{ $day['total_protein'] - $target['proteins'] }}g</h6>
-                            <h6>Masti  {{ $day['total_fat']  -  $target['fats'] }}g</h6>
+{{--                            <h6>Kalorije - {{ $day['total_calories'] }}g</h6>--}}
+{{--                            <h6>Proteini - {{ $day['total_protein'] }}g</h6>--}}
+{{--                            <h6>Masti - {{ $day['total_fat'] }}g</h6>--}}
+{{--                            <h4>Razlika</h4>--}}
+{{--                            <h6>Kalorije  {{ $day['total_calories'] - $target['calories'] }}g</h6>--}}
+{{--                            <h6>Proteini  {{ $day['total_protein'] - $target['proteins'] }}g</h6>--}}
+{{--                            <h6>Masti  {{ $day['total_fat']  -  $target['fats'] }}g</h6>--}}
                         </div>
                     </div>
                 @endforeach
