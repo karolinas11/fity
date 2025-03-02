@@ -20,9 +20,14 @@ class UserController extends Controller
     protected UserService $userService;
     protected RecipeFoodstuffService $recipefoodstuffService;
 
+    protected $bestCombination;
+    protected $bestDifference;
+
     public function __construct() {
         $this->userService = new UserService();
         $this->recipefoodstuffService= new RecipeFoodstuffService();
+        $this->bestCombination = [];
+        $this->bestDifference = PHP_INT_MAX;
     }
 
     public function showAddUser()
@@ -84,7 +89,9 @@ class UserController extends Controller
 
         $user = User::find($userId);
         $target = $this->userService->getMacrosForUser($user);
+        //dd($target);
         $response = Http::timeout(10000)->post('https://fity-algorithm.fly.dev/meal-plan', [
+//        $response = Http::timeout(100000)->post('http://127.0.0.1:8000/meal-plan', [
             'target_calories' => $target['calories'],
             'target_protein' => $target['proteins'],
             'target_fat' => $target['fats'],
@@ -95,51 +102,98 @@ class UserController extends Controller
             'days' => $user->days
         ]);
 
-
         $data = $response->json();
+        //dd($data);
+        $combs = [];
         foreach($data['daily_plans'] as &$day){
             foreach( $day['meals'] as &$meal){
                 $foodstuffs = $this->recipefoodstuffService->getRecipeFoodstuffs($meal['same_meal_id']);
-                $foodstuffsData = [];
-                $input = $meal['holders'];
-                $pairs = explode(' | ', $input);
-                $holders = [];
-                foreach ($pairs as $pair) {
-                    list($key, $value) = explode(' - ', $pair);
-                    /* $holders[(int)$key] = (int)$value;*/
-                    $holderFoodStuffRecipe =RecipeFoodstuff::where('foodstuff_id', (int)$key)
-                        ->where('recipe_id',$meal['same_meal_id'])->first();
-
-                    if($holderFoodStuffRecipe)
-                    {
-                        $singleHolder = [
-                            'id' => (int)$key,
-                            'name' =>Foodstuff::find((int)$key)->name,
-                            'amount' => (int)$value,
-                            'p' => $holderFoodStuffRecipe->proteins_holder,
-                            'f' => $holderFoodStuffRecipe->fats_holder,
-                            'c' => $holderFoodStuffRecipe->carbohydrates_holder
-                        ];
-
-                        array_push($holders,$singleHolder);
-                    }
-                }
-
-                foreach ($foodstuffs as $foodstuff){
-                    if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->carbohydrates_holder == 0) {
-                        $foodstuffData = [];
-                        $foodstuffData['amount'] = $foodstuff['amount'];
-                        $foodstuffData['name'] = Foodstuff::find($foodstuff->foodstuff_id)->name;
-                        array_push($foodstuffsData,$foodstuffData);
-                    }
-
-                }
-                $meal['foodstuffs'] = $foodstuffsData;
-                $meal['holders'] = $holders;
+                $meal['foodstuffs'] = $foodstuffs;
+                //                $foodstuffsData = [];
+//                $input = $meal['holders'];
+//                $pairs = explode(' | ', $input);
+//                $holders = [];
+//                foreach ($pairs as $pair) {
+//                    list($key, $value) = explode(' - ', $pair);
+//                    /* $holders[(int)$key] = (int)$value;*/
+//                    $holderFoodStuffRecipe =RecipeFoodstuff::where('foodstuff_id', (int)$key)
+//                        ->where('recipe_id',$meal['same_meal_id'])->first();
+//
+//                    if($holderFoodStuffRecipe)
+//                    {
+//                        $singleHolder = [
+//                            'id' => (int)$key,
+//                            'name' =>Foodstuff::find((int)$key)->name,
+//                            'amount' => (int)$value,
+//                            'p' => $holderFoodStuffRecipe->proteins_holder,
+//                            'f' => $holderFoodStuffRecipe->fats_holder,
+//                            'c' => $holderFoodStuffRecipe->carbohydrates_holder
+//                        ];
+//
+//                        array_push($holders,$singleHolder);
+//                    }
+//                }
+//
+//                foreach ($foodstuffs as $foodstuff){
+//                    if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->carbohydrates_holder == 0) {
+//                        $foodstuffData = [];
+//                        $foodstuffData['amount'] = $foodstuff['amount'];
+//                        $foodstuffData['name'] = Foodstuff::find($foodstuff->foodstuff_id)->name;
+//                        array_push($foodstuffsData,$foodstuffData);
+//                    }
+//
+//                }
+//                $meal['foodstuffs'] = $foodstuffsData;
+//                $meal['holders'] = $holders;
             }
         }
+        //dd($data);
 
         return view('user-recipes', compact('user', 'target', 'data'));
+    }
+
+    private function findBestCombination($ingredients, $targets, $selected = [], $index = 0) {
+
+        // Base case: all ingredients are selected
+        if ($index === count($ingredients)) {
+            $total = ['calories' => 0, 'proteins' => 0, 'fats' => 0];
+
+            // Sum selected ingredient values
+            foreach ($selected as $variant) {
+                if (is_array($variant) && isset($variant['calories'], $variant['proteins'], $variant['fats'])) {
+                    $total['calories'] += $variant['calories'];
+                    $total['proteins'] += $variant['proteins'];
+                    $total['fats'] += $variant['fats'];
+                } else {
+                    var_dump($variant); // Debugging
+                    exit("Error: Variant is not valid.");
+                }
+
+            }
+
+            // Compute difference from target
+            $difference = abs($total['calories'] - $targets['calories']) +
+                abs($total['proteins'] - $targets['proteins']) +
+                abs($total['fats'] - $targets['fats']);
+
+            // Check if this is the best combination so far
+            if ($difference < $this->bestDifference) {
+                $this->bestDifference = $difference;
+                $this->bestCombination = $selected;
+            }
+
+            return;
+        }
+
+        // Get the current ingredient's variants
+        $ingredientKeys = array_keys($ingredients);
+        $ingredientName = $ingredientKeys[$index];
+
+        // Try each variant
+        foreach ($ingredients[$ingredientName] as $variant) {
+            $selected[$ingredientName] = $variant;
+            $this->findBestCombination($ingredients, $targets, $selected, $index + 1);
+        }
     }
 
     public function showUsersList(UserDataTable $dataTable) {
@@ -164,7 +218,7 @@ class UserController extends Controller
 
         $user = $this->userService->addUser($userData);
         $macros = $this->userService->getMacrosForUser($user);
-        
+
         return redirect()->route('assign-recipes-to-user', ['userId' => $user->id]);
     }
 
