@@ -17,6 +17,7 @@ class OnBoardingQuestionOptionController {
             'name_option' => 'required|string',
             'value' => 'required|string',
             'subtitle' => '',
+            'data_value' => '',
         ]);
 
         $option = $this->onBoardingQuestionOptionService->createOption($validated);
@@ -26,26 +27,27 @@ class OnBoardingQuestionOptionController {
             'name_option' => $option->name_option,
             'value' => $option->value,
             'subtitle' => $option->subtitle,
+            'data_value' => $option->data_value,
         ]);
     }
 
     public function deleteOption(Request $request) {
-        $request->validate([
-            'question_id' => 'required|exists:on_boarding_questions,id',
-            'value' => 'required',
 
+        $request->validate([
+            'option_id' => 'required|exists:on_boarding_question_options,id',
         ]);
-        $option = $this->onBoardingQuestionOptionService->deleteOption($request->question_id, $request->value);
-        if (!$option) {
+        $option = $this->onBoardingQuestionOptionService->deleteOption($request->option_id);
+        if(!$option){
             return response()->json(['error' => 'Opcija nije pronađena.'], 404);
         }
-        return response()->json(['success' => 'Opcija je uspešno obrisana.']);
+        return response()->json(['success'=> 'Opcija je uspesno izbrisana.']);
     }
     public function updateOption(Request $request, $id) {
         $validateData = $request->validate([
             'name_option'=> 'required|string',
             'value'=> 'required|string',
             'subtitle'=> 'required|string',
+            'data_value' => '',
         ]);
         $updateOption = $this->onBoardingQuestionOptionService->updateOption($id, $validateData);
 

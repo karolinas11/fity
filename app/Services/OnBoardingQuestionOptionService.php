@@ -14,8 +14,8 @@ class OnBoardingQuestionOptionService {
         return $this->onBoardingQuestionOptionRepository->createOption($data);
     }
 
-    public function deleteOption($questionId, $optionValue) {
-        return $this->onBoardingQuestionOptionRepository->deleteOption($questionId, $optionValue);
+    public function deleteOption($optionId) {
+        return $this->onBoardingQuestionOptionRepository->deleteOption($optionId);
     }
     public function updateOption($id, $data) {
         return $this->onBoardingQuestionOptionRepository->updateOption($id, $data);

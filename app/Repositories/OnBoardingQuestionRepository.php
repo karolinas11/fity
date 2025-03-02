@@ -9,8 +9,10 @@ class OnBoardingQuestionRepository{
     public function getAllQuestionsWithOptions() {
         try {
             return OnBoardingQuestion::with('options')->get();
+
         }catch (QueryException $e) {
             Log::error('Can\'t add option: ' . $e->getMessage());
+
         }
     }
     public function addQuestion(array $data) {

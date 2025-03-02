@@ -10,4 +10,10 @@ class Foodstuff extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+   /* public function foodstuffAllCategory(){
+        return $this->belongsTo(FoodstuffCategory::class, 'category_id');
+    }*/
 }
+
+

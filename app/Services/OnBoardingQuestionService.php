@@ -34,7 +34,8 @@ class OnBoardingQuestionService{
                     'answerIndex' => $key,
                     'answerTitle' => $option->value,
                     'answerDetail' => $option->subtitle,
-                    'dataType' => $option->name_option
+                    'dataType' => $option->name_option,
+                    'dataValue' =>$option->data_value
                 ];
                 array_push($answers, $singleAnswer);
             }

@@ -10,6 +10,7 @@ class RecipeFoodstuffRepository
 {
     public function addRecipeFoodstuff($recipeId, $foodstuffs) {
         try {
+
             foreach ($foodstuffs as $foodstuff) {
                 RecipeFoodstuff::create([
                     'recipe_id' => $recipeId,
