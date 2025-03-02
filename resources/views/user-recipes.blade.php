@@ -123,7 +123,7 @@
                                 <p>Kalorije - {{ $meal['calories'] }}</p>
                                 <p>Proteini - {{ $meal['proteins'] }}g</p>
                                 <p>Masti - {{ $meal['fats'] }}g</p>
-{{--                                <p>Ugljeni hidrati - {{ $meal['carbs'] }}g</p>--}}
+       {{--                     <p>Ugljeni hidrati - {{ $meal['carbs'] }}g</p> --}}
                                 <div class="divider"></div>
 
 
@@ -136,18 +136,22 @@
                                         <p>
                                             {{ $foodstuff->name }} -
                                             {{ $holder }}g
+                                            @php
+                                                $holderFoodstuff = \App\Models\RecipeFoodstuff::where('foodstuff_id', '=', $key)
+                                                    ->where('recipe_id', '=', $meal['same_meal_id'])
+                                                    ->get()
+                                                    ->first();
+                                            @endphp
 
-{{--                                            @if($holder['p'] == 1)--}}
-{{--                                                - p--}}
-{{--                                            @endif--}}
-
-{{--                                            @if($holder['f'] == 1)--}}
-{{--                                                - m--}}
-{{--                                            @endif--}}
-
-{{--                                            @if($holder['c'] == 1)--}}
-{{--                                                - u--}}
-{{--                                            @endif--}}
+                                            @if($holderFoodstuff->proteins_holder == 1)
+                                                - p
+                                            @endif
+                                            @if($holderFoodstuff->fats_holder == 1)
+                                                - m
+                                            @endif
+                                            @if($holderFoodstuff->carbohydrates_holder == 1)
+                                                - uh
+                                            @endif
                                         </p>
                                     @else
                                         <p>Namirnica nije pronađena za ID {{ $key }}.</p>
@@ -161,13 +165,13 @@
                             </div>
                         @endforeach
                         <div class="col-md-1">
-{{--                            <h6>Kalorije - {{ $day['total_calories'] }}g</h6>--}}
-{{--                            <h6>Proteini - {{ $day['total_protein'] }}g</h6>--}}
-{{--                            <h6>Masti - {{ $day['total_fat'] }}g</h6>--}}
-{{--                            <h4>Razlika</h4>--}}
-{{--                            <h6>Kalorije  {{ $day['total_calories'] - $target['calories'] }}g</h6>--}}
-{{--                            <h6>Proteini  {{ $day['total_protein'] - $target['proteins'] }}g</h6>--}}
-{{--                            <h6>Masti  {{ $day['total_fat']  -  $target['fats'] }}g</h6>--}}
+                            <h6>Kalorije - {{ $day['calories'] }}</h6>
+                            <h6>Proteini - {{ $day['proteins'] }}g</h6>
+                            <h6>Masti - {{ $day['fats'] }}g</h6>
+                            <h4>Razlika</h4>
+                            <h6>Kalorije  {{ $day['calories'] - $target['calories'] }}</h6>
+                            <h6>Proteini  {{ $day['proteins'] - $target['proteins'] }}g</h6>
+                            <h6>Masti  {{ $day['fats']  -  $target['fats'] }}g</h6>
                         </div>
                     </div>
                 @endforeach
