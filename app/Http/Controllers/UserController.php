@@ -24,7 +24,6 @@ class UserController extends Controller
 {
     protected UserService $userService;
     protected RecipeFoodstuffService $recipeFoodstuffService;
-    protected UserWaterService $userWaterService;
     protected UserRecipeService $userRecipeService;
     protected UserAllergyService $userAllergyService;
     protected RecipeFoodstuffService $recipefoodstuffService;

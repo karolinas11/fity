@@ -112,68 +112,70 @@
             <div class="col-md-12 text-center mt-5">
                 <h2 class="mb-4">Recepti</h2>
                 @foreach($data['daily_plans'] as $day)
-                    <div class="row">
-                        <div class="col-md-1">
-                            <h3>Dan - {{ $day['day'] }}</h3>
-                        </div>
-                        @foreach($day['meals'] as $meal)
-                            <div class="col-md-2">
-                                <h4>{{ \App\Models\Recipe::find($meal['same_meal_id'])->name }}</h4>
-                                <div class="divider"></div>
-                                <p>Kalorije - {{ $meal['calories'] }}</p>
-                                <p>Proteini - {{ $meal['proteins'] }}g</p>
-                                <p>Masti - {{ $meal['fats'] }}g</p>
-       {{--                     <p>Ugljeni hidrati - {{ $meal['carbs'] }}g</p> --}}
-                                <div class="divider"></div>
-
-
-                                @foreach($meal['holder_quantities'] as $key => $holder)
-                                    @php
-                                        $foodstuff = \App\Models\Foodstuff::find($key);
-                                    @endphp
-
-                                    @if($foodstuff)
-                                        <p>
-                                            {{ $foodstuff->name }} -
-                                            {{ $holder }}g
-                                            @php
-                                                $holderFoodstuff = \App\Models\RecipeFoodstuff::where('foodstuff_id', '=', $key)
-                                                    ->where('recipe_id', '=', $meal['same_meal_id'])
-                                                    ->get()
-                                                    ->first();
-                                            @endphp
-
-                                            @if($holderFoodstuff->proteins_holder == 1)
-                                                - p
-                                            @endif
-                                            @if($holderFoodstuff->fats_holder == 1)
-                                                - m
-                                            @endif
-                                            @if($holderFoodstuff->carbohydrates_holder == 1)
-                                                - uh
-                                            @endif
-                                        </p>
-                                    @else
-                                        <p>Namirnica nije pronađena za ID {{ $key }}.</p>
-                                    @endif
-                                @endforeach
-                                @foreach($meal['foodstuffs'] as $foodstuff)
-                                    @if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->carbohydrates_holder == 0)
-                                        <p>{{ \App\Models\Foodstuff::where('id', $foodstuff['foodstuff_id'])->get()[0]->name }} - {{ $foodstuff['amount']}}g</p>
-                                    @endif
-                                @endforeach
+                    @if($day['exists'])
+                        <div class="row">
+                            <div class="col-md-1">
+                                <h3>Dan - {{ $day['day'] }}</h3>
                             </div>
-                        @endforeach
-                        <div class="col-md-1">
-                            <h6>Kalorije - {{ $day['calories'] }}</h6>
-                            <h6>Proteini - {{ $day['proteins'] }}g</h6>
-                            <h6>Masti - {{ $day['fats'] }}g</h6>
-                            <h4>Razlika</h4>
-                            <h6>Kalorije  {{ $day['calories'] - $target['calories'] }}</h6>
-                            <h6>Proteini  {{ $day['proteins'] - $target['proteins'] }}g</h6>
-                            <h6>Masti  {{ $day['fats']  -  $target['fats'] }}g</h6>
+                            @foreach($day['meals'] as $meal)
+                                <div class="col-md-2">
+                                    <h4>{{ \App\Models\Recipe::find($meal['same_meal_id'])->name }}</h4>
+                                    <div class="divider"></div>
+                                    <p>Kalorije - {{ $meal['calories'] }}</p>
+                                    <p>Proteini - {{ $meal['proteins'] }}g</p>
+                                    <p>Masti - {{ $meal['fats'] }}g</p>
+           {{--                     <p>Ugljeni hidrati - {{ $meal['carbs'] }}g</p> --}}
+                                    <div class="divider"></div>
+
+
+                                    @foreach($meal['holder_quantities'] as $key => $holder)
+                                        @php
+                                            $foodstuff = \App\Models\Foodstuff::find($key);
+                                        @endphp
+
+                                        @if($foodstuff)
+                                            <p>
+                                                {{ $foodstuff->name }} -
+                                                {{ $holder }}g
+                                                @php
+                                                    $holderFoodstuff = \App\Models\RecipeFoodstuff::where('foodstuff_id', '=', $key)
+                                                        ->where('recipe_id', '=', $meal['same_meal_id'])
+                                                        ->get()
+                                                        ->first();
+                                                @endphp
+
+                                                @if($holderFoodstuff->proteins_holder == 1)
+                                                    - p
+                                                @endif
+                                                @if($holderFoodstuff->fats_holder == 1)
+                                                    - m
+                                                @endif
+                                                @if($holderFoodstuff->carbohydrates_holder == 1)
+                                                    - uh
+                                                @endif
+                                            </p>
+                                        @else
+                                            <p>Namirnica nije pronađena za ID {{ $key }}.</p>
+                                        @endif
+                                    @endforeach
+                                    @foreach($meal['foodstuffs'] as $foodstuff)
+                                        @if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->carbohydrates_holder == 0)
+                                            <p>{{ \App\Models\Foodstuff::where('id', $foodstuff['foodstuff_id'])->get()[0]->name }} - {{ $foodstuff['amount']}}g</p>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            @endforeach
+                            <div class="col-md-1">
+                                <h6>Kalorije - {{ $day['calories'] }}</h6>
+                                <h6>Proteini - {{ $day['proteins'] }}g</h6>
+                                <h6>Masti - {{ $day['fats'] }}g</h6>
+                                <h4>Razlika</h4>
+                                <h6>Kalorije  {{ $day['calories'] - $target['calories'] }}</h6>
+                                <h6>Proteini  {{ $day['proteins'] - $target['proteins'] }}g</h6>
+                                <h6>Masti  {{ $day['fats']  -  $target['fats'] }}g</h6>
+                            </div>
                         </div>
-                    </div>
+                    @endif
                 @endforeach
             </div>
         </div>

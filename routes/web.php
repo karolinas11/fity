@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FoodstuffCategoryController;
 use App\Http\Controllers\FoodstuffController;
 use App\Http\Controllers\OnBoardingQuestionController;
@@ -61,3 +62,7 @@ Route::put('/api/update-question/{id}', [OnBoardingQuestionController::class, 'u
 Route::put('/api/update-option/{id}', [OnBoardingQuestionOptionController::class, 'updateOption'])->name('api.update-option');
 Route::get('/api/create-user',[UserController::class, 'createUser'])->name('api.create-user');
 Route::get('/api/onboarding/questions/{questionSetIndex}/{language}', [OnBoardingQuestionController::class, 'getOnboardingQuestions'])->name('api.onboarding-questions');
+
+
+// Auth Firebase
+Route::get('/api/firebase-test', [AuthController::class, 'firebaseLogin'])->name('firebase-test');
