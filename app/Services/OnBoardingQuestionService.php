@@ -70,7 +70,7 @@ class OnBoardingQuestionService{
                 $name = '';
                 $unit = '';
                 switch($key) {
-                    case 'calories': $name = 'Kalorije'; $unit = 'kcal'; break;
+                    case 'calories': $name = 'Kalorije'; $unit = ' kcal'; break;
                     case 'fats': $name ='Masti'; $unit = 'g'; break;
                     case 'proteins': $name ='Proteini'; $unit = 'g'; break;
                     default: $name = $key; $unit = 'g';
