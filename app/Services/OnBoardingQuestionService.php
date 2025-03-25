@@ -117,9 +117,19 @@ class OnBoardingQuestionService{
                 'answerIndex' => 0,
                 'answerTitle' => 'Očekivani ' . $goal . ' telesne mase na mesečnom nivou iznosi,' . 'od ' . $weightDiff . ' do ' . $weightDiffTo . 'kg',
                 'answerDetail' => $user->weight . ' kg,' . $macros['weight'] . ' kg',
-                'dataType' => 'chart',
+                'dataType' => 'weight',
                 'dataValue' => null
             ];
+
+            $singleQuestion = [
+                'id' => 6,
+                'question' => 'Kako će izgledati tvoj napredak',
+                'description' => '',
+                'type' => 'chart',
+                'answers' => $answers
+            ];
+
+            array_push($finalQuestions, $singleQuestion);
 
             $responseQuestions = [
                 'questionsPageCount' => 6,
