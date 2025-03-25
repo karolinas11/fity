@@ -166,9 +166,9 @@ class OnBoardingQuestionService{
             for($i = 0; $i < 5; $i++) {
                 $singleAnswer = [
                     'answerIndex' => $i,
-                    'answerTitle' => $i,
+                    'answerTitle' => '',
                     'answerDetail' => '',
-                    'dataType' => 'choice',
+                    'dataType' => 'meal',
                     'dataValue' => null
                 ];
                 array_push($answers, $singleAnswer);
