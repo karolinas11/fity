@@ -3,14 +3,17 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Repositories\FoodstuffCategoryRepository;
 use App\Repositories\OnBoardingQuestionRepository;
 use Illuminate\Support\Facades\Validator;
 
 class OnBoardingQuestionService{
     protected OnBoardingQuestionRepository $onBoardingQuestionRepository;
+    protected FoodstuffCategoryRepository $foodstuffCategoryRepository;
     protected UserService $userService;
     public function __construct() {
          $this->onBoardingQuestionRepository = new OnBoardingQuestionRepository();
+         $this->foodstuffCategoryRepository = new FoodstuffCategoryRepository();
          $this->userService = new UserService();
     }
     public function getOnBoardingQuestions() {
@@ -115,7 +118,7 @@ class OnBoardingQuestionService{
             $weightDiffTo = $weightDiff + 2;
             $answers[0] = [
                 'answerIndex' => 0,
-                'answerTitle' => 'Očekivani ' . $goal . ' telesne mase na mesečnom nivou iznosi,' . 'od ' . $weightDiff . ' do ' . $weightDiffTo . 'kg',
+                'answerTitle' => 'Očekivani ' . $goal . ' telesne mase na mesečnom nivou iznosi,' . 'od ' . $weightDiff . 'kg do ' . $weightDiffTo . 'kg',
                 'answerDetail' => $user->weight . ' kg,' . $macros['weight'] . ' kg',
                 'dataType' => 'weight',
                 'dataValue' => null
@@ -131,12 +134,41 @@ class OnBoardingQuestionService{
 
             array_push($finalQuestions, $singleQuestion);
 
+            $foodstuffCategories = $this->foodstuffCategoryRepository->getFoodstuffCategoriesAll();
+            $answers = [];
+            $i = 0;
+            foreach ($foodstuffCategories as $foodstuffCategory) {
+                $foodstuffs = '';
+                foreach ($foodstuffCategory->foodstuffsOption as $foodstuff) {
+                    $foodstuffs .= $foodstuff->name . ',';
+                }
+                $singleAnswer = [
+                    'answerIndex' => $i,
+                    'answerTitle' => $foodstuffCategory->name,
+                    'answerDetail' => $foodstuffs,
+                    'dataType' => 'ingredients',
+                    'dataValue' => null
+                ];
+                array_push($answers, $singleAnswer);
+                $i++;
+            }
+
+            $singleQuestion = [
+                'id' => 7,
+                'question' => 'Isključi namirnice koje ne želiš u ishrani ili na koje si alergičan/a',
+                'description' => '',
+                'type' => 'ingredients',
+                'answers' => $answers
+            ];
+
             $responseQuestions = [
-                'questionsPageCount' => 6,
+                'questionsPageCount' => 7,
                 'submitForCalculationAfterId' => 4,
                 'submitForResultAfterId' => 8,
                 'questions' => $finalQuestions
             ];
+
+            array_push($finalQuestions, $singleQuestion);
 
             return $responseQuestions;
         }
