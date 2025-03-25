@@ -53,16 +53,3 @@ Route::get('/users', [UserController::class, 'showUsersList'])->name('show-users
 
 
 Route::get('/boarding-question',[OnBoardingQuestionController::class, 'index']);
-
-Route::post('/api/add-option',[OnBoardingQuestionOptionController::class,'store'])->name('api.add-option');
-Route::post('/api/delete-option',[OnBoardingQuestionOptionController::class, 'deleteOption'])->name('api.delete-option');
-Route::post('/api/add-question',[OnBoardingQuestionController::class, 'addQuestion'])->name('api.add-question');
-Route::post('/api/delete-question',[OnBoardingQuestionController::class, 'deleteQuestion'])->name('api.delete-question');
-Route::put('/api/update-question/{id}', [OnBoardingQuestionController::class, 'updateQuestion'])->name('api.update-question');
-Route::put('/api/update-option/{id}', [OnBoardingQuestionOptionController::class, 'updateOption'])->name('api.update-option');
-Route::get('/api/create-user',[UserController::class, 'createUser'])->name('api.create-user');
-Route::get('/api/onboarding/questions/{questionSetIndex}/{language}', [OnBoardingQuestionController::class, 'getOnboardingQuestions'])->name('api.onboarding-questions');
-
-
-// Auth Firebase
-Route::get('/api/firebase-test', [AuthController::class, 'firebaseLogin'])->name('firebase-test');

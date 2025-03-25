@@ -27,30 +27,30 @@ class AuthController extends Controller
         try {
             $verifiedIdToken = $this->firebaseAuth->verifyIdToken($token);
             $request->attributes->set('firebase_uid', $verifiedIdToken->claims()->get('sub'));
-            return response()->json(['firebase_uid' => $verifiedIdToken->claims()->get('sub')]);
+            return response()->json(['firebase_uid' => $verifiedIdToken->claims()->get('sub')], 200);
 
             // Verify Firebase ID Token
-            $verifiedIdToken = $this->firebaseAuth->verifyIdToken($request->firebase_token);
-            $uid = $verifiedIdToken->claims()->get('sub');
-
-            // Get Firebase User
-            $firebaseUser = $this->firebaseAuth->getUser($uid);
-            $email = $firebaseUser->email ?? null;
-
-            if (!$email) {
-                return response()->json(['message' => 'No email found'], 400);
-            }
-
-            // Find or Create User in Laravel
-            $user = User::firstOrCreate(
-                ['email' => $email],
-                ['name' => $firebaseUser->displayName, 'password' => Hash::make(uniqid())]
-            );
-
-            // Generate Laravel API Token
-            $token = $user->createToken('auth_token')->plainTextToken;
-
-            return response()->json(['token' => $token]);
+//            $verifiedIdToken = $this->firebaseAuth->verifyIdToken($request->firebase_token);
+//            $uid = $verifiedIdToken->claims()->get('sub');
+//
+//            // Get Firebase User
+//            $firebaseUser = $this->firebaseAuth->getUser($uid);
+//            $email = $firebaseUser->email ?? null;
+//
+//            if (!$email) {
+//                return response()->json(['message' => 'No email found'], 400);
+//            }
+//
+//            // Find or Create User in Laravel
+//            $user = User::firstOrCreate(
+//                ['email' => $email],
+//                ['name' => $firebaseUser->displayName, 'password' => Hash::make(uniqid())]
+//            );
+//
+//            // Generate Laravel API Token
+//            $token = $user->createToken('auth_token')->plainTextToken;
+//
+//            return response()->json(['token' => $token]);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Invalid Firebase Token'], 401);
         }
