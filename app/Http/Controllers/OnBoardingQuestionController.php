@@ -81,5 +81,62 @@ class OnBoardingQuestionController extends Controller {
         return response()->json($data, '200');
     }
 
+    function saveFirstAnswers(Request $request) {
+        $json = '{
+   "question 0":[
+      {
+         "index":0,
+         "dataType":"choice",
+         "value":"Redukcija telesne mase",
+         "detail":null
+      }
+   ],
+   "question 1":[
+      {
+         "index":0,
+         "dataType":"height",
+         "value":"100",
+         "detail":null
+      },
+      {
+         "index":1,
+         "dataType":"weight",
+         "value":"66.0",
+         "detail":null
+      },
+      {
+         "index":2,
+         "dataType":"age",
+         "value":"40",
+         "detail":null
+      },
+      {
+         "index":3,
+         "dataType":"gender",
+         "value":"Žensko",
+         "detail":null
+      }
+   ],
+   "question 2":[
+      {
+         "index":0,
+         "dataType":"choice",
+         "value":"Nimalo aktivni",
+         "detail":null
+      }
+   ],
+   "question 3":[
+      {
+         "index":1,
+         "dataType":"choice",
+         "value":"Ne",
+         "detail":null
+      }
+   ]
+}';
+
+
+        return response()->json($result, '200');
+    }
 
 }

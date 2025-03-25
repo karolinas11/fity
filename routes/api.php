@@ -19,9 +19,6 @@ Route::put('/update-question/{id}', [OnBoardingQuestionController::class, 'updat
 Route::put('/update-option/{id}', [OnBoardingQuestionOptionController::class, 'updateOption'])->name('api.update-option');
 Route::get('/create-user',[UserController::class, 'createUser'])->name('api.create-user');
 Route::get('/onboarding/questions/{questionSetIndex}/{language}', [OnBoardingQuestionController::class, 'getOnboardingQuestions'])->name('api.onboarding-questions');
-Route::post('/onboarding/answers/_calculate', function(Request $request) {
-   \Illuminate\Support\Facades\Log::error('TEST LOG', $request->all());
-   return response()->json(['success' => true], 200);
-});
+Route::post('/onboarding/answers/_calculate', [OnBoardingQuestionController::class, 'saveFirstAnswers'])->name('api.calculate-answers');
 
 Route::get('/firebase-test', [AuthController::class, 'firebaseLogin'])->name('firebase-test');
