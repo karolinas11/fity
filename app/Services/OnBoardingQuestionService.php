@@ -71,14 +71,14 @@ class OnBoardingQuestionService{
                 $unit = '';
                 switch($key) {
                     case 'calories': $name = 'Kalorije'; $unit = ' kcal'; break;
-                    case 'fats': $name ='Masti'; $unit = 'g'; break;
-                    case 'proteins': $name ='Proteini'; $unit = 'g'; break;
+                    case 'fats': $name ='Masti'; $unit = 'g' . ',0.7'; break;
+                    case 'proteins': $name ='Proteini'; $unit = 'g' . ',0.7'; break;
                     default: $name = $key; $unit = 'g';
                 }
                 $singleAnswer = [
                     'answerIndex' => $i,
                     'answerTitle' => $name,
-                    'answerDetail' => $macro . $unit . ',0.7',
+                    'answerDetail' => $macro . $unit,
                     'dataType' => $key,
                     'dataValue' => null
                 ];
