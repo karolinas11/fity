@@ -78,7 +78,7 @@ class OnBoardingQuestionService{
                 $singleAnswer = [
                     'answerIndex' => $i,
                     'answerTitle' => $name,
-                    'answerDetail' => $macro . $unit,
+                    'answerDetail' => $macro . $unit . ',0.7',
                     'dataType' => $key,
                     'dataValue' => null
                 ];
