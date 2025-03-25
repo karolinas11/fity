@@ -135,8 +135,8 @@ class OnBoardingQuestionController extends Controller {
    ]
 }';
 
-
-        return response()->json($result, '200');
+        $data = $this->onBoardingQuestionService->getOnBoardingQuestionsByIndexAndLang(2, 'en');
+        return response()->json($data, '200');
     }
 
 }
