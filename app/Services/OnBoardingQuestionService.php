@@ -164,9 +164,27 @@ class OnBoardingQuestionService{
 
             $answers = [];
             for($i = 0; $i < 5; $i++) {
+                $title = '';
+                switch ($i) {
+                    case 0:
+                        $title = 'Doručak';
+                        break;
+                    case 1:
+                        $title = 'Ručak';
+                        break;
+                    case 2:
+                        $title = 'Večera';
+                        break;
+                    case 3:
+                        $title = 'Užina 1';
+                        break;
+                    case 4:
+                        $title = 'Užina 2';
+                        break;
+                }
                 $singleAnswer = [
                     'answerIndex' => $i,
-                    'answerTitle' => '',
+                    'answerTitle' => $title,
                     'answerDetail' => '',
                     'dataType' => 'meal',
                     'dataValue' => null
