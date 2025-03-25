@@ -160,6 +160,7 @@ class OnBoardingQuestionService{
                 'type' => 'ingredients',
                 'answers' => $answers
             ];
+            array_push($finalQuestions, $singleQuestion);
 
             $responseQuestions = [
                 'questionsPageCount' => 7,
@@ -167,8 +168,6 @@ class OnBoardingQuestionService{
                 'submitForResultAfterId' => 8,
                 'questions' => $finalQuestions
             ];
-
-            array_push($finalQuestions, $singleQuestion);
 
             return $responseQuestions;
         }
