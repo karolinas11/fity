@@ -37,7 +37,7 @@ class OnBoardingQuestionService{
                     'answerTitle' => $option->value,
                     'answerDetail' => $option->subtitle,
                     'dataType' => $option->name_option,
-                    'dataValue' => $option->data_value
+                    'dataValue' => $option->data_value,
                 ];
                 array_push($answers, $singleAnswer);
             }
@@ -67,6 +67,7 @@ class OnBoardingQuestionService{
             $i = 0;
             $answers = [];
             foreach ($macros as $key => $macro) {
+                if($key == 'weight') continue;
                 $name = '';
                 $unit = '';
                 switch($key) {
@@ -96,8 +97,32 @@ class OnBoardingQuestionService{
 
             array_push($finalQuestions, $singleQuestion);
 
+            $answers = [];
+
+            $goal = '';
+            switch ($user->goal) {
+                case 'reduction':
+                    $goal = 'gubitak';
+                    break;
+                case 'increase':
+                    $goal = 'dobitak';
+                    break;
+                default:
+                    $goal = 'nema';
+            }
+
+            $weightDiff = abs($user->weight - $macros['weight']);
+            $weightDiffTo = $weightDiff + 2;
+            $answers[0] = [
+                'answerIndex' => 0,
+                'answerTitle' => 'Očekivani ' . $goal . ' telesne mase na mesečnom nivou iznosi,' . 'od ' . $weightDiff . ' do ' . $weightDiffTo . 'kg',
+                'answerDetail' => $user->weight . ' kg,' . $macros['weight'] . ' kg',
+                'dataType' => 'chart',
+                'dataValue' => null
+            ];
+
             $responseQuestions = [
-                'questionsPageCount' => 5,
+                'questionsPageCount' => 6,
                 'submitForCalculationAfterId' => 4,
                 'submitForResultAfterId' => 8,
                 'questions' => $finalQuestions

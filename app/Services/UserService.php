@@ -88,6 +88,7 @@ class UserService
             'calories' => $calories,
             'proteins' => $proteins,
             'fats' => $fats,
+            'weight' => $weight,
         ];
 
     }

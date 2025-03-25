@@ -85,6 +85,22 @@ class OnBoardingQuestionController extends Controller {
     }
 
     function saveFirstAnswers(Request $request) {
+
+        $requestData =  $request->all();
+
+        $goal = '';
+        switch ($requestData['question 0'][0]['value']) {
+            case 'Redukcija telesne mase':
+                $goal = 'reduction';
+                break;
+            case 'Održavanje telesne mase':
+                $goal = 'stable';
+                break;
+            case 'Uvećanje telesne mase':
+                $goal = 'increase';
+                break;
+        }
+
         $json = '{
    "question 0":[
       {
@@ -139,7 +155,7 @@ class OnBoardingQuestionController extends Controller {
 }';
 
         $userData = [
-            'goal' => $request->input('goal'),
+            'goal' => $goal,
             'height' => $request->input('height'),
             'weight' => $request->input('weight'),
             'age' => $request->input('age'),
