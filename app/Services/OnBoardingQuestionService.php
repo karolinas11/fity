@@ -95,7 +95,15 @@ class OnBoardingQuestionService{
             ];
 
             array_push($finalQuestions, $singleQuestion);
-            return $finalQuestions;
+
+            $responseQuestions = [
+                'questionsPageCount' => 5,
+                'submitForCalculationAfterId' => 4,
+                'submitForResultAfterId' => 8,
+                'questions' => $finalQuestions
+            ];
+
+            return $responseQuestions;
         }
     }
 

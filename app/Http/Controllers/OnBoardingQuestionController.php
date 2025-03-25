@@ -74,14 +74,7 @@ class OnBoardingQuestionController extends Controller {
           'success' => false,
           'message' => 'Pitanja nije uspesno azurirano!'
       ]);
-    }
 
-    public function getOnboardingQuestions($questionSetIndex, $language) {
-        $data = $this->onBoardingQuestionService->getOnBoardingQuestionsByIndexAndLang($questionSetIndex, $language);
-        return response()->json($data, '200');
-    }
-
-    function saveFirstAnswers(Request $request) {
         $json = '{
    "question 0":[
       {
@@ -134,6 +127,29 @@ class OnBoardingQuestionController extends Controller {
       }
    ]
 }';
+
+        $userData = [
+            'goal' => $request->input('goal'),
+            'height' => $request->input('height'),
+            'weight' => $request->input('weight'),
+            'age' => $request->input('age'),
+            'gender' => $request->input('gender'),
+            'activity' => $request->input('activity'),
+            'tolerance_proteins'=>$request->input('tolerance_proteins'),
+            'tolerance_fats'=>$request->input('tolerance_fats'),
+            'tolerance_calories'=>$request->input('tolerance_calories'),
+            'meals_num'=>$request->input('meals_num'),
+            'days'=>$request->input('days')
+        ];
+
+    }
+
+    public function getOnboardingQuestions($questionSetIndex, $language) {
+        $data = $this->onBoardingQuestionService->getOnBoardingQuestionsByIndexAndLang($questionSetIndex, $language);
+        return response()->json($data, '200');
+    }
+
+    function saveFirstAnswers(Request $request) {
 
         $data = $this->onBoardingQuestionService->getOnBoardingQuestionsByIndexAndLang(2, 'en');
         return response()->json($data, '200');
