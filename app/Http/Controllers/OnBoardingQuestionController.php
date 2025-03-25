@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 use App\Models\RecipeFoodstuff;
 use App\Services\OnBoardingQuestionService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class OnBoardingQuestionController extends Controller {
     protected OnBoardingQuestionService $onBoardingQuestionService;
@@ -86,20 +87,21 @@ class OnBoardingQuestionController extends Controller {
 
     function saveFirstAnswers(Request $request) {
 
-        $requestData =  $request->all();
-
-        $goal = '';
-        switch ($requestData['question 0'][0]['value']) {
-            case 'Redukcija telesne mase':
-                $goal = 'reduction';
-                break;
-            case 'Održavanje telesne mase':
-                $goal = 'stable';
-                break;
-            case 'Uvećanje telesne mase':
-                $goal = 'increase';
-                break;
-        }
+        Log::error('saveFirstAnswers: ', [$request->all()]);
+//        $requestData =  $request->all();
+//
+//        $goal = '';
+//        switch ($requestData['question 0'][0]['value']) {
+//            case 'Redukcija telesne mase':
+//                $goal = 'reduction';
+//                break;
+//            case 'Održavanje telesne mase':
+//                $goal = 'stable';
+//                break;
+//            case 'Uvećanje telesne mase':
+//                $goal = 'increase';
+//                break;
+//        }
 
         $json = '{
    "question 0":[
@@ -154,19 +156,19 @@ class OnBoardingQuestionController extends Controller {
    ]
 }';
 
-        $userData = [
-            'goal' => $goal,
-            'height' => $request->input('height'),
-            'weight' => $request->input('weight'),
-            'age' => $request->input('age'),
-            'gender' => $request->input('gender'),
-            'activity' => $request->input('activity'),
-            'tolerance_proteins'=>$request->input('tolerance_proteins'),
-            'tolerance_fats'=>$request->input('tolerance_fats'),
-            'tolerance_calories'=>$request->input('tolerance_calories'),
-            'meals_num'=>$request->input('meals_num'),
-            'days'=>$request->input('days')
-        ];
+//        $userData = [
+//            'goal' => $goal,
+//            'height' => $request->input('height'),
+//            'weight' => $request->input('weight'),
+//            'age' => $request->input('age'),
+//            'gender' => $request->input('gender'),
+//            'activity' => $request->input('activity'),
+//            'tolerance_proteins'=>$request->input('tolerance_proteins'),
+//            'tolerance_fats'=>$request->input('tolerance_fats'),
+//            'tolerance_calories'=>$request->input('tolerance_calories'),
+//            'meals_num'=>$request->input('meals_num'),
+//            'days'=>$request->input('days')
+//        ];
         $data = $this->onBoardingQuestionService->getOnBoardingQuestionsByIndexAndLang(2, 'en');
         return response()->json($data, '200');
     }
