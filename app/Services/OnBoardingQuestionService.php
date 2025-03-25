@@ -162,12 +162,23 @@ class OnBoardingQuestionService{
             ];
             array_push($finalQuestions, $singleQuestion);
 
+            $answers = [];
+            for($i = 0; $i < 5; $i++) {
+                $singleAnswer = [
+                    'answerIndex' => $i,
+                    'answerTitle' => $i,
+                    'answerDetail' => '',
+                    'dataType' => 'choice',
+                    'dataValue' => null
+                ];
+                array_push($answers, $singleAnswer);
+            }
             $singleQuestion = [
                 'id' => 8,
                 'question' => 'Odaberi broj i tip obroka tokom dana',
                 'description' => 'Kako biste osigurali najbolje rezultate i održivost zdravog načina ishrane preporuka je da tokom dana minimum imate tri glavna obroka i jednu užinu.',
                 'type' => 'toggle',
-                'answers' => []
+                'answers' => $answers
             ];
             array_push($finalQuestions, $singleQuestion);
 
