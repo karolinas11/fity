@@ -93,15 +93,11 @@ class OnBoardingQuestionController extends Controller {
         $requestData = $request->all();
         $goal = '';
 
-// Decode the JSON for question_0 (assuming it's JSON encoded)
-        $question0 = json_decode($requestData['question_0'], true);  // Decode as an associative array
-
-// Log the value of 'question_0'
-        if (isset($question0[0]['value'])) {
-            Log::error('question0 value: ', [$question0[0]['value']]);
-        } else {
-            Log::error('question0 does not have value key.');
-        }
+        $question0 = json_decode($requestData['question_0'], true);
+        $question1 = json_decode($requestData['question_1'], true);
+        $question2 = json_decode($requestData['question_2'], true);
+        $question3 = json_decode($requestData['question_3'], true);
+        $question4 = json_decode($requestData['question_4'], true);
 
         switch ($question0[0]['value']) {
             case 'Redukcija telesne mase':
@@ -116,7 +112,7 @@ class OnBoardingQuestionController extends Controller {
         }
 
         $gender = '';
-        switch ($requestData['question_3'][0]['value']) {
+        switch ($question3[0]['value']) {
             case 'Muško':
                 $gender = 'm';
                 break;
@@ -126,7 +122,7 @@ class OnBoardingQuestionController extends Controller {
         }
 
         $activity = '';
-        switch ($requestData['question_2'][0]['value']) {
+        switch ($question2[0]['value']) {
             case 'Nimalo aktivni':
                 $activity = 1.2;
                 break;
@@ -146,9 +142,9 @@ class OnBoardingQuestionController extends Controller {
 
         $userData = [
             'goal' => $goal,
-            'height' => $requestData['question_1'][0]['value'],
-            'weight' => $requestData['question_1'][1]['value'],
-            'age' => $requestData['question_1'][2]['value'],
+            'height' => $question1[0]['value'],
+            'weight' => $question1[1]['value'],
+            'age' => $question1[2]['value'],
             'gender' => $gender,
             'activity' => $activity,
             'tolerance_proteins'=> 5,
