@@ -94,7 +94,7 @@ class OnBoardingQuestionService{
                 'question' => 'Tvoj dnevni plan unosa kalorija i makrosa',
                 'description' => '',
                 'type' => 'calculation',
-                'answers' => $answers
+                'answers' => $answers,
             ];
 
             array_push($finalQuestions, $singleQuestion);
@@ -204,7 +204,7 @@ class OnBoardingQuestionService{
                 'submitForCalculationAfterId' => 4,
                 'submitForResultAfterId' => 8,
                 'questions' => $finalQuestions,
-                'userId' => $user->id
+                'userId' => (string)$user->id
             ];
 
             return $responseQuestions;
