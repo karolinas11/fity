@@ -92,7 +92,11 @@ class OnBoardingQuestionController extends Controller {
         Log::error('saveFirstAnswers: ', [$request->all()]);
         $requestData = $request->all();
         $goal = '';
-        switch ($requestData['question_0'][0]['value']) {
+
+        $question0 = json_decode($requestData['question_0']);
+        Log::error('question0: ', $question0[0]['value']);
+        Log::error('question0: ', $question0['value']);
+        switch ($question0[0]['value']) {
             case 'Redukcija telesne mase':
                 $goal = 'reduction';
                 break;
