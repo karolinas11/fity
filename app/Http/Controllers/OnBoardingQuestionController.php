@@ -11,6 +11,7 @@ class OnBoardingQuestionController extends Controller {
     protected UserService $userService;
     public function __construct() {
         $this->onBoardingQuestionService =new OnBoardingQuestionService();
+        $this->userService = new UserService();
     }
     public function index() {
         $questions = $this->onBoardingQuestionService->getOnBoardingQuestions();
