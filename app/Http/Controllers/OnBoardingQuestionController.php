@@ -89,9 +89,8 @@ class OnBoardingQuestionController extends Controller {
 
     function saveFirstAnswers(Request $request) {
 
-        Log::error('saveFirstAnswers: ', [$request->getContent()]);
-        $requestDataa = $request->all();
-        $requestData = $requestDataa[0];
+        Log::error('saveFirstAnswers: ', [$request->all()]);
+        $requestData = $request->all();
         $goal = '';
         switch ($requestData['question_0'][0]['value']) {
             case 'Redukcija telesne mase':
