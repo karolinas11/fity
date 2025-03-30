@@ -203,7 +203,8 @@ class OnBoardingQuestionService{
                 'questionsPageCount' => 8,
                 'submitForCalculationAfterId' => 4,
                 'submitForResultAfterId' => 8,
-                'questions' => $finalQuestions
+                'questions' => $finalQuestions,
+                'userId' => $user->id
             ];
 
             return $responseQuestions;
