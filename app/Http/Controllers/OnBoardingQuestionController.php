@@ -93,9 +93,16 @@ class OnBoardingQuestionController extends Controller {
         $requestData = $request->all();
         $goal = '';
 
-        $question0 = json_decode($requestData['question_0']);
-        Log::error('question0: ', $question0->value);
-        Log::error('question0: ', $question0['value']);
+// Decode the JSON for question_0 (assuming it's JSON encoded)
+        $question0 = json_decode($requestData['question_0'], true);  // Decode as an associative array
+
+// Log the value of 'question_0'
+        if (isset($question0[0]['value'])) {
+            Log::error('question0 value: ', [$question0[0]['value']]);
+        } else {
+            Log::error('question0 does not have value key.');
+        }
+
         switch ($question0[0]['value']) {
             case 'Redukcija telesne mase':
                 $goal = 'reduction';
