@@ -20,5 +20,6 @@ Route::put('/update-option/{id}', [OnBoardingQuestionOptionController::class, 'u
 Route::get('/create-user',[UserController::class, 'createUser'])->name('api.create-user');
 Route::get('/onboarding/questions/{questionSetIndex}/{language}', [OnBoardingQuestionController::class, 'getOnboardingQuestions'])->name('api.onboarding-questions');
 Route::post('/onboarding/answers/_calculate', [OnBoardingQuestionController::class, 'saveFirstAnswers'])->name('api.calculate-answers');
+Route::post('/onboarding/answers/_finalize', [OnBoardingQuestionController::class, 'saveSecondAnswers'])->name('api.finalize-answers');
 
 Route::get('/firebase-test', [AuthController::class, 'firebaseLogin'])->name('firebase-test');

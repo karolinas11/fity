@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\RecipeFoodstuff;
+use App\Models\User;
 use App\Services\OnBoardingQuestionService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
@@ -158,6 +159,12 @@ class OnBoardingQuestionController extends Controller {
         $data = $this->onBoardingQuestionService->getOnBoardingQuestionsByIndexAndLang(2, 'en', $user);
 
         return response()->json($data, '200');
+    }
+
+    public function saveSecondAnswers(Request $request) {
+        $user = User::latest()->first();
+
+        return response()->json($user->id, '200');
     }
 
 }
