@@ -2,11 +2,13 @@
 namespace App\Http\Controllers;
 use App\Models\RecipeFoodstuff;
 use App\Services\OnBoardingQuestionService;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class OnBoardingQuestionController extends Controller {
     protected OnBoardingQuestionService $onBoardingQuestionService;
+    protected UserService $userService;
     public function __construct() {
         $this->onBoardingQuestionService =new OnBoardingQuestionService();
     }
@@ -88,88 +90,66 @@ class OnBoardingQuestionController extends Controller {
     function saveFirstAnswers(Request $request) {
 
         Log::error('saveFirstAnswers: ', [$request->all()]);
-//        $requestData =  $request->all();
-//
-//        $goal = '';
-//        switch ($requestData['question 0'][0]['value']) {
-//            case 'Redukcija telesne mase':
-//                $goal = 'reduction';
-//                break;
-//            case 'Održavanje telesne mase':
-//                $goal = 'stable';
-//                break;
-//            case 'Uvećanje telesne mase':
-//                $goal = 'increase';
-//                break;
-//        }
+        $requestData = json_decode($request->getContent(), true);
 
-        $json = '{
-   "question 0":[
-      {
-         "index":0,
-         "dataType":"choice",
-         "value":"Redukcija telesne mase",
-         "detail":null
-      }
-   ],
-   "question 1":[
-      {
-         "index":0,
-         "dataType":"height",
-         "value":"100",
-         "detail":null
-      },
-      {
-         "index":1,
-         "dataType":"weight",
-         "value":"66.0",
-         "detail":null
-      },
-      {
-         "index":2,
-         "dataType":"age",
-         "value":"40",
-         "detail":null
-      },
-      {
-         "index":3,
-         "dataType":"gender",
-         "value":"Žensko",
-         "detail":null
-      }
-   ],
-   "question 2":[
-      {
-         "index":0,
-         "dataType":"choice",
-         "value":"Nimalo aktivni",
-         "detail":null
-      }
-   ],
-   "question 3":[
-      {
-         "index":1,
-         "dataType":"choice",
-         "value":"Ne",
-         "detail":null
-      }
-   ]
-}';
+        $goal = '';
+        switch ($requestData['question 0'][0]['value']) {
+            case 'Redukcija telesne mase':
+                $goal = 'reduction';
+                break;
+            case 'Održavanje telesne mase':
+                $goal = 'stable';
+                break;
+            case 'Uvećanje telesne mase':
+                $goal = 'increase';
+                break;
+        }
 
-//        $userData = [
-//            'goal' => $goal,
-//            'height' => $request->input('height'),
-//            'weight' => $request->input('weight'),
-//            'age' => $request->input('age'),
-//            'gender' => $request->input('gender'),
-//            'activity' => $request->input('activity'),
-//            'tolerance_proteins'=>$request->input('tolerance_proteins'),
-//            'tolerance_fats'=>$request->input('tolerance_fats'),
-//            'tolerance_calories'=>$request->input('tolerance_calories'),
-//            'meals_num'=>$request->input('meals_num'),
-//            'days'=>$request->input('days')
-//        ];
-        $data = $this->onBoardingQuestionService->getOnBoardingQuestionsByIndexAndLang(2, 'en');
+        $gender = '';
+        switch ($requestData['question 3'][0]['value']) {
+            case 'Muško':
+                $gender = 'm';
+                break;
+            case 'Ženško':
+                $gender = 'f';
+                break;
+        }
+
+        $activity = '';
+        switch ($requestData['question 2'][0]['value']) {
+            case 'Nimalo aktivni':
+                $activity = 1.2;
+                break;
+            case 'Slabo aktivni':
+                $activity = 1.375;
+                break;
+            case 'Srednje aktivni':
+                $activity = 1.55;
+                break;
+            case 'Vrlo aktivni':
+                $activity = 1.725;
+                break;
+            case 'Ekstremno aktivni':
+                $activity = 1.95;
+                break;
+        }
+
+        $userData = [
+            'goal' => $goal,
+            'height' => $requestData['question 1'][0]['value'],
+            'weight' => $requestData['question 1'][1]['value'],
+            'age' => $requestData['question 1'][2]['value'],
+            'gender' => $gender,
+            'activity' => $activity,
+            'tolerance_proteins'=> 5,
+            'tolerance_fats'=> 5,
+            'tolerance_calories'=> 50,
+            'meals_num'=> 4,
+            'days'=> 30
+        ];
+        $user = $this->userService->addUser($userData);
+        $data = $this->onBoardingQuestionService->getOnBoardingQuestionsByIndexAndLang(2, 'en', $user);
+
         return response()->json($data, '200');
     }
 

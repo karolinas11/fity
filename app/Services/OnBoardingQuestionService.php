@@ -29,7 +29,7 @@ class OnBoardingQuestionService{
         return $this->onBoardingQuestionRepository->updateQuestion($id, $data);
     }
 
-    public function getOnBoardingQuestionsByIndexAndLang($index, $lang) {
+    public function getOnBoardingQuestionsByIndexAndLang($index, $lang, $user = null) {
         $questions = $this->getOnBoardingQuestions();
         $finalQuestions = [];
         foreach ($questions as $question) {
@@ -65,7 +65,6 @@ class OnBoardingQuestionService{
         if($index == 1) {
             return $responseQuestions;
         } else {
-            $user = User::find(30);
             $macros = $this->userService->getMacrosForUser($user);
             $i = 0;
             $answers = [];
