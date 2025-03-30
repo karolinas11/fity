@@ -90,8 +90,8 @@ class OnBoardingQuestionController extends Controller {
     function saveFirstAnswers(Request $request) {
 
         Log::error('saveFirstAnswers: ', [$request->all()]);
-        $requestData = json_decode($request->all(), true);
-
+        $requestDataa = json_decode($request->all(), true);
+        $requestData = $requestDataa[0];
         $goal = '';
         switch ($requestData['question_0'][0]['value']) {
             case 'Redukcija telesne mase':
