@@ -97,7 +97,6 @@ class OnBoardingQuestionController extends Controller {
         $question1 = json_decode($requestData['question_1'], true);
         $question2 = json_decode($requestData['question_2'], true);
         $question3 = json_decode($requestData['question_3'], true);
-        $question4 = json_decode($requestData['question_4'], true);
 
         switch ($question0[0]['value']) {
             case 'Redukcija telesne mase':
