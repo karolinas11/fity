@@ -151,7 +151,8 @@ class OnBoardingQuestionController extends Controller {
             'tolerance_fats'=> 5,
             'tolerance_calories'=> 50,
             'meals_num'=> 4,
-            'days'=> 30
+            'days'=> 30,
+            'insulin_resistance' => 0
         ];
         $user = $this->userService->addUser($userData);
         $data = $this->onBoardingQuestionService->getOnBoardingQuestionsByIndexAndLang(2, 'en', $user);
