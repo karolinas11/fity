@@ -93,7 +93,7 @@ class OnBoardingQuestionController extends Controller {
         $requestData = json_decode($request->getContent(), true);
 
         $goal = '';
-        switch ($requestData['question 0'][0]['value']) {
+        switch ($requestData['question_0'][0]['value']) {
             case 'Redukcija telesne mase':
                 $goal = 'reduction';
                 break;
@@ -106,7 +106,7 @@ class OnBoardingQuestionController extends Controller {
         }
 
         $gender = '';
-        switch ($requestData['question 3'][0]['value']) {
+        switch ($requestData['question_3'][0]['value']) {
             case 'Muško':
                 $gender = 'm';
                 break;
@@ -116,7 +116,7 @@ class OnBoardingQuestionController extends Controller {
         }
 
         $activity = '';
-        switch ($requestData['question 2'][0]['value']) {
+        switch ($requestData['question_2'][0]['value']) {
             case 'Nimalo aktivni':
                 $activity = 1.2;
                 break;
@@ -136,9 +136,9 @@ class OnBoardingQuestionController extends Controller {
 
         $userData = [
             'goal' => $goal,
-            'height' => $requestData['question 1'][0]['value'],
-            'weight' => $requestData['question 1'][1]['value'],
-            'age' => $requestData['question 1'][2]['value'],
+            'height' => $requestData['question_1'][0]['value'],
+            'weight' => $requestData['question_1'][1]['value'],
+            'age' => $requestData['question_1'][2]['value'],
             'gender' => $gender,
             'activity' => $activity,
             'tolerance_proteins'=> 5,
