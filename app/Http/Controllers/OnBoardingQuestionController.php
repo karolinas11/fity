@@ -91,7 +91,6 @@ class OnBoardingQuestionController extends Controller {
 
     function saveFirstAnswers(Request $request) {
 
-        Log::error('saveFirstAnswers: ', [$request->all()]);
         $requestData = $request->all();
         $goal = '';
 
@@ -162,6 +161,8 @@ class OnBoardingQuestionController extends Controller {
     }
 
     public function saveSecondAnswers(Request $request) {
+        Log::error('saveSecondAnswers: ', [$request->all()]);
+
         $user = User::latest()->first();
 
         return response()->json($user->id, '200');
