@@ -94,8 +94,8 @@ class OnBoardingQuestionController extends Controller {
         $requestData = $request->all();
         $goal = '';
 
-        Log::error(json_encode($requestData));
-        exit;
+//        Log::error(json_encode($requestData));
+//        exit;
 
         $question0 = json_decode($requestData['question_0'], true);
         $question1 = json_decode($requestData['question_1'], true);
@@ -115,7 +115,20 @@ class OnBoardingQuestionController extends Controller {
         }
 
         $gender = '';
-        switch ($question1[3]['value']) {
+        $gen = $hei = $wei = $age;
+        foreach ($question1 as $key => $value) {
+            if($value['index'] == 0) {
+                $hei = $value['value'];
+            } else if($value['index'] == 1) {
+                $wei = $value['value'];
+            } else if($value['index'] == 2) {
+                $age = $value['value'];
+            } else if($value['index'] == 3) {
+                $gen = $value['value'];
+            }
+        }
+
+        switch ($gen) {
             case 'Muško':
                 $gender = 'm';
                 break;
@@ -147,9 +160,9 @@ class OnBoardingQuestionController extends Controller {
 
         $userData = [
             'goal' => $goal,
-            'height' => $question1[0]['value'],
-            'weight' => $question1[1]['value'],
-            'age' => $question1[2]['value'],
+            'height' => $hei,
+            'weight' => $wei,
+            'age' => $age,
             'gender' => $gender,
             'activity' => $activity,
             'tolerance_proteins'=> 5,
