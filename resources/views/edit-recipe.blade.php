@@ -15,7 +15,13 @@
             @if($recipe->featured_image)
                 <div class="row mb-3">
                     <div class="col-md-2">
-                        <img src="{{ asset('storage/featured_recipes/' . $recipe->featured_image) }}" alt="Glavna slika" style="width: 100px; height: auto;">
+                        <img id="preview-image" src="{{ asset('storage/featured_recipes/' . $recipe->featured_image) }}" alt="Glavna slika" style="width: 100px; height: auto;">
+                    </div>
+                </div>
+            @else
+                <div class="row">
+                    <div class="col-md-2">
+                        <img id="preview-image" src="" alt="Glavna slika" style="width: 100px; height: auto; display: none;">
                     </div>
                 </div>
             @endif
@@ -27,7 +33,7 @@
             </div>
 
             @if($recipe->galleryImages && count($recipe->galleryImages))
-                <div id="existingGallery" class="d-flex flex-wrap gap-2 mb-4">
+                <div id="imagePreviewContainer" class="d-flex flex-wrap gap-2 mb-4">
                     @foreach($recipe->galleryImages as $galleryImage)
                         <div style="position: relative;">
                             <img src="{{ asset('storage/gallery_recipes/' . $galleryImage->image_path) }}" style="width: 100px; height: auto; margin:5px;">
@@ -35,10 +41,9 @@
                         </div>
                     @endforeach
                 </div>
+            @else
+                <div id="imagePreviewContainer" class="d-flex flex-wrap gap-2"></div>
             @endif
-
-            <div id="imagePreviewContainer" class="d-flex flex-wrap gap-2"></div>
-
 
             <div class="form-group mb-3">
                 <label for="name">Naziv recepta</label>
@@ -229,6 +234,15 @@
             });
         });
 
+        document.querySelector('input[name="featured_image"]').addEventListener('change', function(event) {
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let img = document.getElementById('preview-image');
+                img.src = e.target.result;
+                img.style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        });
 
     </script>
 @endsection

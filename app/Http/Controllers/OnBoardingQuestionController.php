@@ -119,7 +119,7 @@ class OnBoardingQuestionController extends Controller {
             case 'Muško':
                 $gender = 'm';
                 break;
-            case 'Ženško':
+            case 'Žensko':
                 $gender = 'f';
                 break;
         }
