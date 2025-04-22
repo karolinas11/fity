@@ -36,7 +36,7 @@ class UserService
         $proteins = 0;
         $fats = 0;
         if($user->goal == 'reduction') {
-            $calories -= 300;
+            $calories -= 500;
             switch ($user->activity) {
                 case '1.2':
                     $proteins = 1.6 * $weight;
@@ -91,5 +91,9 @@ class UserService
             'weight' => $weight,
         ];
 
+    }
+
+    public function assignFirebaseUid($userId, $firebaseUid) {
+        return $this->userRepository->assignFirebaseUid($userId, $firebaseUid);
     }
 }

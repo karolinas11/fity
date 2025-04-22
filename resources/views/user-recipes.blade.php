@@ -87,6 +87,10 @@
                     <h3>Broj dana</h3>
                     <input type="number" name="days" id="days" class="form-control" value="{{$user->days}}">
                 </div>
+                <div class="col-md-4">
+                    <h3>Idealna težina</h3>
+                    <p>{{ $target['weight'] }}</p>
+                </div>
             </div>
                 <div class="col-md-12 text-center mt-4">
                     <button type="submit" id="editUserButton" class="btn btn-primary">Sačuvaj izmene</button>

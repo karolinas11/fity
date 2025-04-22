@@ -173,5 +173,8 @@ class UserController extends Controller
         $this->userAllergyService->addUserAllergy($allergyData);
     }
 
+    public function assignFirebaseUid(Request $request) {
+        $this->userService->assignFirebaseUid($request->userId, $request->firebaseUid);
+    }
 
 }

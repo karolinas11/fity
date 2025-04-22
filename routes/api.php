@@ -23,3 +23,4 @@ Route::post('/onboarding/answers/_calculate', [OnBoardingQuestionController::cla
 Route::post('/onboarding/answers/_finalize', [OnBoardingQuestionController::class, 'saveSecondAnswers'])->name('api.finalize-answers');
 
 Route::get('/firebase-test', [AuthController::class, 'firebaseLogin'])->name('firebase-test');
+Route::post('/users/assign-firebase-uid', [UserController::class, 'assignFirebaseUid'])->name('assign-firebase-uid');
