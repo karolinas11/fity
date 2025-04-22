@@ -94,8 +94,8 @@ class OnBoardingQuestionController extends Controller {
         $requestData = $request->all();
         $goal = '';
 
-        Log::error(json_encode($requestData));
-        exit;
+//        Log::error(json_encode($requestData));
+//        exit;
 
         $question0 = json_decode($requestData['question_0'], true);
         $question1 = json_decode($requestData['question_1'], true);
@@ -115,7 +115,7 @@ class OnBoardingQuestionController extends Controller {
         }
 
         $gender = '';
-        switch ($question3[0]['value']) {
+        switch ($question1[3]['value']) {
             case 'Muško':
                 $gender = 'm';
                 break;
@@ -143,6 +143,8 @@ class OnBoardingQuestionController extends Controller {
                 break;
         }
 
+        $insulinResistance = $question3[0]['value'] == 'Da' ? 1 : 0;
+
         $userData = [
             'goal' => $goal,
             'height' => $question1[0]['value'],
@@ -155,7 +157,7 @@ class OnBoardingQuestionController extends Controller {
             'tolerance_calories'=> 50,
             'meals_num'=> 4,
             'days'=> 30,
-            'insulin_resistance' => 0
+            'insulin_resistance' => $insulinResistance
         ];
         $user = $this->userService->addUser($userData);
         $data = $this->onBoardingQuestionService->getOnBoardingQuestionsByIndexAndLang(2, 'en', $user);
