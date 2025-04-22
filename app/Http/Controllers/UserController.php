@@ -17,6 +17,7 @@ use App\Services\FoodstuffCategoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
@@ -173,8 +174,23 @@ class UserController extends Controller
         $this->userAllergyService->addUserAllergy($allergyData);
     }
 
-    public function assignFirebaseUid(Request $request) {
-        $this->userService->assignFirebaseUid($request->userId, $request->firebaseUid);
-    }
+    public function assignFirebaseUid(Request $request, $firebaseAuth)
+    {
+        $authorizationHeader = $request->header('Authorization');
 
+        if (!$authorizationHeader || !Str::startsWith($authorizationHeader, 'Bearer ')) {
+            return response()->json(['error' => 'Authorization header missing or invalid'], 401);
+        }
+        $idToken = Str::replaceFirst('Bearer ', '', $authorizationHeader);
+
+        try {
+            $verifiedIdToken = $firebaseAuth->verifyIdToken($idToken);
+            $firebaseUid = $verifiedIdToken->claims()->get('sub');
+            $this->userService->assignFirebaseUid($request->userId, $firebaseUid);
+
+            return response()->json(['message' => 'Firebase UID assigned successfully']);
+        } catch (\Kreait\Firebase\Exception\AuthException $e) {
+            return response()->json(['error' => 'Firebase Auth error: ' . $e->getMessage()], 500);
+        }
+    }
 }
