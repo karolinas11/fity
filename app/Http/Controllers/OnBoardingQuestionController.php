@@ -94,6 +94,9 @@ class OnBoardingQuestionController extends Controller {
         $requestData = $request->all();
         $goal = '';
 
+        Log::error(json_encode($requestData));
+        exit;
+
         $question0 = json_decode($requestData['question_0'], true);
         $question1 = json_decode($requestData['question_1'], true);
         $question2 = json_decode($requestData['question_2'], true);

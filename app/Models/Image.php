@@ -11,8 +11,4 @@ class Image extends Model
     protected $guarded = [];
     protected $table = 'images';
 
-    public function recipe_images()
-    {
-        return $this->belongsTo(Recipe::class, 'recipes_id', 'id');
-    }
 }

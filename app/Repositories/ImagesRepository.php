@@ -9,7 +9,7 @@ class ImagesRepository {
         try{
             Log::info('Dodajem sliku za recept ID ' . $recipeId . ' sa putanjom: ' . $imagePath);
             return  Image::create([
-                'recipes_id' => $recipeId,
+                'recipe_id' => $recipeId,
                 'image_path' => $imagePath
             ]);
         }catch(\Exception $e){

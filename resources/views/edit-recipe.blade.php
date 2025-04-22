@@ -9,6 +9,38 @@
         <form id="recipe-form">
             @csrf
             <div class="form-group mb-3">
+                <label for="featured_image">Glavna slika recepta</label>
+                <input type="file" name="featured_image" class="form-control">
+            </div>
+            @if($recipe->featured_image)
+                <div class="row mb-3">
+                    <div class="col-md-2">
+                        <img src="{{ asset('storage/featured_recipes/' . $recipe->featured_image) }}" alt="Glavna slika" style="width: 100px; height: auto;">
+                    </div>
+                </div>
+            @endif
+            <div class="row"><hr></div>
+
+            <div class="form-group mb-3">
+                <label for="gallery_images">Galerija slika</label>
+                <input type="file" id="gallery_images" name="gallery_images[]" class="form-control" multiple>
+            </div>
+
+            @if($recipe->galleryImages && count($recipe->galleryImages))
+                <div id="existingGallery" class="d-flex flex-wrap gap-2 mb-4">
+                    @foreach($recipe->galleryImages as $galleryImage)
+                        <div style="position: relative;">
+                            <img src="{{ asset('storage/gallery_recipes/' . $galleryImage->image_path) }}" style="width: 100px; height: auto; margin:5px;">
+                            <!-- Opcionalno dugme za brisanje slike -->
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+
+            <div id="imagePreviewContainer" class="d-flex flex-wrap gap-2"></div>
+
+
+            <div class="form-group mb-3">
                 <label for="name">Naziv recepta</label>
                 <input type="text" value="{{ $recipe->name }}" name="name" class="form-control" placeholder="Unesite naziv recepta">
             </div>
@@ -179,6 +211,24 @@
                 }
             });
         });
+
+        document.getElementById('gallery_images').addEventListener('change', function(event) {
+            let container = document.getElementById('imagePreviewContainer');
+            container.innerHTML = '';
+
+            Array.from(event.target.files).forEach(file => {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    let img = document.createElement('img');
+                    img.setAttribute('src', e.target.result);
+                    img.style.width = '100px';
+                    img.style.margin = '5px';
+                    container.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            });
+        });
+
 
     </script>
 @endsection
