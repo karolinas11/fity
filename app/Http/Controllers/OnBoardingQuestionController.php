@@ -115,7 +115,7 @@ class OnBoardingQuestionController extends Controller {
         }
 
         $gender = '';
-        $gen = $hei = $wei = $age;
+        $gen = $hei = $wei = $age = null;
         foreach ($question1 as $key => $value) {
             if($value['index'] == 0) {
                 $hei = $value['value'];
