@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Kreait\Firebase\Factory;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
@@ -29,6 +30,7 @@ class UserController extends Controller
     protected UserAllergyService $userAllergyService;
     protected RecipeFoodstuffService $recipefoodstuffService;
     protected FoodstuffCategoryService $foodstuffCategoryService;
+    protected $firebaseAuth;
 
     public function __construct() {
         $this->userService = new UserService();
@@ -38,6 +40,9 @@ class UserController extends Controller
         $this->userAllergyService= new UserAllergyService();
         $this->recipefoodstuffService= new RecipeFoodstuffService();
         $this->foodstuffCategoryService= new FoodstuffCategoryService();
+        $factory = (new Factory)->withServiceAccount(base_path('fity-8a542-firebase-adminsdk-fbsvc-3845d64334.json'));
+        $this->firebaseAuth = $factory->createAuth();
+
     }
 
     public function showAddUser()
@@ -174,7 +179,7 @@ class UserController extends Controller
         $this->userAllergyService->addUserAllergy($allergyData);
     }
 
-    public function assignFirebaseUid(Request $request, $firebaseAuth)
+    public function assignFirebaseUid(Request $request)
     {
         $authorizationHeader = $request->header('Authorization');
 
@@ -184,7 +189,7 @@ class UserController extends Controller
         $idToken = Str::replaceFirst('Bearer ', '', $authorizationHeader);
 
         try {
-            $verifiedIdToken = $firebaseAuth->verifyIdToken($idToken);
+            $verifiedIdToken = $this->firebaseAuth->verifyIdToken($idToken);
             $firebaseUid = $verifiedIdToken->claims()->get('sub');
             $this->userService->assignFirebaseUid($request->userId, $firebaseUid);
 
