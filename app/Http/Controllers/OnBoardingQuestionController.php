@@ -7,6 +7,7 @@ use App\Models\UserAllergy;
 use App\Models\UserRecipe;
 use App\Models\UserRecipeFoodstuff;
 use App\Services\OnBoardingQuestionService;
+use App\Services\RecipeFoodstuffService;
 use App\Services\UserService;
 use DateTime;
 use Illuminate\Http\Request;
@@ -15,10 +16,13 @@ use Illuminate\Support\Facades\Log;
 
 class OnBoardingQuestionController extends Controller {
     protected OnBoardingQuestionService $onBoardingQuestionService;
+    protected RecipeFoodstuffService $recipefoodstuffService;
+
     protected UserService $userService;
     public function __construct() {
         $this->onBoardingQuestionService =new OnBoardingQuestionService();
         $this->userService = new UserService();
+        $this->recipefoodstuffService= new RecipeFoodstuffService();
     }
     public function index() {
         $questions = $this->onBoardingQuestionService->getOnBoardingQuestions();
@@ -241,7 +245,8 @@ class OnBoardingQuestionController extends Controller {
                     'status' => 'active',
                     'date' => $date
                 ]);
-                foreach ($meal['foodstuffs'] as $foodstuff) {
+                $foodstuffs = $this->recipefoodstuffService->getRecipeFoodstuffs($meal['same_meal_id']);
+                foreach ($foodstuffs as $foodstuff) {
                     if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->calories_holder == 0) {
                         UserRecipeFoodstuff::create([
                             'user_recipe_id' => $userRecipe->id,
