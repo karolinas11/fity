@@ -40,9 +40,8 @@ class UserController extends Controller
         $this->userAllergyService= new UserAllergyService();
         $this->recipefoodstuffService= new RecipeFoodstuffService();
         $this->foodstuffCategoryService= new FoodstuffCategoryService();
-//        $factory = (new Factory)->withServiceAccount(base_path('fity-8a542-firebase-adminsdk-fbsvc-3845d64334.json'));
-//        $this->firebaseAuth = $factory->createAuth();
-
+        $factory = (new Factory)->withServiceAccount(base_path('fity-8a542-firebase-adminsdk-fbsvc-3845d64334.json'));
+        $this->firebaseAuth = $factory->createAuth();
     }
 
     public function showAddUser()
