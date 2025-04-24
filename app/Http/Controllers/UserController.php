@@ -197,9 +197,11 @@ class UserController extends Controller
         return response()->json($recipes);
     }
 
-    public function getRecipesByUserIdAndDate(Request $request) {
-        //$firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
-        //$userId = User::where('firebase_uid', $firebaseUid)->first()->id;
-        $recipes = $this->userRecipeService->getUserRecipesByDate($request->userId, $request->date);
+    public function getRecipeByUserIdAndRecipeId(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
+        $recipe = $this->userRecipeService->getUserRecipeByUserIdAndRecipeId($userId, $request->recipeId);
+        return response()->json($recipe);
     }
+
 }
