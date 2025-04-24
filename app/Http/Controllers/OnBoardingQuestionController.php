@@ -189,8 +189,8 @@ class OnBoardingQuestionController extends Controller {
         $user = User::find($userId);
 
         $answers = json_decode($requestData['answers'], true);
-        $question6 = $answers['question_6'];
         $question7 = json_decode($answers['question_7'], true);
+        $question6 = $answers['question_6'];
 
         $mealsNum = 0;
         foreach ($question7 as $value) {
