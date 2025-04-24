@@ -747,6 +747,7 @@ class RecipeController
                 $fat += $foodstuff->amount * ($f->fats / 100);
                 $ch += $foodstuff->amount * ($f->carbohydrates / 100);
                 $foodstuff->foodstuff_category = FoodstuffCategory::where('id', $f->foodstuff_category_id)->get()[0]->name;
+                $foodstuff->name = $f->name;
             }
 
             $recipe->calAmount = $cal;
