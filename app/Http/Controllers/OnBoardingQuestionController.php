@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\UserAllergy;
 use App\Services\OnBoardingQuestionService;
 use App\Services\UserService;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -226,6 +227,11 @@ class OnBoardingQuestionController extends Controller {
 
 
         $data = $response->json();
+
+        foreach ($data['daily_plans'] as $day) {
+            if(!$day['exists']) continue;
+            $date = date('Y-m-d', strtotime('+' . $day['day'] . ' days'));
+        }
 
         return response()->json($userId, '200');
     }
