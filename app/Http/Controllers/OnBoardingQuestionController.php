@@ -4,6 +4,8 @@ use App\Models\Foodstuff;
 use App\Models\RecipeFoodstuff;
 use App\Models\User;
 use App\Models\UserAllergy;
+use App\Models\UserRecipe;
+use App\Models\UserRecipeFoodstuff;
 use App\Services\OnBoardingQuestionService;
 use App\Services\UserService;
 use DateTime;
@@ -232,6 +234,32 @@ class OnBoardingQuestionController extends Controller {
         foreach ($data['daily_plans'] as $day) {
             if(!$day['exists']) continue;
             $date = date('Y-m-d', strtotime('+' . $day['day'] . ' days'));
+            foreach ($day['meals'] as $meal) {
+                $userRecipe = UserRecipe::create([
+                    'user_id' => $userId,
+                    'recipe_id' => $meal['same_meal_id'],
+                    'date' => $date
+                ]);
+                foreach ($meal['foodstuffs'] as $foodstuff) {
+                    if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->calories_holder == 0) {
+                        UserRecipeFoodstuff::create([
+                            'user_recipe_id' => $userRecipe->id,
+                            'foodstuff_id' => $foodstuff->foodstuff_id,
+                            'amount' => $foodstuff->amount,
+                            'purchased' => 0
+                        ]);
+                    }
+                }
+
+                foreach ($meal['golder_quantities'] as $key => $holder) {
+                    UserRecipeFoodstuff::create([
+                        'user_recipe_id' => $userRecipe->id,
+                        'foodstuff_id' => $key,
+                        'amount' => $holder,
+                        'purchased' => 0
+                    ]);
+                }
+            }
         }
 
         return response()->json($userId, '200');

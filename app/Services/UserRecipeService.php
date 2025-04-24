@@ -17,7 +17,16 @@ class UserRecipeService
         return $this->userRecipeRepository->updateUserRecipeStatus($userId, $recipeId, $status);
     }
 
-    public function getUserRecipes($userId, $startDate, $endDate) {
-        return $this->userRecipeRepository->getUserRecipes($userId, $startDate, $endDate);
+    public function getUserRecipesByDate($userId, $startDate, $endDate) {
+        $recipes = $this->userRecipeRepository->getUserRecipes($userId, $startDate, $endDate);
+        foreach ($recipes as &$recipe) {
+            $recipe->foodstuffs = $recipe->foodstuffs;
+        }
+        $recipesByDate = $recipes->groupBy(function ($recipe) {
+            return \Carbon\Carbon::parse($recipe->date)->format('Y-m-d');
+        });
+        $recipesByDate = $recipesByDate->sortKeys();
+        return $recipesByDate;
     }
+
 }

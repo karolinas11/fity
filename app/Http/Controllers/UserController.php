@@ -8,6 +8,8 @@ use App\Models\Recipe;
 use App\Models\RecipeFoodstuff;
 use App\Models\User;
 use App\Models\UserRecipe;
+use App\Models\UserWater;
+use App\Services\AuthService;
 use App\Services\RecipeFoodstuffService;
 use App\Services\UserAllergyService;
 use App\Services\UserService;
@@ -30,7 +32,9 @@ class UserController extends Controller
     protected UserAllergyService $userAllergyService;
     protected RecipeFoodstuffService $recipefoodstuffService;
     protected FoodstuffCategoryService $foodstuffCategoryService;
-    protected $firebaseAuth;
+    protected AuthService $authService;
+    protected UserWaterService $userWaterService;
+//    protected $firebaseAuth;
 
     public function __construct() {
         $this->userService = new UserService();
@@ -40,8 +44,9 @@ class UserController extends Controller
         $this->userAllergyService= new UserAllergyService();
         $this->recipefoodstuffService= new RecipeFoodstuffService();
         $this->foodstuffCategoryService= new FoodstuffCategoryService();
-        $factory = (new Factory)->withServiceAccount(base_path('fity-8a542-firebase-adminsdk-fbsvc-3845d64334.json'));
-        $this->firebaseAuth = $factory->createAuth();
+//        $factory = (new Factory)->withServiceAccount(base_path('fity-8a542-firebase-adminsdk-fbsvc-3845d64334.json'));
+//        $this->firebaseAuth = $factory->createAuth();
+        $this->authService = new AuthService();
     }
 
     public function showAddUser()
@@ -180,29 +185,21 @@ class UserController extends Controller
 
     public function assignFirebaseUid(Request $request)
     {
-        $authorizationHeader = $request->header('Authorization');
-
-        if (!$authorizationHeader || !Str::startsWith($authorizationHeader, 'Bearer ')) {
-            return response()->json(['error' => 'Authorization header missing or invalid'], 401);
-        }
-        $idToken = Str::replaceFirst('Bearer ', '', $authorizationHeader);
-
-        try {
-            $verifiedIdToken = $this->firebaseAuth->verifyIdToken($idToken);
-            $firebaseUid = $verifiedIdToken->claims()->get('sub');
-            $this->userService->assignFirebaseUid($request->userId, $firebaseUid);
-
-            return response()->json(['message' => 'Firebase UID assigned successfully']);
-        } catch (\Kreait\Firebase\Exception\AuthException $e) {
-            return response()->json(['error' => 'Firebase Auth error: ' . $e->getMessage()], 500);
-        }
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        $this->userService->assignFirebaseUid($request->userId, $firebaseUid);
+        return response()->json(['message' => 'Firebase UID assigned successfully']);
     }
 
     public function getRecipesByUserIdAndWeek(Request $request) {
-        $recipes = $this->userRecipeService->getUserRecipes($request->userId, $request->startDate, $request->endDate);
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
+        $recipes = $this->userRecipeService->getUserRecipesByDate($userId, $request->startDate, $request->endDate);
+        return response()->json($recipes);
     }
 
     public function getRecipesByUserIdAndDate(Request $request) {
-        $recipes = $this->userRecipeService->getUserRecipes($request->userId, $request->date);
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
+        $recipes = $this->userRecipeService->getUserRecipesByDate($userId, $request->date);
     }
 }
