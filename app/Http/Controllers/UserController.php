@@ -191,9 +191,9 @@ class UserController extends Controller
     }
 
     public function getRecipesByUserIdAndWeek(Request $request) {
-//        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
-//        $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
-        $recipes = $this->userRecipeService->getUserRecipesByDate($request->userId, $request->startDate, $request->endDate);
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
+        $recipes = $this->userRecipeService->getUserRecipesByDate($userId, $request->startDate, $request->endDate);
         return response()->json($recipes);
     }
 
