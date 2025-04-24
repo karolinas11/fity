@@ -8,6 +8,7 @@ use App\Models\FoodstuffCategory;
 use App\Models\Recipe;
 use App\Models\UserRecipe;
 use App\Repositories\UserRecipeRepository;
+use Illuminate\Support\Facades\Log;
 
 class UserRecipeService
 {
@@ -72,6 +73,7 @@ class UserRecipeService
             ->where('recipe_id', $recipeId)
             ->get()
             ->first();
+        Log::error($userId, $recipeId);
         $r = Recipe::where('id', $recipe->recipe_id)->first();
         $recipe->foodstuffs = $recipe->foodstuffs;
         $recipe->type = $r->type;
