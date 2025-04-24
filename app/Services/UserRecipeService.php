@@ -56,7 +56,14 @@ class UserRecipeService
         });
         $recipesByDate = $recipesByDate->sortKeys();
 
-        return $recipesByDate;
+        $recipesArray = $recipesByDate->map(function ($items, $date) {
+            return [
+                'date' => $date,
+                'recipes' => $items->values(), // Ensures the recipes are in a numerically indexed array
+            ];
+        })->values();
+
+        return $recipesArray;
     }
 
     public function getUserRecipeByUserIdAndRecipeId($userId, $recipeId) {
