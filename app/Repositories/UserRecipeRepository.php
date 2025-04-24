@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\UserRecipe;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 
@@ -24,8 +25,13 @@ class UserRecipeRepository
 
     public function getUserRecipes($userId, $startDate, $endDate) {
         try {
-            return UserRecipe::where('user_id', '=', $userId)
-                ->whereBetween('date', [$startDate, $endDate])
+            if($startDate && $endDate) {
+                $start = Carbon::parse($startDate)->format('Y-m-d');
+                $end = Carbon::parse($endDate)->format('Y-m-d');
+            }
+            return UserRecipe::where('user_id', $userId)
+                ->whereDate('date', '>=', $start)
+                ->whereDate('date', '<=', $end)
                 ->get();
         } catch (QueryException $e) {
             Log::error('Can\'t get user recipes: ' . $e->getMessage());

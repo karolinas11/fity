@@ -10,6 +10,7 @@ use App\Models\Recipe;
 use App\Services\ImagesService;
 use App\Services\RecipeFoodstuffService;
 use App\Services\RecipeService;
+use App\Services\UserRecipeService;
 use Dotenv\Parser\Parser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -21,11 +22,13 @@ class RecipeController
     protected RecipeService $recipeService;
     protected RecipeFoodstuffService $recipeFoodstuffService;
     protected ImagesService $imagesService;
+    protected UserRecipeService $userRecipeService;
 
     public function __construct() {
         $this->recipeService = new RecipeService();
         $this->recipeFoodstuffService = new RecipeFoodstuffService();
         $this->imagesService = new ImagesService();
+        $this->userRecipeService = new UserRecipeService();
     }
     public function showAddRecipe() {
         $foodstuffs = Foodstuff::all();
@@ -757,6 +760,17 @@ class RecipeController
         }
 
         return response()->json($recipes);
+    }
+
+    public function getGroceriesListForUser(Request $request) {
+        $recipes = $this->userRecipeService->getUserRecipesByDate($request->userId, '1900-01-01', '2100-01-01');
+        $foodstuffs = [];
+
+        foreach ($recipes as $recipe) {
+            foreach ($recipe->foodstuffs as &$foodstuff) {
+                $foodstuff->category = FoodstuffCategory::where('id', $foodstuff->foodstuff->foodstuff_category_id)->get()[0]->name;
+            }
+        }
     }
 
 }

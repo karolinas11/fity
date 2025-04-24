@@ -10,4 +10,6 @@ class UserRecipeFoodstuff extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+
 }
