@@ -42,12 +42,11 @@ class RecipeController
 
         if ($request->hasFile('featured_image')) {
             $image = $request->file('featured_image');
-
             $imageName = $image->getClientOriginalName();
-            /*$imagePath = 'images/recipes/' . $imageName;*/
             $image->storeAs('public/featured_recipes', $imageName);
             $recipeData['featured_image'] = $imageName;
         }
+        //dd($recipeData);
         $recipe = $this->recipeService->addRecipe($recipeData);
 
         $foodstuffs = json_decode($request->input('foodstuffs'), true);
@@ -104,9 +103,32 @@ class RecipeController
             'insulin' => $request->input('insulin'),
             'type' => $request->input('type')
         ];
+
+        if ($request->hasFile('featured_image')) {
+            $image = $request->file('featured_image');
+            $imageName = $image->getClientOriginalName();
+            $image->storeAs('public/featured_recipes', $imageName);
+            $recipeData['featured_image'] = $imageName;
+        }
+
+        //dd($request->all(), $request->file('featured_image'));
+
+
         $recipe = $this->recipeService->editRecipe($recipeData, $id);
+
+        if ($request->hasFile('gallery_images')) {
+            $this->imagesService->deleteRecipeImages($recipe->id);
+            $galleryImages = $request->file('gallery_images');
+            Log::info('Broj slika koje se šalju: ' . count($galleryImages));  // Ovo će prikazati broj slika koje Laravel prima
+            foreach ($galleryImages as $image) {
+                $imageName = $image->getClientOriginalName();
+                $image->storeAs('public/gallery_recipes', $imageName);
+                $this->imagesService->addImages($recipe->id, $imageName);
+            }
+        }
+
         $this->recipeFoodstuffService->deleteRecipeFoodstuff($recipe->id);
-        $this->recipeFoodstuffService->addRecipeFoodstuff($recipe->id, $request->input('foodstuffs'));
+        $this->recipeFoodstuffService->addRecipeFoodstuff($recipe->id, json_decode($request->input('foodstuffs'), true));
         return redirect()->route('show-recipes-list');
     }
 

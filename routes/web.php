@@ -50,7 +50,4 @@ Route::get('/ide-gas2', [RecipeController::class, 'printFoodstuffs'])->name('ide
 Route::get('/test-curl', [RecipeController::class, 'testCurl'])->name('test-curl');
 
 Route::get('/users', [UserController::class, 'showUsersList'])->name('show-users-list');
-
-
 Route::get('/boarding-question',[OnBoardingQuestionController::class, 'index']);
-

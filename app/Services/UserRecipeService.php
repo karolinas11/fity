@@ -17,4 +17,7 @@ class UserRecipeService
         return $this->userRecipeRepository->updateUserRecipeStatus($userId, $recipeId, $status);
     }
 
+    public function getUserRecipes($userId, $startDate, $endDate) {
+        return $this->userRecipeRepository->getUserRecipes($userId, $startDate, $endDate);
+    }
 }

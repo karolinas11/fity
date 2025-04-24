@@ -24,3 +24,4 @@ Route::post('/onboarding/answers/_finalize', [OnBoardingQuestionController::clas
 
 Route::get('/firebase-test', [AuthController::class, 'firebaseLogin'])->name('firebase-test');
 Route::post('/users/assign-firebase-uid', [UserController::class, 'assignFirebaseUid'])->name('assign-firebase-uid');
+Route::get('/users/get-user-recipes', [UserController::class, 'getRecipesByUserId'])->name('get-user-recipes');

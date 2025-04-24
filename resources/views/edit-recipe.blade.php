@@ -198,23 +198,40 @@
                 });
             });
 
+            let imageInput = document.querySelector('input[name="featured_image"]');
+            let formData= new FormData();
+            if (imageInput.files.length > 0 ){
+                formData.append('featured_image', imageInput.files[0]);
+            }
+
+            let galleryInput = document.querySelector('input[name="gallery_images[]"]');
+            let galleryFiles = galleryInput.files;
+            if(galleryFiles.length > 0){
+                for (let i = 0; i < galleryFiles.length; i++) {
+                    formData.append(`gallery_images[]`, galleryFiles[i]);
+                }
+            }
+
+            formData.append('_token', " {{csrf_token() }}");
+            formData.append('name', document.querySelector('input[name="name"]').value);
+            formData.append('description', document.querySelector('textarea[name="description"]').value);
+            formData.append('short_description', document.querySelector('textarea[name="short_description"]').value);
+            formData.append('type', document.querySelector('select[name="type"]').value);
+            formData.append('insulin', document.querySelector('input[name="insulin"]').checked ? 1 : 0);
+            formData.append('foodstuffs', JSON.stringify(foodstuffData));
+
             jQuery.ajax({
                 url: "{{ route('edit-recipe', $recipe->id) }}",
                 method: "POST",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    name: document.querySelector('input[name="name"]').value,
-                    description: document.querySelector('textarea[name="description"]').value,
-                    short_description: document.querySelector('textarea[name="short_description"]').value,
-                    type: document.querySelector('select[name="type"]').value,
-                    insulin: document.querySelector('input[name="insulin"]').checked ? 1: 0,
-                    foodstuffs: foodstuffData
-                },
+                data: formData,
+                processData: false,
+                contentType: false,
                 success: function(result) {
                     alert('Recept uspešno izmenjen!');
                     window.location.href = window.origin + '/recipes/';
                 }
             });
+
         });
 
         document.getElementById('gallery_images').addEventListener('change', function(event) {

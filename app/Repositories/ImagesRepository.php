@@ -17,4 +17,12 @@ class ImagesRepository {
             return response()->json(['error' => 'Došlo je do greške prilikom dodavanja slike'], 500);
         }
     }
+
+    public function deleteRecipeImages($recipeId) {
+        try {
+            Image::where('recipe_id', $recipeId)->delete();
+        } catch (QueryException $e) {
+            Log::error('Can\'t delete images: ' . $e->getMessage());
+        }
+    }
 }

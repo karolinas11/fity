@@ -1,10 +1,13 @@
 <?php
 namespace App\Http\Controllers;
+use App\Models\Foodstuff;
 use App\Models\RecipeFoodstuff;
 use App\Models\User;
+use App\Models\UserAllergy;
 use App\Services\OnBoardingQuestionService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class OnBoardingQuestionController extends Controller {
@@ -180,10 +183,51 @@ class OnBoardingQuestionController extends Controller {
 
     public function saveSecondAnswers(Request $request) {
         Log::error('saveSecondAnswers: ', [$request->all()]);
+        $requestData = $request->all();
+        $userId = $requestData['userId'];
+        $user = User::find($userId);
 
-        $user = User::latest()->first();
+        $question6 = json_decode($requestData['answers']['question_6'], true);
+        $question7 = json_decode($requestData['answers']['question_7'], true);
 
-        return response()->json($user->id, '200');
+        $mealsNum = 0;
+        foreach ($question7 as $key => $value) {
+            if($value['value'] == 'true') {
+                $mealsNum++;
+            }
+        }
+
+        $foodstuffs = $question6['ingredients'];
+        $foodstuffsArray = explode(',', $foodstuffs);
+        foreach ($foodstuffsArray as $foodstuff) {
+            UserAllergy::create([
+                'user_id' => $userId,
+                'foodstuff_id' => Foodstuff::where('name', $foodstuff)->first()->id
+            ]);
+        }
+
+        $user->meals_num = $mealsNum;
+        $user->days = 7;
+        $user->save();
+
+        $target = $this->userService->getMacrosForUser($user);
+        $response = Http::timeout(10000)
+            ->withoutVerifying()
+            ->post('https://fity-algorithm.fly.dev/meal-plan', [
+                'target_calories' => $target['calories'],
+                'target_protein' => $target['proteins'],
+                'target_fat' => $target['fats'],
+                'meals_num' => $user->meals_num,
+                'tolerance_calories' => $user->tolerance_calories,
+                'tolerance_proteins' => $user->tolerance_proteins,
+                'tolerance_fats' => $user->tolerance_fats,
+                'days' => $user->days
+            ]);
+
+
+        $data = $response->json();
+
+        return response()->json($userId, '200');
     }
 
 }

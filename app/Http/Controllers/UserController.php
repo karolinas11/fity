@@ -198,4 +198,12 @@ class UserController extends Controller
             return response()->json(['error' => 'Firebase Auth error: ' . $e->getMessage()], 500);
         }
     }
+
+    public function getRecipesByUserIdAndWeek(Request $request) {
+        $recipes = $this->userRecipeService->getUserRecipes($request->userId, $request->startDate, $request->endDate);
+    }
+
+    public function getRecipesByUserIdAndDate(Request $request) {
+        $recipes = $this->userRecipeService->getUserRecipes($request->userId, $request->date);
+    }
 }

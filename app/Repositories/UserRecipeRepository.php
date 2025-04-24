@@ -21,4 +21,14 @@ class UserRecipeRepository
             Log::error('Can\'t update recipe status: ' . $e->getMessage());
         }
     }
+
+    public function getUserRecipes($userId, $startDate, $endDate) {
+        try {
+            return UserRecipe::where('user_id', '=', $userId)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->get();
+        } catch (QueryException $e) {
+            Log::error('Can\'t get user recipes: ' . $e->getMessage());
+        }
+    }
 }

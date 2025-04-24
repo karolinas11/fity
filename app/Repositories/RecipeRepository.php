@@ -24,6 +24,7 @@ class RecipeRepository
             $recipe->short_description = $recipeData['short_description'];
             $recipe->insulin = $recipeData['insulin'];
             $recipe->type = $recipeData['type'];
+            $recipe->featured_image = $recipeData['featured_image'] ?? $recipe->featured_image;
             $recipe->save();
             return $recipe;
         } catch (QueryException $e) {

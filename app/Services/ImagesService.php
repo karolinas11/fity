@@ -12,4 +12,8 @@ class ImagesService {
     public function addImages($recipeId, $imagePath) {
         return $this->imagesRepository->addImages($recipeId, $imagePath);
     }
+
+    public function deleteRecipeImages($recipeId) {
+        $this->imagesRepository->deleteRecipeImages($recipeId);
+    }
 }

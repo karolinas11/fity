@@ -198,10 +198,7 @@
             formData.append('insulin', document.querySelector('input[name="insulin"]').checked ? 1 : 0);
             formData.append('foodstuffs', JSON.stringify(foodstuffData));
             /**/
-            // Provera sadržaja FormData
-            formData.forEach((value, key) => {
-                console.log(key, value);
-            });
+
             jQuery.ajax({
                 url: "{{ route('add-recipe') }}",
                 method: "POST",
