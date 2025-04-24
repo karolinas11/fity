@@ -730,6 +730,11 @@ class RecipeController
 
         $recipes = Recipe::all();
 
+        foreach ($recipes as &$recipe) {
+            $recipe->foodstuffs = $recipe->foodstuffs;
+            $recipe->steps = explode('\n', $recipe->description);
+        }
+
         return response()->json($recipes);
     }
 
