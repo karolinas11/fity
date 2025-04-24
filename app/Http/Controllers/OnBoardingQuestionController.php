@@ -199,7 +199,7 @@ class OnBoardingQuestionController extends Controller {
             }
         }
 
-        $foodstuffs = $question6['value'];
+        $foodstuffs = $question6[0]['value'];
         $foodstuffsArray = explode(',', $foodstuffs);
         foreach ($foodstuffsArray as $foodstuff) {
             UserAllergy::create([
