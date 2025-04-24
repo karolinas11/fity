@@ -28,6 +28,7 @@ class UserRecipeService
             $recipe->foodstuffs = $recipe->foodstuffs;
             $recipe->type = $r->type;
             $recipe->name = $r->name;
+            $recipe->id = $r->id;
             $description = str_replace('\n', "\n", $r->description);
             $recipe->steps = preg_split('/\r\n|\r|\n/', $description);
             $recipe->steps = array_filter($recipe->steps, fn($step) => trim($step) !== '');
@@ -59,7 +60,7 @@ class UserRecipeService
         $recipesArray = $recipesByDate->map(function ($items, $date) {
             return [
                 'date' => $date,
-                'recipes' => $items->values(), // Ensures the recipes are in a numerically indexed array
+                'recipes' => $items->values(),
             ];
         })->values();
 
