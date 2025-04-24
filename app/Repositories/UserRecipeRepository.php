@@ -25,6 +25,7 @@ class UserRecipeRepository
 
     public function getUserRecipes($userId, $startDate, $endDate) {
         try {
+            Log::error($startDate . '---' . $endDate);
             if($startDate && $endDate) {
                 $start = Carbon::parse($startDate)->format('Y-m-d');
                 $end = Carbon::parse($endDate)->format('Y-m-d');
