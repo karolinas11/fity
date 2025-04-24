@@ -190,7 +190,7 @@ class OnBoardingQuestionController extends Controller {
 
         $answers = json_decode($requestData['answers'], true);
         $question7 = json_decode($answers['question_7'], true);
-        $question6 = $answers['question_6'];
+        $question6 = json_decode($answers['question_6'], true);
 
         $mealsNum = 0;
         foreach ($question7 as $value) {
