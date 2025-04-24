@@ -238,6 +238,7 @@ class OnBoardingQuestionController extends Controller {
                 $userRecipe = UserRecipe::create([
                     'user_id' => $userId,
                     'recipe_id' => $meal['same_meal_id'],
+                    'status' => 'active',
                     'date' => $date
                 ]);
                 foreach ($meal['foodstuffs'] as $foodstuff) {
