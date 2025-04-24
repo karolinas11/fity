@@ -7,6 +7,7 @@ use App\DataTables\RecipesDataTable;
 use App\Models\Foodstuff;
 use App\Models\FoodstuffCategory;
 use App\Models\Recipe;
+use App\Services\AuthService;
 use App\Services\ImagesService;
 use App\Services\RecipeFoodstuffService;
 use App\Services\RecipeService;
@@ -23,12 +24,14 @@ class RecipeController
     protected RecipeFoodstuffService $recipeFoodstuffService;
     protected ImagesService $imagesService;
     protected UserRecipeService $userRecipeService;
+    protected AuthService $authService;
 
     public function __construct() {
         $this->recipeService = new RecipeService();
         $this->recipeFoodstuffService = new RecipeFoodstuffService();
         $this->imagesService = new ImagesService();
         $this->userRecipeService = new UserRecipeService();
+        $this->authService = new AuthService();
     }
     public function showAddRecipe() {
         $foodstuffs = Foodstuff::all();
@@ -731,6 +734,10 @@ class RecipeController
     }
 
     public function getRecipes(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
 
         $recipes = Recipe::all();
 

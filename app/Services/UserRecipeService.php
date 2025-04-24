@@ -51,7 +51,12 @@ class UserRecipeService
             $recipe->chAmount = $ch;
         }
 
-        return $recipes;
+        $recipesByDate = $recipes->groupBy(function ($recipe) {
+            return \Carbon\Carbon::parse($recipe->date)->format('Y-m-d');
+        });
+        $recipesByDate = $recipesByDate->sortKeys();
+
+        return $recipesByDate;
     }
 
     public function getUserRecipeByUserIdAndRecipeId($userId, $recipeId) {
