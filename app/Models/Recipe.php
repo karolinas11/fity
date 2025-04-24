@@ -18,4 +18,8 @@ class Recipe extends Model
     public function galleryImages() {
         return $this->hasMany(Image::class, 'recipe_id');
     }
+
+    public function recipeFoodstuffs() {
+        return $this->hasMany(RecipeFoodstuff::class);
+    }
 }
