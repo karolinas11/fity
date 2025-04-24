@@ -13,6 +13,7 @@ use Dotenv\Parser\Parser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use function Pest\Laravel\json;
 
 class RecipeController
 {
@@ -723,6 +724,13 @@ class RecipeController
 
     private function calculateCalories($proteins, $fats, $carbohydrates) {
         return $proteins * 4 + $fats * 9 + $carbohydrates * 4;
+    }
+
+    public function getRecipes(Request $request) {
+
+        $recipes = Recipe::all();
+
+        return response()->json($recipes);
     }
 
 }

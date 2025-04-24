@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\OnBoardingQuestionController;
 use App\Http\Controllers\OnBoardingQuestionOptionController;
+use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -25,3 +26,4 @@ Route::post('/onboarding/answers/_finalize', [OnBoardingQuestionController::clas
 Route::get('/firebase-test', [AuthController::class, 'firebaseLogin'])->name('firebase-test');
 Route::post('/users/assign-firebase-uid', [UserController::class, 'assignFirebaseUid'])->name('assign-firebase-uid');
 Route::get('/users/get-user-recipes', [UserController::class, 'getRecipesByUserId'])->name('get-user-recipes');
+Route::get('/get-recipes', [RecipeController::class, 'getRecipes'])->name('get-recipes');
