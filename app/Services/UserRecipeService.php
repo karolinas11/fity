@@ -73,7 +73,7 @@ class UserRecipeService
             ->where('recipe_id', $recipeId)
             ->get()
             ->first();
-        Log::error($userId, $recipeId);
+        Log::error($userId . '--' . $recipeId);
         $r = Recipe::where('id', $recipe->recipe_id)->first();
         $recipe->foodstuffs = $recipe->foodstuffs;
         $recipe->type = $r->type;
