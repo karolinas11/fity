@@ -257,7 +257,7 @@ class OnBoardingQuestionController extends Controller {
                     }
                 }
 
-                foreach ($meal['golder_quantities'] as $key => $holder) {
+                foreach ($meal['holder_quantities'] as $key => $holder) {
                     UserRecipeFoodstuff::create([
                         'user_recipe_id' => $userRecipe->id,
                         'foodstuff_id' => $key,
