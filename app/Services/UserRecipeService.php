@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Controllers\UserController;
+use App\Models\Foodstuff;
 use App\Models\FoodstuffCategory;
 use App\Models\Recipe;
 use App\Repositories\UserRecipeRepository;
@@ -33,12 +34,13 @@ class UserRecipeService
             $fat = 0;
             $ch = 0;
             foreach ($recipe->foodstuffs as &$foodstuff) {
-                $cal += $foodstuff->amount * ($foodstuff->foodstuff->calories / 100);
-                $prot += $foodstuff->amount * ($foodstuff->foodstuff->proteins / 100);
-                $fat += $foodstuff->amount * ($foodstuff->foodstuff->fats / 100);
-                $ch += $foodstuff->amount * ($foodstuff->foodstuff->carbohydrates / 100);
-                $foodstuff->foodstuff_category = FoodstuffCategory::where('id', $foodstuff->foodstuff->foodstuff_category_id)->get()[0]->name;
-                $foodstuff->name = $foodstuff->foodstuff->name;
+                $f = Foodstuff::where('id', $foodstuff->foodstuff_id)->get()[0];
+                $cal += $foodstuff->amount * ($f->calories / 100);
+                $prot += $foodstuff->amount * ($f->proteins / 100);
+                $fat += $foodstuff->amount * ($f->fats / 100);
+                $ch += $foodstuff->amount * ($f->carbohydrates / 100);
+                $foodstuff->foodstuff_category = FoodstuffCategory::where('id', $f->foodstuff_category_id)->get()[0]->name;
+                $foodstuff->name = $f->name;
             }
 
             $recipe->calAmount = $cal;
