@@ -206,16 +206,16 @@ class OnBoardingQuestionController extends Controller {
         }
 
         $foodstuffsArray = [];
-        if($question6[0]) {
-            $foodstuffs = $question6[0]['value'];
-            $foodstuffsArray = explode(',', $foodstuffs);
-            foreach ($foodstuffsArray as $foodstuff) {
-                UserAllergy::create([
-                    'user_id' => $userId,
-                    'foodstuff_id' => Foodstuff::where('name', $foodstuff)->first()->id
-                ]);
-            }
-        }
+//        if($question6[0]) {
+//            $foodstuffs = $question6[0]['value'];
+//            $foodstuffsArray = explode(',', $foodstuffs);
+//            foreach ($foodstuffsArray as $foodstuff) {
+//                UserAllergy::create([
+//                    'user_id' => $userId,
+//                    'foodstuff_id' => Foodstuff::where('name', $foodstuff)->first()->id
+//                ]);
+//            }
+//        }
 
         $user->meals_num = $mealsNum;
         $user->days = 7;
