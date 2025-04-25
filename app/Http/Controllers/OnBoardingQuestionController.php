@@ -240,8 +240,8 @@ class OnBoardingQuestionController extends Controller {
 
         foreach ($data['daily_plans'] as $day) {
             if(!$day['exists']) continue;
-            $num = $day - 1;
-            $date = date('Y-m-d', strtotime('+' . $num . ' days'));
+            $num = $day['day'] - 1;
+            $date = date('Y-m-d', strtotime('+' . $day['day'] . ' days'));
             foreach ($day['meals'] as $meal) {
                 $userRecipe = UserRecipe::create([
                     'user_id' => $userId,
