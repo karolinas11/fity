@@ -217,7 +217,7 @@ class OnBoardingQuestionController extends Controller {
 //            }
 //        }
 
-        $user->meals_num = $mealsNum;
+        $user->meals_num = 4;
         $user->days = 7;
         $user->save();
 
