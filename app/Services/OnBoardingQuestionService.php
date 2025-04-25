@@ -118,7 +118,7 @@ class OnBoardingQuestionService{
             $answers[0] = [
                 'answerIndex' => 0,
                 'answerTitle' => 'Očekivani ' . $goal . ' telesne mase na mesečnom nivou iznosi,' . 'od ' . $weightDiff . 'kg do ' . $weightDiffTo . 'kg',
-                'answerDetail' => $user->weight . ' kg,' . $macros['weight'] . ' kg',
+                'answerDetail' => $user->weight . ',' . $macros['weight'],
                 'dataType' => 'weight',
                 'dataValue' => null
             ];
