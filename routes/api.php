@@ -22,9 +22,10 @@ Route::get('/create-user',[UserController::class, 'createUser'])->name('api.crea
 Route::get('/onboarding/questions/{questionSetIndex}/{language}', [OnBoardingQuestionController::class, 'getOnboardingQuestions'])->name('api.onboarding-questions');
 Route::post('/onboarding/answers/_calculate', [OnBoardingQuestionController::class, 'saveFirstAnswers'])->name('api.calculate-answers');
 Route::post('/onboarding/answers/_finalize', [OnBoardingQuestionController::class, 'saveSecondAnswers'])->name('api.finalize-answers');
-
 Route::get('/firebase-test', [AuthController::class, 'firebaseLogin'])->name('firebase-test');
 Route::post('/users/assign-firebase-uid', [UserController::class, 'assignFirebaseUid'])->name('assign-firebase-uid');
 Route::get('/users/get-user-recipes', [UserController::class, 'getRecipesByUserIdAndWeek'])->name('get-user-recipes');
 Route::get('/users/get-user-recipe', [UserController::class, 'getRecipeByUserIdAndRecipeId'])->name('get-user-recipe');
 Route::get('/get-recipes', [RecipeController::class, 'getRecipes'])->name('get-recipes');
+Route::post('/update-recipe-status', [RecipeController::class, 'updateRecipeStatus'])->name('update-recipe-status');
+Route::post('/update-user-water', [UserController::class, 'updateUserWater'])->name('update-user-water');

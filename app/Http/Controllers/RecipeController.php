@@ -7,6 +7,8 @@ use App\DataTables\RecipesDataTable;
 use App\Models\Foodstuff;
 use App\Models\FoodstuffCategory;
 use App\Models\Recipe;
+use App\Models\User;
+use App\Models\UserRecipe;
 use App\Services\AuthService;
 use App\Services\ImagesService;
 use App\Services\RecipeFoodstuffService;
@@ -778,6 +780,25 @@ class RecipeController
                 $foodstuff->category = FoodstuffCategory::where('id', $foodstuff->foodstuff->foodstuff_category_id)->get()[0]->name;
             }
         }
+    }
+
+    public function updateRecipeStatus(Request $request) {
+
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
+
+        $recipe = UserRecipe::where('user_id', $user->id)
+            ->where('recipe_id', $request->recipeId)
+            ->get()
+            ->first();
+        $recipe->status = $request->status;
+        $recipe->save();
+
+        return response()->json($recipe);
     }
 
 }

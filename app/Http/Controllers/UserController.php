@@ -168,7 +168,9 @@ class UserController extends Controller
     }
 
     public function updateUserWater(Request $request) {
-        $this->userWaterService->updateUserWater($request->userId, $request->water);
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
+        $this->userWaterService->updateUserWater($userId, $request->water);
     }
 
     public function updateUserRecipeStatus(Request $request) {
