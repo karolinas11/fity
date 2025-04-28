@@ -810,7 +810,27 @@ class RecipeController
 
         $faqs = Faq::all()->groupBy('category');
 
+        foreach ($faqs as &$faq) {
+            $faq->html_url = 'https://fity.c-slatkatradicija.mystableserver.com/api/faq/' . $faq->id;
+        }
+
         return response()->json($faqs);
+    }
+
+    public function getFaqCategories(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $categories = Faq::select('category')->distinct()->pluck('category')->toArray();
+        return response()->json($categories);
+    }
+
+    public function getFaq($id) {
+        $faq = Faq::find($id);
+
+        return view('faq', compact('faq'));
     }
 
 }

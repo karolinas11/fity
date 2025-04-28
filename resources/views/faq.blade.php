@@ -1,0 +1,1 @@
+{!! $faq->html_answer !!}
