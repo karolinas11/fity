@@ -29,3 +29,4 @@ Route::get('/users/get-user-recipe', [UserController::class, 'getRecipeByUserIdA
 Route::get('/get-recipes', [RecipeController::class, 'getRecipes'])->name('get-recipes');
 Route::post('/update-recipe-status', [RecipeController::class, 'updateRecipeStatus'])->name('update-recipe-status');
 Route::post('/update-user-water', [UserController::class, 'updateUserWater'])->name('update-user-water');
+Route::get('/faqs', [RecipeController::class, 'getFaqs'])->name('get-faqs');

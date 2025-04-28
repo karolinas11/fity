@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DataTables\RecipeDataTable;
 use App\DataTables\RecipesDataTable;
+use App\Models\Faq;
 use App\Models\Foodstuff;
 use App\Models\FoodstuffCategory;
 use App\Models\Recipe;
@@ -799,6 +800,17 @@ class RecipeController
         $recipe->save();
 
         return response()->json($recipe);
+    }
+
+    public function getFaqs(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $faqs = Faq::all()->groupBy('category');
+
+        return response()->json($faqs);
     }
 
 }
