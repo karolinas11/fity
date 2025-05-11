@@ -45,7 +45,7 @@ class RecipeDataTable extends DataTable
                 </form>
             ';
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['action', 'name'])
             ->setRowId('id');
     }
 
