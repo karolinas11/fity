@@ -767,6 +767,7 @@ class RecipeController
             $recipe->proteinAmount = $prot;
             $recipe->fatsAmount = $fat;
             $recipe->chAmount = $ch;
+            $recipe->image = asset('storage/featured_recipes/' . $recipe->featured_image);
         }
 
         return response()->json($recipes);
