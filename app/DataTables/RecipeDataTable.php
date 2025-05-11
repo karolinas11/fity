@@ -23,7 +23,7 @@ class RecipeDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addColumn('name', function(Recipe $recipe) {
-                return $recipe->name;
+                return $recipe->name . '<img height="80" src="' . asset('storage/featured_recipes/' . $recipe->featured_image) . '" alt=""/>';
             })
             ->addColumn('type', function(Recipe $recipe) {
                 return match ($recipe->type) {
