@@ -809,7 +809,7 @@ class RecipeController
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        $faqs = Faq::where('cateogry', '=', $request->category)->get();
+        $faqs = Faq::where('category', '=', $request->category)->get();
 
         foreach ($faqs as &$faq) {
             $faq->html_url = 'https://fity.c-slatkatradicija.mystableserver.com/api/faq/' . $faq->id;
