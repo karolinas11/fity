@@ -32,3 +32,4 @@ Route::post('/update-user-water', [UserController::class, 'updateUserWater'])->n
 Route::get('/faqs', [RecipeController::class, 'getFaqs'])->name('get-faqs');
 Route::get('/faq/{id}', [RecipeController::class, 'getFaq'])->name('get-faq');
 Route::get('/faqs/categories', [RecipeController::class, 'getFaqCategories'])->name('get-faqs-categories');
+Route::get('/users/get-user-calories', [UserController::class, 'getUserCalories'])->name('get-user-calories');

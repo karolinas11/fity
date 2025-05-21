@@ -821,7 +821,7 @@ class RecipeController
     public function getFaqCategories(Request $request) {
         $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
         if(!$firebaseUid) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['error' => 'Authorization header missing or invalid'], 401);
         }
 
         $categories = Faq::select('category')->distinct()->pluck('category')->toArray();

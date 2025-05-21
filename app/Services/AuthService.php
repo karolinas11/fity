@@ -16,15 +16,14 @@ class AuthService
 
     public function verifyUserAndGetUid($authorizationHeader) {
         if (!$authorizationHeader || !Str::startsWith($authorizationHeader, 'Bearer ')) {
-            return response()->json(['error' => 'Authorization header missing or invalid'], 401);
+            return false;
         }
         $idToken = Str::replaceFirst('Bearer ', '', $authorizationHeader);
-
         try {
             $verifiedIdToken = $this->firebaseAuth->verifyIdToken($idToken);
             return $verifiedIdToken->claims()->get('sub');
         } catch (\Kreait\Firebase\Exception\AuthException $e) {
-            return response()->json(['error' => 'Firebase Auth error: ' . $e->getMessage()], 500);
+            return false;
         }
     }
 }

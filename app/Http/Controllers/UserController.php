@@ -169,6 +169,9 @@ class UserController extends Controller
 
     public function updateUserWater(Request $request) {
         $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Authorization header missing or invalid'], 401);
+        }
         $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
         $this->userWaterService->updateUserWater($userId, $request->water);
     }
@@ -194,6 +197,9 @@ class UserController extends Controller
 
     public function getRecipesByUserIdAndWeek(Request $request) {
         $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Authorization header missing or invalid'], 401);
+        }
         $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
         $recipes = $this->userRecipeService->getUserRecipesByDate($userId, $request->startDate, $request->endDate);
         return response()->json($recipes);
@@ -201,9 +207,22 @@ class UserController extends Controller
 
     public function getRecipeByUserIdAndRecipeId(Request $request) {
         $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Authorization header missing or invalid'], 401);
+        }
         $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
         $recipe = $this->userRecipeService->getUserRecipeByUserIdAndRecipeId($userId, $request->recipeId);
         return response()->json($recipe);
+    }
+
+    public function getUserCalories(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Authorization header missing or invalid'], 401);
+        }
+        $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
+        $target = $this->userService->getMacrosForUser(User::find($userId));
+        return response()->json($target);
     }
 
 }
