@@ -24,7 +24,7 @@ class FoodstuffDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addColumn('name', function(Foodstuff $foodstuff) {
-                return $foodstuff->name;
+                return '<span>' . $foodstuff->name . '</span><img height="80" src="' . asset('storage/featured_foodstuffs/' . $foodstuff->featured_image) . '" alt=""/>';
             })
             ->addColumn('amount', function(Foodstuff $foodstuff) {
                 return $foodstuff->amount;
@@ -66,7 +66,7 @@ class FoodstuffDataTable extends DataTable
                 </form>
             ';
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['action', 'name'])
             ->setRowId('id');
     }
 

@@ -10,7 +10,9 @@ use App\Models\User;
 use App\Models\UserRecipe;
 use App\Models\UserWater;
 use App\Services\AuthService;
+use App\Services\PhotoService;
 use App\Services\RecipeFoodstuffService;
+use App\Services\ScopeService;
 use App\Services\UserAllergyService;
 use App\Services\UserService;
 use App\Services\UserWaterService;
@@ -34,6 +36,8 @@ class UserController extends Controller
     protected FoodstuffCategoryService $foodstuffCategoryService;
     protected AuthService $authService;
     protected UserWaterService $userWaterService;
+    protected ScopeService $scopeService;
+    protected PhotoService $photoService;
 //    protected $firebaseAuth;
 
     public function __construct() {
@@ -47,6 +51,8 @@ class UserController extends Controller
 //        $factory = (new Factory)->withServiceAccount(base_path('fity-8a542-firebase-adminsdk-fbsvc-3845d64334.json'));
 //        $this->firebaseAuth = $factory->createAuth();
         $this->authService = new AuthService();
+        $this->scopeService = new ScopeService();
+        $this->photoService = new PhotoService();
     }
 
     public function showAddUser()
@@ -170,7 +176,7 @@ class UserController extends Controller
     public function updateUserWater(Request $request) {
         $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
         if(!$firebaseUid) {
-            return response()->json(['error' => 'Authorization header missing or invalid'], 401);
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
         $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
         $this->userWaterService->updateUserWater($userId, $request->water);
@@ -191,14 +197,17 @@ class UserController extends Controller
     public function assignFirebaseUid(Request $request)
     {
         $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
         $this->userService->assignFirebaseUid($request->userId, $firebaseUid);
-        return response()->json(['message' => 'Firebase UID assigned successfully']);
+        return response()->json(['user' => User::find($request->userId)]);
     }
 
     public function getRecipesByUserIdAndWeek(Request $request) {
         $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
         if(!$firebaseUid) {
-            return response()->json(['error' => 'Authorization header missing or invalid'], 401);
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
         $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
         $recipes = $this->userRecipeService->getUserRecipesByDate($userId, $request->startDate, $request->endDate);
@@ -208,7 +217,7 @@ class UserController extends Controller
     public function getRecipeByUserIdAndRecipeId(Request $request) {
         $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
         if(!$firebaseUid) {
-            return response()->json(['error' => 'Authorization header missing or invalid'], 401);
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
         $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
         $recipe = $this->userRecipeService->getUserRecipeByUserIdAndRecipeId($userId, $request->recipeId);
@@ -218,11 +227,62 @@ class UserController extends Controller
     public function getUserCalories(Request $request) {
         $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
         if(!$firebaseUid) {
-            return response()->json(['error' => 'Authorization header missing or invalid'], 401);
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
         $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
         $target = $this->userService->getMacrosForUser(User::find($userId));
         return response()->json($target);
+    }
+
+    public function addScope(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
+        $scopeData = [
+            'user_id' => $userId,
+            'name' => $request->input('scope_name'),
+            'metric' => $request->input('scope_metric'),
+            'dimension' => $request->input('scope_dimension'),
+        ];
+        $scope = $this->scopeService->addScope($scopeData);
+        return response()->json($scope);
+    }
+
+    public function getUserScopes(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
+        $scopes = $this->scopeService->getUserScopes($userId);
+        return response()->json($scopes);
+    }
+
+    public function addPhoto(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
+        $photoData = [
+            'user_id' => $userId,
+            'type' => $request->input('type'),
+            'path' => $request->input('path'),
+        ];
+        $photo = $this->photoService->addPhoto($photoData);
+        return response()->json($photo);
+    }
+
+    public function getUserPhotos(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
+        $photos = $this->photoService->getUserPhotos($userId);
+        return response()->json($photos);
     }
 
 }

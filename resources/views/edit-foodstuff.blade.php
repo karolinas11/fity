@@ -4,6 +4,24 @@
     <div class="container mt-5">
         <form action="{{ route('edit-foodstuff', $foodstuff->id) }}" method="post">
             @csrf
+            <div class="form-group mb-3">
+                <label for="featured_image">Slika</label>
+                <input type="file" name="featured_image" class="form-control">
+            </div>
+            @if($foodstuff->featured_image)
+                <div class="row mb-3">
+                    <div class="col-md-2">
+                        <img id="preview-image" src="{{ asset('storage/featured_foodstuffs/' . $foodstuff->featured_image) }}" alt="Glavna slika" style="width: 100px; height: auto;">
+                    </div>
+                </div>
+            @else
+                <div class="row">
+                    <div class="col-md-2">
+                        <img id="preview-image" src="" alt="Glavna slika" style="width: 100px; height: auto; display: none;">
+                    </div>
+                </div>
+            @endif
+            <div class="row"><hr></div>
 
             <div class="row mb-3">
                 <label for="name" class="col-md-4 col-form-label">Naziv namirnice</label>
@@ -88,9 +106,61 @@
 
             <div class="row mb-3">
                 <div class="col-md-12 text-center">
-                    <button type="submit" class="btn btn-primary">Pošalji</button>
+                    <button type="submit" id="submit-btn" class="btn btn-primary">Pošalji</button>
                 </div>
             </div>
         </form>
     </div>
+@endsection
+
+@section('scriptsBottom')
+    <script>
+        let submitBtn = document.getElementById('submit-btn');
+        submitBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            let imageInput = document.querySelector('input[name="featured_image"]');
+            let formData= new FormData();
+            if (imageInput.files.length > 0 ){
+                formData.append('featured_image', imageInput.files[0]);
+            }
+
+            formData.append('_token', " {{csrf_token() }}");
+            formData.append('name', document.querySelector('input[name="name"]').value);
+            formData.append('foodstuff_category_id', document.querySelector('select[name="foodstuff_category_id"]').value);
+            formData.append('amount', document.querySelector('input[name="amount"]').value);
+            formData.append('measurement_unit', document.querySelector('input[name="measurement_unit"]').value);
+            formData.append('calories', document.querySelector('input[name="calories"]').value);
+            formData.append('proteins', document.querySelector('input[name="proteins"]').value);
+            formData.append('fats', document.querySelector('input[name="fats"]').value);
+            formData.append('carbohydrates', document.querySelector('input[name="carbohydrates"]').value);
+            formData.append('min', document.querySelector('input[name="min"]').value);
+            formData.append('max', document.querySelector('input[name="max"]').value);
+            formData.append('step', document.querySelector('input[name="step"]').value);
+
+            jQuery.ajax({
+                url: "{{ route('edit-foodstuff', $foodstuff->id) }}",
+                method: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(result) {
+                    alert('Namirnica uspešno izmenjena!');
+                    window.location.href = window.origin + '/foodstuffs/';
+                },
+                error: function(xhr, status, error) {
+                    console.log("Greška: ", status, error);
+                }
+            });
+        });
+
+        document.querySelector('input[name="featured_image"]').addEventListener('change', function(event) {
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let img = document.getElementById('preview-image');
+                img.src = e.target.result;
+                img.style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        });
+    </script>
 @endsection

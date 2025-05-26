@@ -37,6 +37,13 @@ class FoodstuffController extends Controller
              'step' => $request->input('step'),
          ];
 
+         if ($request->hasFile('featured_image')) {
+             $image = $request->file('featured_image');
+             $imageName = $image->getClientOriginalName();
+             $image->storeAs('public/featured_foodstuffs', $imageName);
+             $foodstuffData['featured_image'] = $imageName;
+         }
+
          $foodstuff = $this->foodstuffService->addFoodstuff($foodstuffData);
          return redirect()->route('show-add-foodstuff');
      }
@@ -65,6 +72,14 @@ class FoodstuffController extends Controller
             'max' => $request->input('max'),
             'step' => $request->input('step'),
         ];
+
+        if ($request->hasFile('featured_image')) {
+            $image = $request->file('featured_image');
+            $imageName = $image->getClientOriginalName();
+            $image->storeAs('public/featured_foodstuffs', $imageName);
+            $foodstuffData['featured_image'] = $imageName;
+        }
+
         $foodstuff = $this->foodstuffService->editFoodstuff($foodstuffData, $id);
         return redirect()->route('show-foodstuffs-list');
     }

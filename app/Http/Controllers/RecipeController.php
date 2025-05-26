@@ -739,7 +739,7 @@ class RecipeController
     public function getRecipes(Request $request) {
         $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
         if(!$firebaseUid) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
 
         $recipes = Recipe::all();
@@ -788,7 +788,7 @@ class RecipeController
 
         $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
         if(!$firebaseUid) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
 
         $user = User::where('firebase_uid', $firebaseUid)->get()->first();
@@ -806,7 +806,7 @@ class RecipeController
     public function getFaqs(Request $request) {
         $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
         if(!$firebaseUid) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
 
         $faqs = Faq::where('category', '=', $request->category)->get();
@@ -821,7 +821,7 @@ class RecipeController
     public function getFaqCategories(Request $request) {
         $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
         if(!$firebaseUid) {
-            return response()->json(['error' => 'Authorization header missing or invalid'], 401);
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
 
         $categories = Faq::select('category')->distinct()->pluck('category')->toArray();
