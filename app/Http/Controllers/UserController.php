@@ -21,6 +21,7 @@ use App\Services\FoodstuffCategoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Kreait\Firebase\Factory;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -262,17 +263,51 @@ class UserController extends Controller
 
     public function addPhoto(Request $request) {
         $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
-        if(!$firebaseUid) {
+        if (!$firebaseUid) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
-        $photoData = [
-            'user_id' => $userId,
-            'type' => $request->input('type'),
-            'path' => $request->input('path'),
-        ];
-        $photo = $this->photoService->addPhoto($photoData);
-        return response()->json($photo);
+
+        $user = User::where('firebase_uid', $firebaseUid)->first();
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $base64Image = $request->input('photo');
+        if (!$base64Image) {
+            return response()->json(['error' => 'No image data provided'], 422);
+        }
+
+        if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
+            $image = substr($base64Image, strpos($base64Image, ',') + 1);
+            $type = strtolower($type[1]);
+
+            if (!in_array($type, ['jpg', 'jpeg', 'png', 'gif'])) {
+                return response()->json(['error' => 'Invalid image type'], 422);
+            }
+
+            $image = base64_decode($image);
+
+            if ($image === false) {
+                return response()->json(['error' => 'Base64 decode failed'], 422);
+            }
+
+            $filename = 'user_' . $user->id . '_' . Str::random(10) . '.' . $type;
+
+            $path = 'user_photos/' . $filename;
+            Storage::disk('public')->put($path, $image);
+
+            $photoData = [
+                'user_id' => $user->id,
+                'type' => $request->input('type'),
+                'path' => $path,
+            ];
+
+            $photo = $this->photoService->addPhoto($photoData);
+
+            return response()->json($photo);
+        } else {
+            return response()->json(['error' => 'Invalid image format'], 422);
+        }
     }
 
     public function getUserPhotos(Request $request) {
