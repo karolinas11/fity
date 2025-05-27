@@ -93,7 +93,10 @@
                 </div>
                 <div class="col-md-3">
                     <h3>Algoritam</h3>
-                    <p>{{ $user->macros_type }}</p>
+                    <select name="macros_type" id="macros_type" class="form-control">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                    </select>
                 </div>
             </div>
                 <div class="col-md-12 text-center mt-4">
@@ -207,7 +210,8 @@
                 tolerance_calories: document.getElementById('tolerance_calories').value,
                 tolerance_fats: document.getElementById('tolerance_fats').value,
                 meals_num: document.getElementById('meals_num').value,
-                days: document.getElementById('days').value
+                days: document.getElementById('days').value,
+                macros_type: document.getElementById('macros_type').value
             };
 
             // AJAX poziv za slanje podataka na server
