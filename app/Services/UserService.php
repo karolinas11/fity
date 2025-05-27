@@ -190,9 +190,9 @@ class UserService
                         default => 500,
                     };
                 }
-
-                $calories -= $caloriesAdd;
             }
+
+            $calories -= $caloriesAdd;
         } else if($user->goal == 'increase') {
             $calories += 500;
             $proteins = 2 * $weight;
