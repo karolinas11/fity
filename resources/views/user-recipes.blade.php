@@ -94,8 +94,8 @@
                 <div class="col-md-3">
                     <h3>Algoritam</h3>
                     <select name="macros_type" id="macros_type" class="form-control">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
+                        <option value="1" {{ $user->macros_type == 1 ? 'selected' : ''}}>1</option>
+                        <option value="2" {{ $user->macros_type == 2 ? 'selected' : ''}}>2</option>
                     </select>
                 </div>
             </div>

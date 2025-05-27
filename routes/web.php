@@ -31,7 +31,6 @@ Route::get('/add-recipe-form', [RecipeController::class, 'showAddRecipe'])->name
 Route::post('/add-recipe', [RecipeController::class, 'addRecipe'])->name('add-recipe');
 
 Route::get('/user/{userId}', [UserController::class, 'assignRecipesToUser'])->name('assign-recipes-to-user');
-//user/edit preko ajaksa radimo izmeni dugme
 Route::post('/user/edit', [UserController::class, 'editUser']);
 
 Route::get('/recipes', [RecipeController::class, 'showRecipesList'])->name('show-recipes-list');
