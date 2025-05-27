@@ -112,6 +112,16 @@
             </div>
 
             <div class="row mb-3">
+                <label for="macros_type" class="col-md-4 col-form-label">Algoritam</label>
+                <div class="col-md-8">
+                    <select name="macros_type" id="macros_type" class="form-select">
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-3">
                 <div class="col-md-12 text-center">
                     <button type="submit" class="btn btn-primary">Pošalji</button>
                 </div>

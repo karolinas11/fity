@@ -136,7 +136,63 @@ class UserService
         }
 
         if($user->goal == 'reduction') {
-            $calories -= 500;
+            if($user->gender == 'm') {
+                $abs = abs($user->weight - $weight);
+                if($abs > 30) {
+                    $caloriesAdd = match ($user->activity) {
+                        '1.2' => 700,
+                        '1.375' => 1000,
+                        default => 1500,
+                    };
+                } else if($abs > 20) {
+                    $caloriesAdd = match ($user->activity) {
+                        '1.2' => 500,
+                        '1.375' => 800,
+                        default => 1200,
+                    };
+                } else if($abs > 10) {
+                    $caloriesAdd = match ($user->activity) {
+                        '1.2' => 500,
+                        '1.375' => 700,
+                        default => 900,
+                    };
+                } else if($abs > 0) {
+                    $caloriesAdd = match ($user->activity) {
+                        '1.2', '1.375' => 500,
+                        default => 800,
+                    };
+                }
+            } else {
+                $caloriesAdd = 655.1 + (9.563 * $user->weight) + (1.85 * $user->height) - (4.676 * $user->age);
+                $weight = 45 + (0.9 * ($user->height - 152.4));
+
+                $abs = abs($user->weight - $weight);
+                if($abs > 30) {
+                    $caloriesAdd = match ($user->activity) {
+                        '1.2' => 500,
+                        '1.375' => 600,
+                        default => 800,
+                    };
+                } else if($abs > 20) {
+                    $caloriesAdd = match ($user->activity) {
+                        '1.2', '1.375' => 500,
+                        default => 600,
+                    };
+                } else if($abs > 10) {
+                    $caloriesAdd = match ($user->activity) {
+                        '1.2', '1.375' => 500,
+                        default => 600,
+                    };
+                } else if($abs > 0) {
+                    $caloriesAdd = match ($user->activity) {
+                        '1.2' => 200,
+                        '1.375' => 500,
+                        default => 500,
+                    };
+                }
+
+                $calories -= $caloriesAdd;
+            }
         } else if($user->goal == 'increase') {
             $calories += 500;
             $proteins = 2 * $weight;
@@ -171,65 +227,6 @@ class UserService
             'fats' => $fats,
             'weight' => $weight,
         ];
-
-        if($user->gender == 'm') {
-            $calories = 66.47 + (13.75 * $user->weight) + (5.003 * $user->height) - (6.755 * $user->age);
-            $weight = 48 + (1.1 * ($user->height - 152.4));
-
-            $abs = abs($user->weight - $weight);
-            if($abs > 30) {
-                $caloriesAdd = match ($user->activity) {
-                    '1.2' => 700,
-                    '1.375' => 1000,
-                    default => 1500,
-                };
-            } else if($abs > 20) {
-                $caloriesAdd = match ($user->activity) {
-                    '1.2' => 500,
-                    '1.375' => 800,
-                    default => 1200,
-                };
-            } else if($abs > 10) {
-                $caloriesAdd = match ($user->activity) {
-                    '1.2' => 500,
-                    '1.375' => 700,
-                    default => 900,
-                };
-            } else if($abs > 0) {
-                $caloriesAdd = match ($user->activity) {
-                    '1.2', '1.375' => 500,
-                    default => 800,
-                };
-            }
-        } else {
-            $caloriesAdd = 655.1 + (9.563 * $user->weight) + (1.85 * $user->height) - (4.676 * $user->age);
-            $weight = 45 + (0.9 * ($user->height - 152.4));
-
-            $abs = abs($user->weight - $weight);
-            if($abs > 30) {
-                $caloriesAdd = match ($user->activity) {
-                    '1.2' => 500,
-                    '1.375' => 600,
-                    default => 800,
-                };
-            } else if($abs > 20) {
-                $caloriesAdd = match ($user->activity) {
-                    '1.2', '1.375' => 500,
-                    default => 600,
-                };
-            } else if($abs > 10) {
-                $caloriesAdd = match ($user->activity) {
-                    '1.2', '1.375' => 500,
-                    default => 600,
-                };
-            } else if($abs > 0) {
-                $caloriesAdd = match ($user->activity) {
-                    '1.2' => 200,
-                    '1.375' => 500,
-                    default => 500,
-                };
-            }
-        }
 
     }
 

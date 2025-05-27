@@ -75,7 +75,8 @@ class UserController extends Controller
             'tolerance_fats'=>$request->input('tolerance_fats'),
             'tolerance_calories'=>$request->input('tolerance_calories'),
             'meals_num'=>$request->input('meals_num'),
-            'days'=>$request->input('days')
+            'days'=>$request->input('days'),
+            'macros_type'=>$request->input('macros_type'),
         ];
 
         $userId= $request->input('user_id');
@@ -87,7 +88,11 @@ class UserController extends Controller
 
             return response()->json(['success' => false, 'message'=> 'Korisnik nije pronadjen!'], 200);
         }
-        $target = $this->userService->getMacrosForUser($user);
+        if($user->macros_type == '1') {
+            $target = $this->userService->getMacrosForUser($user);
+        } else {
+            $target = $this->userService->getMacrosForUser2($user);
+        }
         return response()->json(['success'=> true, 'target'=> $target], 200);
     }
     public function addUser(Request $request) {
@@ -104,6 +109,7 @@ class UserController extends Controller
             'tolerance_proteins' => $request->input('tolerance_proteins'),
             'tolerance_fats' => $request->input('tolerance_fats'),
             'days' => $request->input('days'),
+            'macros_type' => $request->input('macros_type')
         ];
 
         $user = $this->userService->addUser($userData);
@@ -114,7 +120,11 @@ class UserController extends Controller
     public function assignRecipesToUser($userId) {
 
         $user = User::find($userId);
-        $target = $this->userService->getMacrosForUser($user);
+        if($user->macros_type == '1') {
+            $target = $this->userService->getMacrosForUser($user);
+        } else {
+            $target = $this->userService->getMacrosForUser2($user);
+        }
         $response = Http::timeout(10000)
             ->withoutVerifying()
             ->post('https://fity-algorithm.fly.dev/meal-plan', [
@@ -144,7 +154,6 @@ class UserController extends Controller
             $day['fats'] = $dayFats;
         }
 
-        dd($data);
         return view('user-recipes', compact('user', 'target', 'data'));
     }
 
@@ -166,10 +175,15 @@ class UserController extends Controller
             'tolerance_proteins' => $request->input('tolerance_proteins'),
             'tolerance_fats' => $request->input('tolerance_fats'),
             'days' => $request->input('days'),
+            'macros_type' => $request->input('macros_type')
         ];
 
         $user = $this->userService->addUser($userData);
-        $macros = $this->userService->getMacrosForUser($user);
+        if($request->input('macros_type') == '1') {
+            $macros = $this->userService->getMacrosForUser($user);
+        } else {
+            $macros = $this->userService->getMacrosForUser2($user);
+        }
 
         return redirect()->route('assign-recipes-to-user', ['userId' => $user->id]);
     }

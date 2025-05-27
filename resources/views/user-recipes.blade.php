@@ -75,7 +75,7 @@
                     <input type="number" name="tolerance_fats" id="tolerance_fats" class="form-control" value="{{$user->tolerance_fats}}">
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <h3>Broj obroka:</h3>
                     <select name="meals_num" id="meals_num" class="form-control">
                         <option value="3" {{$user->meals_num == '3' ? 'selected' : ''}}>3</option>
@@ -83,13 +83,17 @@
                         <option value="5" {{$user->meals_num == '5' ? 'selected' : ''}}>5</option>
                     </select>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <h3>Broj dana</h3>
                     <input type="number" name="days" id="days" class="form-control" value="{{$user->days}}">
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <h3>Idealna težina</h3>
                     <p>{{ $target['weight'] }}</p>
+                </div>
+                <div class="col-md-3">
+                    <h3>Algoritam</h3>
+                    <p>{{ $user->macros_type }}</p>
                 </div>
             </div>
                 <div class="col-md-12 text-center mt-4">
