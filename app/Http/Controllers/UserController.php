@@ -234,8 +234,7 @@ class UserController extends Controller
         if(!$firebaseUid) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
-        $recipe = $this->userRecipeService->getUserRecipeByUserIdAndRecipeId($userId, $request->recipeId);
+        $recipe = $this->userRecipeService->getUserRecipeByUserIdAndRecipeId($request->recipeId);
         return response()->json($recipe);
     }
 
