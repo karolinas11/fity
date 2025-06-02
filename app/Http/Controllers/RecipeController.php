@@ -791,12 +791,7 @@ class RecipeController
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
-
-        $recipe = UserRecipe::where('user_id', $user->id)
-            ->where('recipe_id', $request->recipeId)
-            ->get()
-            ->first();
+        $recipe = UserRecipe::find($request->recipeId);
         $recipe->status = $request->status;
         $recipe->save();
 
