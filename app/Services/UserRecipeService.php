@@ -29,7 +29,7 @@ class UserRecipeService
             $recipe->foodstuffs = $recipe->foodstuffs;
             $recipe->type = $r->type;
             $recipe->name = $r->name;
-            $recipe->id = $r->id;
+            $recipe->main_recipe_id = $r->id;
             $recipe->featured_image = $r->featured_image;
             $description = str_replace('\n', "\n", $r->description);
             $recipe->steps = preg_split('/\r\n|\r|\n/', $description);
