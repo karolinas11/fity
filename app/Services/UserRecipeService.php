@@ -69,11 +69,8 @@ class UserRecipeService
         return $recipesArray;
     }
 
-    public function getUserRecipeByUserIdAndRecipeId($userId, $recipeId) {
-        $recipe = UserRecipe::where('user_id', $userId)
-            ->where('recipe_id', $recipeId)
-            ->get()
-            ->first();
+    public function getUserRecipeByUserIdAndRecipeId($recipeId) {
+        $recipe = UserRecipe::find($recipeId);
         $r = Recipe::where('id', $recipe->recipe_id)->first();
         $recipe->foodstuffs = $recipe->foodstuffs;
         $recipe->type = $r->type;
