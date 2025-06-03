@@ -6,6 +6,11 @@
         <p><strong>Proteini: </strong>{{ round($proteinPercentage, 2) }}%</p>
         <p><strong>Masti: </strong>{{ round($fatPercentage, 2) }}%</p>
         <p><strong>Ugljeni hidrati: </strong>{{ round($carbPercentage, 2) }}%</p>
+        <hr>
+        <h5>Cal procenti</h5>
+        <p><strong>Proteini: </strong>{{ round($proteinCalPercentage, 2) }}%</p>
+        <p><strong>Masti: </strong>{{ round($fatCalPercentage, 2) }}%</p>
+        <p><strong>Ugljeni hidrati: </strong>{{ round($carbCalPercentage, 2) }}%</p>
         <form id="recipe-form">
             @csrf
             <div class="form-group mb-3">

@@ -103,7 +103,13 @@ class RecipeController
         $fatPercentage = $totalMass > 0 ? ($fats / $totalMass) * 100 : 0;
         $carbPercentage = $totalMass > 0 ? ($carbs / $totalMass) * 100 : 0;
 
-        return view('edit-recipe', compact('recipe', 'foodstuffs', 'recipeFoodstuffs','proteinPercentage', 'fatPercentage', 'carbPercentage'));
+        $totalCal = ($proteins * 4) + ($fats * 9) + ($carbs * 4);
+
+        $proteinCalPercentage = $totalCal > 0 ? (($proteins * 4) / $totalCal) * 100 : 0;
+        $fatCalPercentage = $totalCal > 0 ? (($fats * 9) / $totalCal) * 100 : 0;
+        $carbCalPercentage = $totalCal > 0 ? (($carbs * 4) / $totalCal) * 100 : 0;
+
+        return view('edit-recipe', compact('recipe', 'foodstuffs', 'recipeFoodstuffs','proteinPercentage', 'fatPercentage', 'carbPercentage', 'proteinCalPercentage', 'fatCalPercentage', 'carbCalPercentage'));
     }
 
     public function editRecipe(Request $request, $id) {
