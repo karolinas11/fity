@@ -61,7 +61,7 @@ class UserService
         if($user->goal == 'reduction') {
             $calories -= 500;
         } else if($user->goal == 'increase') {
-            $calories += 500;
+            $calories += 300;
             $proteins = 2 * $weight;
             $fats = 1.2 * $weight;
         } else {
@@ -194,7 +194,7 @@ class UserService
 
             $calories -= $caloriesAdd;
         } else if($user->goal == 'increase') {
-            $calories += 500;
+            $calories += 300;
             $proteins = 2 * $weight;
             $fats = 1.2 * $weight;
         } else {

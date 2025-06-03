@@ -24,7 +24,7 @@
                     <select name="goal" id="goal" class="form-select">
                         <option value="reduction" {{ $user->goal == 'reduction' ? 'selected' : '' }}>Redukcija telesne mase</option>
                         <option value="stable" {{ $user->goal == 'stable' ? 'selected' : '' }}>Održavanje telesne mase</option>
-                        <option value="increase" {{ $user->increase == 'increase' ? 'selected' : '' }}>Uvećanje telesne mase</option>
+                        <option value="increase" {{ $user->goal == 'increase' ? 'selected' : '' }}>Uvećanje telesne mase</option>
                     </select>
                 </div>
                 <div class="col-md-4">
@@ -135,7 +135,7 @@
                                     <p>Kalorije - {{ $meal['calories'] }}</p>
                                     <p>Proteini - {{ $meal['proteins'] }}g</p>
                                     <p>Masti - {{ $meal['fats'] }}g</p>
-           {{--                     <p>Ugljeni hidrati - {{ $meal['carbs'] }}g</p> --}}
+                                    <p>Ugljeni hidrati - {{ $meal['carbs'] }}g</p>
                                     <div class="divider"></div>
 
 
