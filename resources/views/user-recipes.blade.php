@@ -135,7 +135,7 @@
                                     <p>Kalorije - {{ $meal['calories'] }}</p>
                                     <p>Proteini - {{ $meal['proteins'] }}g</p>
                                     <p>Masti - {{ $meal['fats'] }}g</p>
-{{--                                    <p>Ugljeni hidrati - {{ $meal['carbs'] }}g</p>--}}
+                                    <p>Ugljeni hidrati - {{ $meal['carbohydrates'] }}g</p>
                                     <div class="divider"></div>
 
 

@@ -154,8 +154,6 @@ class UserController extends Controller
             $day['fats'] = $dayFats;
         }
 
-        dd($data);
-
         return view('user-recipes', compact('user', 'target', 'data'));
     }
 
