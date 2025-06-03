@@ -141,13 +141,24 @@ class UserController extends Controller
 
         $data = $response->json();
         foreach($data['daily_plans'] as &$day) {
-            $dayCalories = $dayProteins = $dayFats = 0;
+            $dayCalories = $dayProteins = $dayFats = $dayCarbs = 0;
             foreach($day['meals'] as &$meal) {
                 $foodstuffs = $this->recipefoodstuffService->getRecipeFoodstuffs($meal['same_meal_id']);
+                foreach ($meal['holder_quantities'] as $key => $holder) {
+                    $f = Foodstuff::find($key);
+                    $meal['carbohydrates'] += $f->carbohydrates * $holder / 100;
+                }
+                foreach ($foodstuffs as $foodstuff) {
+                    if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->carbohydrates_holder == 0) {
+                        $f = Foodstuff::find($foodstuff->foodstuff_id);
+                        $meal['carbohydrates'] += $f->carbohydrates * $foodstuff->amount / 100;
+                    }
+                }
                 $meal['foodstuffs'] = $foodstuffs;
                 $dayCalories += $meal['calories'];
                 $dayProteins += $meal['proteins'];
                 $dayFats += $meal['fats'];
+
             }
             $day['calories'] = $dayCalories;
             $day['proteins'] = $dayProteins;
@@ -179,11 +190,6 @@ class UserController extends Controller
         ];
 
         $user = $this->userService->addUser($userData);
-        if($request->input('macros_type') == '1') {
-            $macros = $this->userService->getMacrosForUser($user);
-        } else {
-            $macros = $this->userService->getMacrosForUser2($user);
-        }
 
         return redirect()->route('assign-recipes-to-user', ['userId' => $user->id]);
     }
