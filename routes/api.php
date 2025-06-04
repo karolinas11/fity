@@ -42,3 +42,4 @@ Route::post('/users/add-photo', [UserController::class, 'addPhoto'])->name('add-
 Route::get('/users/get-photos', [UserController::class, 'getUserPhotos'])->name('get-user-photos');
 Route::post('/update-recipe-bookmark-status', [RecipeController::class, 'updateRecipeBookmarkStatus'])->name('update-recipe-status');
 Route::get('/users/get-water', [UserController::class, 'getUserWater'])->name('get-user-water');
+Route::get('/user', [UserController::class, 'getUser'])->name('get-user');

@@ -233,7 +233,7 @@ class UserController extends Controller
         if(!$firebaseUid) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        $this->userService->assignFirebaseUid($request->userId, $firebaseUid);
+        $this->userService->assignFirebaseUid($request->userId, $firebaseUid, $request->email, $request->name);
         return response()->json(['user' => User::find($request->userId)]);
     }
 
@@ -349,6 +349,15 @@ class UserController extends Controller
         $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
         $photos = $this->photoService->getUserPhotos($userId);
         return response()->json($photos);
+    }
+
+    public function getUser(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        $user = User::where('firebase_uid', $firebaseUid)->first();
+        return response()->json($user);
     }
 
 }

@@ -230,7 +230,7 @@ class UserService
 
     }
 
-    public function assignFirebaseUid($userId, $firebaseUid) {
-        return $this->userRepository->assignFirebaseUid($userId, $firebaseUid);
+    public function assignFirebaseUid($userId, $firebaseUid, $email, $name) {
+        return $this->userRepository->assignFirebaseUid($userId, $firebaseUid, $email, $name);
     }
 }

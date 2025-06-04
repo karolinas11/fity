@@ -30,10 +30,12 @@ class UserRepository
         }
     }
 
-    public function assignFirebaseUid($userId, $firebaseUid) {
+    public function assignFirebaseUid($userId, $firebaseUid, $email, $name) {
         try {
             $user = User::find($userId);
             $user->firebase_uid = $firebaseUid;
+            $user->email = $email;
+            $user->name = $name;
             $user->save();
         } catch (QueryException $e) {
             Log::error('Can\'t assign firebase uid: ' . $e->getMessage());
