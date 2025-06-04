@@ -40,3 +40,5 @@ Route::post('/users/add-scope', [UserController::class, 'addScope'])->name('add-
 Route::get('/users/get-scopes', [UserController::class, 'getUserScopes'])->name('get-user-scopes');
 Route::post('/users/add-photo', [UserController::class, 'addPhoto'])->name('add-photo');
 Route::get('/users/get-photos', [UserController::class, 'getUserPhotos'])->name('get-user-photos');
+Route::post('/update-recipe-bookmark-status', [RecipeController::class, 'updateRecipeBookmarkStatus'])->name('update-recipe-status');
+Route::get('/users/get-water', [UserController::class, 'getUserWater'])->name('get-user-water');

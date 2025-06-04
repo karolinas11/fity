@@ -804,6 +804,21 @@ class RecipeController
         return response()->json($recipe);
     }
 
+    public function updateRecipeBookmarkStatus(Request $request) {
+
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $recipe = UserRecipe::find($request->recipeId);
+        $recipe->bookmarked_status = $request->bookmarked_status;
+        $recipe->save();
+
+        return response()->json($recipe);
+    }
+
+
     public function getFaqs(Request $request) {
         $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
         if(!$firebaseUid) {
