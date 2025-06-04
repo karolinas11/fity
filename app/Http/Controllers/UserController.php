@@ -77,6 +77,7 @@ class UserController extends Controller
             'meals_num'=>$request->input('meals_num'),
             'days'=>$request->input('days'),
             'macros_type'=>$request->input('macros_type'),
+            'name' => $request->input('name'),
         ];
 
         $userId= $request->input('user_id');
@@ -109,7 +110,8 @@ class UserController extends Controller
             'tolerance_proteins' => $request->input('tolerance_proteins'),
             'tolerance_fats' => $request->input('tolerance_fats'),
             'days' => $request->input('days'),
-            'macros_type' => $request->input('macros_type')
+            'macros_type' => $request->input('macros_type'),
+            'name' => $request->input('name'),
         ];
 
         $user = $this->userService->addUser($userData);

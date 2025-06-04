@@ -7,6 +7,13 @@
             @csrf
 
             <div class="row mb-3">
+                <label for="name" class="col-md-4 col-form-label">Naziv korisnika</label>
+                <div class="col-md-8">
+                    <input name="name" type="text" class="form-control" placeholder="Unesite naziv">
+                </div>
+            </div>
+
+            <div class="row mb-3">
                 <label for="goal" class="col-md-4 col-form-label">Šta želiš da postigneš?</label>
                 <div class="col-md-8">
                     <select name="goal" id="goal" class="form-select">

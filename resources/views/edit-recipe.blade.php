@@ -7,10 +7,14 @@
         <p><strong>Masti: </strong>{{ round($fatPercentage, 2) }}%</p>
         <p><strong>Ugljeni hidrati: </strong>{{ round($carbPercentage, 2) }}%</p>
         <hr>
-        <h5>Cal procenti</h5>
-        <p><strong>Proteini: </strong>{{ round($proteinCalPercentage, 2) }}%</p>
-        <p><strong>Masti: </strong>{{ round($fatCalPercentage, 2) }}%</p>
-        <p><strong>Ugljeni hidrati: </strong>{{ round($carbCalPercentage, 2) }}%</p>
+        <div style="position: sticky; width: 100%; padding-top: 70px; background: white; top: 0; z-index: 1000;">
+            <h5 style="text-align: center;">Cal procenti</h5>
+            <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                <p><strong>Proteini: </strong>{{ round($proteinCalPercentage, 2) }}%</p>
+                <p><strong>Masti: </strong>{{ round($fatCalPercentage, 2) }}%</p>
+                <p><strong>Ugljeni hidrati: </strong>{{ round($carbCalPercentage, 2) }}%</p>
+            </div>
+        </div>
         <form id="recipe-form">
             @csrf
             <div class="form-group mb-3">

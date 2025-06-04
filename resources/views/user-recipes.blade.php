@@ -15,6 +15,7 @@
         <div class="row">
             <div class="col-md-12 text-center">
                 <h1 class="mb-4">Korisnik #{{ $user->id }}</h1>
+                <input type="text" name="name" id="name" class="form-control" value="{{ $user->name }}">
             </div>
 
                  <input type="hidden" name="user_id" id="user_id" value="{{ $user->id }}">
@@ -211,7 +212,8 @@
                 tolerance_fats: document.getElementById('tolerance_fats').value,
                 meals_num: document.getElementById('meals_num').value,
                 days: document.getElementById('days').value,
-                macros_type: document.getElementById('macros_type').value
+                macros_type: document.getElementById('macros_type').value,
+                name: document.getElementById('name').value
             };
 
             // AJAX poziv za slanje podataka na server

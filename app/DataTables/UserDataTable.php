@@ -22,7 +22,7 @@ class UserDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addColumn('id', function(User $user) {
-                return $user->id;
+                return $user->id . ' - ' . $user->name;
             })
             ->addColumn('goal', function(User $user) {
                 if($user->goal == 'increase'){
