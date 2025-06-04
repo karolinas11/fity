@@ -10,9 +10,9 @@
         <div style="position: sticky; width: 100%; padding-top: 70px; background: white; top: 0; z-index: 1000;">
             <h5 style="text-align: center;">Cal procenti</h5>
             <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                <p><strong>Proteini: </strong>{{ round($proteinCalPercentage, 2) }}%</p>
-                <p><strong>Masti: </strong>{{ round($fatCalPercentage, 2) }}%</p>
-                <p><strong>Ugljeni hidrati: </strong>{{ round($carbCalPercentage, 2) }}%</p>
+                <p class="proteins"><strong>Proteini: </strong><span>{{ round($proteinCalPercentage, 2) }}</span>%</p>
+                <p class="fats"><strong>Masti: </strong><span>{{ round($fatCalPercentage, 2) }}</span>%</p>
+                <p class="carbohydrates"><strong>Ugljeni hidrati: </strong><span>{{ round($carbCalPercentage, 2) }}</span>%</p>
             </div>
         </div>
         <form id="recipe-form">
@@ -93,7 +93,7 @@
                             <label>Namirnica</label>
                             <select name="foodstuff_id" class="form-select">
                                 @foreach($foodstuffs as $foodstuff)
-                                    <option @if($foodstuff->id == $recipeFoodstuff->foodstuff_id) selected @endif value="{{ $foodstuff->id }}">{{ $foodstuff->name }}</option>
+                                    <option data-proteins="{{ $foodstuff->proteins }}" data-fats="{{ $foodstuff->fats }}" data-carbohydrates="{{ $foodstuff->carbohydrates }}" @if($foodstuff->id == $recipeFoodstuff->foodstuff_id) selected @endif value="{{ $foodstuff->id }}">{{ $foodstuff->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -146,7 +146,7 @@
                     <label>Namirnica</label>
                     <select name="foodstuff_id" class="form-select">
                         @foreach($foodstuffs as $foodstuff)
-            <option value="{{ $foodstuff->id }}">{{ $foodstuff->name }}</option>
+            <option data-proteins="{{ $foodstuff->proteins }}" data-fats="{{ $foodstuff->fats }}" data-carbohydrates="{{ $foodstuff->carbohydrates }}" value="{{ $foodstuff->id }}">{{ $foodstuff->name }}</option>
                         @endforeach
             </select>
         </div>
@@ -171,6 +171,14 @@
         </div>
 `;
             foodstuffContainer.appendChild(newFoodstuff);
+
+            newFoodstuff.querySelector('input[name="amount"]').addEventListener('input', function() {
+                calculateCalPercents();
+            });
+
+            newFoodstuff.querySelector('select[name="foodstuff_id"]').addEventListener('change', function() {
+                calculateCalPercents();
+            });
 
             attachRemoveHandler();
         });
@@ -268,6 +276,48 @@
                 img.style.display = 'block';
             };
             reader.readAsDataURL(event.target.files[0]);
+        });
+
+        function calculateCalPercents() {
+            let foodstuffs = document.querySelectorAll('.single-foodstuff');
+            let total = 0;
+            let proteins = 0;
+            let fats = 0;
+            let carbs = 0;
+            foodstuffs.forEach(foodstuff => {
+                let select = foodstuff.querySelector('select[name="foodstuff_id"]');
+                let selectedFoodstuff = select.options[select.selectedIndex];
+                let amountInput = parseFloat(foodstuff.querySelector('input[name="amount"]').value) ? parseFloat(foodstuff.querySelector('input[name="amount"]').value) : 0;
+                let foodstuffProteins = parseFloat(selectedFoodstuff.getAttribute('data-proteins'));
+                let foodstuffFats = parseFloat(selectedFoodstuff.getAttribute('data-fats'));
+                let foodstuffCarbs = parseFloat(selectedFoodstuff.getAttribute('data-carbohydrates'));
+
+                let p = foodstuffProteins * amountInput * 4 / 100;
+                let f = foodstuffFats * amountInput * 9 / 100;
+                let c = foodstuffCarbs * amountInput * 4 / 100;
+
+                proteins += p;
+                fats += f;
+                carbs += c;
+
+                total += p + f + c;
+            });
+
+            let proteinCalPercentage = total > 0 ? (proteins / total) * 100 : 0;
+            let fatCalPercentage = total > 0 ? (fats / total) * 100 : 0;
+            let carbCalPercentage = total > 0 ? (carbs / total) * 100 : 0;
+
+            document.querySelector('.proteins span').innerText = proteinCalPercentage.toFixed(2);
+            document.querySelector('.fats span').innerText = fatCalPercentage.toFixed(2);
+            document.querySelector('.carbohydrates span').innerText = carbCalPercentage.toFixed(2);
+        }
+
+        document.querySelectorAll('input[name="amount"]').forEach(input => {
+            input.addEventListener('input', calculateCalPercents);
+        });
+
+        document.querySelectorAll('select[name="foodstuff_id"]').forEach(select => {
+            select.addEventListener('change', calculateCalPercents);
         });
 
     </script>
