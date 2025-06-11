@@ -244,6 +244,9 @@ class OnBoardingQuestionController extends Controller {
             $date = date('Y-m-d', strtotime('+' . $i . ' days'));
             $i++;
             foreach ($day['meals'] as $meal) {
+                if($meal['same_meal_id'] == 33) {
+                    continue;
+                }
                 $userRecipe = UserRecipe::create([
                     'user_id' => $userId,
                     'recipe_id' => $meal['same_meal_id'],
