@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\DataTables\UserDataTable;
 use App\Models\Foodstuff;
+use App\Models\Photo;
 use App\Models\Recipe;
 use App\Models\RecipeFoodstuff;
+use App\Models\Scope;
 use App\Models\User;
 use App\Models\UserRecipe;
 use App\Models\UserWater;
+use App\Models\UserWeight;
 use App\Services\AuthService;
 use App\Services\PhotoService;
 use App\Services\RecipeFoodstuffService;
@@ -294,6 +297,31 @@ class UserController extends Controller
         return response()->json($scopes);
     }
 
+    public function getUserScopeFirst(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
+        $scope = Scope::where('user_id', $userId)
+            ->where('name', $request->input('scope_name'))
+            ->first();
+        return response()->json($scope);
+    }
+
+    public function getUserScopeLast(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
+        $scope = Scope::where('user_id', $userId)
+            ->where('name', $request->input('scope_name'))
+            ->latest()
+            ->first();
+        return response()->json($scope);
+    }
+
     public function addPhoto(Request $request) {
         $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
         if (!$firebaseUid) {
@@ -353,6 +381,31 @@ class UserController extends Controller
         return response()->json($photos);
     }
 
+    public function getUserPhotoFirst(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
+        $photo = Photo::where('user_id', $userId)
+            ->where('type', $request->input('type'))
+            ->first();
+        return response()->json($photo);
+    }
+
+    public function getUserPhotoLast(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
+        $photo = Photo::where('user_id', $userId)
+            ->where('type', $request->input('type'))
+            ->latest()
+            ->first();
+        return response()->json($photo);
+    }
+
     public function getUser(Request $request) {
         $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
         if(!$firebaseUid) {
@@ -366,6 +419,29 @@ class UserController extends Controller
         $queryParams = http_build_query($request->all());
         $intentUrl = "intent://callback?' . $queryParams . '#Intent;package=rs.fity;scheme=signinwithapple;end";
         return redirect()->away($intentUrl);
+    }
+
+    public function addUserWeight(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
+        $userWeight = UserWeight::create([
+            'user_id' => $userId,
+            'weight' => $request->input('weight'),
+            ]);
+        return response()->json($userWeight);
+    }
+
+    public function getUserWeights(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
+        $userWeights = UserWeight::where('user_id', $userId)->get();
+        return response()->json($userWeights);
     }
 
 }

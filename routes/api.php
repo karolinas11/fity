@@ -11,21 +11,17 @@ use Illuminate\Support\Facades\Route;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
-
 Route::post('/add-option',[OnBoardingQuestionOptionController::class,'store'])->name('api.add-option');
 Route::post('/delete-option',[OnBoardingQuestionOptionController::class, 'deleteOption'])->name('api.delete-option');
 Route::post('/add-question',[OnBoardingQuestionController::class, 'addQuestion'])->name('api.add-question');
 Route::post('/delete-question',[OnBoardingQuestionController::class, 'deleteQuestion'])->name('api.delete-question');
 Route::put('/update-question/{id}', [OnBoardingQuestionController::class, 'updateQuestion'])->name('api.update-question');
 Route::put('/update-option/{id}', [OnBoardingQuestionOptionController::class, 'updateOption'])->name('api.update-option');
-
 Route::get('/create-user',[UserController::class, 'createUser'])->name('api.create-user');
 Route::get('/onboarding/questions/{questionSetIndex}/{language}', [OnBoardingQuestionController::class, 'getOnboardingQuestions'])->name('api.onboarding-questions');
 Route::post('/onboarding/answers/_calculate', [OnBoardingQuestionController::class, 'saveFirstAnswers'])->name('api.calculate-answers');
 Route::post('/onboarding/answers/_finalize', [OnBoardingQuestionController::class, 'saveSecondAnswers'])->name('api.finalize-answers');
-
 Route::get('/firebase-test', [AuthController::class, 'firebaseLogin'])->name('firebase-test');
-
 Route::post('/users/assign-firebase-uid', [UserController::class, 'assignFirebaseUid'])->name('assign-firebase-uid');
 Route::get('/users/get-user-recipes', [UserController::class, 'getRecipesByUserIdAndWeek'])->name('get-user-recipes');
 Route::get('/users/get-user-recipe', [UserController::class, 'getRecipeByUserIdAndRecipeId'])->name('get-user-recipe');
@@ -40,7 +36,13 @@ Route::post('/users/add-scope', [UserController::class, 'addScope'])->name('add-
 Route::get('/users/get-scopes', [UserController::class, 'getUserScopes'])->name('get-user-scopes');
 Route::post('/users/add-photo', [UserController::class, 'addPhoto'])->name('add-photo');
 Route::get('/users/get-photos', [UserController::class, 'getUserPhotos'])->name('get-user-photos');
+Route::get('/users/get-user-photo-first', [UserController::class, 'getUserPhotoFirst'])->name('get-user-photo-first');
+Route::get('/users/get-user-photo-last', [UserController::class, 'getUserPhotoLast'])->name('get-user-photo-last');
+Route::get('/users/get-user-scope-first', [UserController::class, 'getUserScopeFirst'])->name('get-user-scope-first');
+Route::get('/users/get-user-scope-last', [UserController::class, 'getUserScopeLast'])->name('get-user-scope-last');
 Route::post('/update-recipe-bookmark-status', [RecipeController::class, 'updateRecipeBookmarkStatus'])->name('update-recipe-status');
 Route::get('/users/get-water', [UserController::class, 'getUserWater'])->name('get-user-water');
 Route::get('/user', [UserController::class, 'getUser'])->name('get-user');
 Route::post('/users/apple-sign-in-callback', [UserController::class, 'appleSignInCallback'])->name('apple-sign-in-callback');
+Route::post('/users/add-user-weight', [UserController::class, 'addUserWeight'])->name('add-user-weight');
+Route::get('/users/get-user-weights', [UserController::class, 'getUserWeights'])->name('get-user-weight');
