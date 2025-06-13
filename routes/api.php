@@ -43,3 +43,4 @@ Route::get('/users/get-photos', [UserController::class, 'getUserPhotos'])->name(
 Route::post('/update-recipe-bookmark-status', [RecipeController::class, 'updateRecipeBookmarkStatus'])->name('update-recipe-status');
 Route::get('/users/get-water', [UserController::class, 'getUserWater'])->name('get-user-water');
 Route::get('/user', [UserController::class, 'getUser'])->name('get-user');
+Route::get('/users/apple-sign-in-callback', [UserController::class, 'appleSignInCallback'])->name('apple-sign-in-callback');

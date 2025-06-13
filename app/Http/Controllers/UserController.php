@@ -362,4 +362,14 @@ class UserController extends Controller
         return response()->json($user);
     }
 
+    public function appleSignInCallback(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        $queryParams = http_build_query($request->all());
+        $intentUrl = "intent://callback?' . $queryParams . '#Intent;package=rs.fity;scheme=signinwithapple;end";
+        return redirect()->away($intentUrl);
+    }
+
 }
