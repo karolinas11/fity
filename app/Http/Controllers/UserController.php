@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\UserRecipe;
 use App\Models\UserWater;
 use App\Models\UserWeight;
+use App\Repositories\UserRecipeRepository;
 use App\Services\AuthService;
 use App\Services\PhotoService;
 use App\Services\RecipeFoodstuffService;
@@ -43,6 +44,7 @@ class UserController extends Controller
     protected UserWaterService $userWaterService;
     protected ScopeService $scopeService;
     protected PhotoService $photoService;
+    protected UserRecipeRepository $userRecipeRepository;
 //    protected $firebaseAuth;
 
     public function __construct() {
@@ -58,6 +60,7 @@ class UserController extends Controller
         $this->authService = new AuthService();
         $this->scopeService = new ScopeService();
         $this->photoService = new PhotoService();
+        $this->userRecipeRepository = new UserRecipeRepository();
     }
 
     public function showAddUser()
@@ -466,6 +469,44 @@ class UserController extends Controller
         $photo = Photo::find($request->input('photoId'));
         $photo->delete();
         return response()->json('success', 200);
+    }
+
+    public function getShopFoodstuffs(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if (!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
+        $startDate = $request->input('startDate');
+        $endDate = $request->input('endDate');
+        $foodstuffs = collect();
+
+        $recipes = $this->userRecipeRepository->getUserRecipes($userId, $startDate, $endDate);
+
+        foreach ($recipes as $recipe) {
+            foreach ($recipe->foodstuffs as $foodstuff) {
+                $foodstuffId = $foodstuff->pivot->foodstuff_id;
+                $fullFoodstuffModel = Foodstuff::find($foodstuffId);
+                $foodstuff->full_model = $fullFoodstuffModel;
+                $foodstuff->foodstuff_id = $foodstuffId;
+                $foodstuff->amount = $foodstuff->pivot->amount;
+                $foodstuff->purchased = $foodstuff->pivot->purchased;
+                $foodstuffs->push($foodstuff);
+            }
+        }
+
+        $foodstuffsFinal = $foodstuffs->groupBy('foodstuff_id')->map(function ($group) {
+            return [
+                'name' => $group->first()->full_model->name,
+                'amount' => $group->where('purchased', 0)->sum('amount'),
+                'ingredient' => $group->first()->full_model,
+                'bought' => $group->every(fn ($f) => $f->purchased == 1),
+                'unit' => 'g'
+            ];
+        })->values();
+
+        return response()->json($foodstuffsFinal);
     }
 
 }
