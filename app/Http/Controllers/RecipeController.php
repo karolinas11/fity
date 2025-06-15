@@ -851,4 +851,32 @@ class RecipeController
         return view('faq', compact('faq'));
     }
 
+    public function filterRecipes(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $recipes = Recipe::all();
+        $types = $request->input('types');
+        $foodstuffs = $request->input('foodstuffs');
+        $recipesFinal = [];
+        foreach ($recipes as $recipe) {
+            if($types && !in_array($recipe->type, $types)) {
+                continue;
+            }
+            $hasFoodstuff = false;
+            foreach ($recipe->foodstuffs as $foodstuff) {
+                if(in_array($foodstuffs, $foodstuff->name)) {
+                    $hasFoodstuff = true;
+                }
+            }
+
+            if($hasFoodstuff) {
+                $recipesFinal[] = $recipe;
+            }
+        }
+
+        return response()->json($recipesFinal);
+    }
 }

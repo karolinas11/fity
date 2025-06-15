@@ -49,3 +49,4 @@ Route::get('/users/get-user-weights', [UserController::class, 'getUserWeights'])
 Route::post('/users/delete-user-photo', [UserController::class, 'deleteUserPhoto'])->name('delete-user-photo');
 Route::get('/recipes/get-shop-foodstuffs', [UserController::class, 'getShopFoodstuffs'])->name('get-shop-foodstuffs');
 Route::get('/recipes/get-recipe-shop-foodstuffs', [UserController::class, 'getRecipeShopFoodstuffs'])->name('get-recipe-shop-foodstuffs');
+Route::get('/recipes/filter-recipes', [RecipeController::class, 'filterRecipes'])->name('get-recipes');
