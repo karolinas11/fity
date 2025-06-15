@@ -21,6 +21,7 @@ use App\Services\UserService;
 use App\Services\UserWaterService;
 use App\Services\UserRecipeService;
 use App\Services\FoodstuffCategoryService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
@@ -214,9 +215,22 @@ class UserController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
         $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
-        $userWater = UserWater::where('user_id', $userId)
-            ->get()
-            ->first();
+
+        $start = null;
+        $end = null;
+
+        if ($request->filled(['startDate', 'endDate'])) {
+            $start = Carbon::parse($request->input('startDate'))->format('Y-m-d');
+            $end = Carbon::parse($request->input('endDate'))->format('Y-m-d');
+        }
+
+        $query = UserWater::where('user_id', $userId);
+
+        if ($start && $end) {
+            $query->whereBetween('date', [$start, $end]);
+        }
+
+        $userWater = $query->first();
         return response()->json($userWater);
     }
 
