@@ -799,6 +799,7 @@ class RecipeController
 
         $recipe = UserRecipe::find($request->recipeId);
         $recipe->status = $request->status;
+        $recipe->skipReason = $request->skipReason;
         $recipe->save();
 
         return response()->json($recipe);
