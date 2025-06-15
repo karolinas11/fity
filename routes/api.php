@@ -46,3 +46,4 @@ Route::get('/user', [UserController::class, 'getUser'])->name('get-user');
 Route::post('/users/apple-sign-in-callback', [UserController::class, 'appleSignInCallback'])->name('apple-sign-in-callback');
 Route::post('/users/add-user-weight', [UserController::class, 'addUserWeight'])->name('add-user-weight');
 Route::get('/users/get-user-weights', [UserController::class, 'getUserWeights'])->name('get-user-weight');
+Route::post('/users/delete-user-photo', [UserController::class, 'deleteUserPhoto'])->name('delete-user-photo');

@@ -458,4 +458,10 @@ class UserController extends Controller
         return response()->json($userWeights);
     }
 
+    public function deleteUserPhoto(Request $request) {
+        $photo = Photo::find($request->input('photoId'));
+        $photo->delete();
+        return response()->json('success', 200);
+    }
+
 }
