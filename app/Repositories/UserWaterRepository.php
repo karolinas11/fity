@@ -20,7 +20,7 @@ class UserWaterRepository
             if($userWater == null) {
                 return UserWater::create(['user_id' => $userId, 'water' => $water, 'date' => $today]);
             } else {
-                $userWater->water += $water;
+                $userWater->water = $water;
                 $userWater->save();
                 return $userWater;
             }
