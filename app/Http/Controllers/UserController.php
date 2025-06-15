@@ -509,4 +509,36 @@ class UserController extends Controller
         return response()->json($foodstuffsFinal);
     }
 
+    public function getRecipeShopFoodstuffs(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if (!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $recipe = UserRecipe::find($request->input('recipeId'));
+        $foodstuffs = collect();
+
+        foreach ($recipe->foodstuffs as $foodstuff) {
+            $foodstuffId = $foodstuff->pivot->foodstuff_id;
+            $fullFoodstuffModel = Foodstuff::find($foodstuffId);
+            $foodstuff->full_model = $fullFoodstuffModel;
+            $foodstuff->foodstuff_id = $foodstuffId;
+            $foodstuff->amount = $foodstuff->pivot->amount;
+            $foodstuff->purchased = $foodstuff->pivot->purchased;
+            $foodstuffs->push($foodstuff);
+        }
+
+        $foodstuffsFinal = $foodstuffs->groupBy('foodstuff_id')->map(function ($group) {
+            return [
+                'name' => $group->first()->full_model->name,
+                'amount' => $group->where('purchased', 0)->sum('amount'),
+                'ingredient' => $group->first()->full_model,
+                'bought' => $group->every(fn ($f) => $f->purchased == 1),
+                'unit' => 'g'
+            ];
+        })->values();
+
+        return response()->json($foodstuffsFinal);
+    }
+
 }
