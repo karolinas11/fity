@@ -459,6 +459,10 @@ class UserController extends Controller
     }
 
     public function deleteUserPhoto(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
         $photo = Photo::find($request->input('photoId'));
         $photo->delete();
         return response()->json('success', 200);
