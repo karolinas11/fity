@@ -50,3 +50,4 @@ Route::post('/users/delete-user-photo', [UserController::class, 'deleteUserPhoto
 Route::get('/recipes/get-shop-foodstuffs', [UserController::class, 'getShopFoodstuffs'])->name('get-shop-foodstuffs');
 Route::get('/recipes/get-recipe-shop-foodstuffs', [UserController::class, 'getRecipeShopFoodstuffs'])->name('get-recipe-shop-foodstuffs');
 Route::get('/recipes/filter-recipes', [RecipeController::class, 'filterRecipes'])->name('get-recipes');
+Route::post('/recipes/update-shop-foodstuffs', [UserController::class, 'updateShopFoodstuffs'])->name('update-shop-foodstuffs');

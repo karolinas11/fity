@@ -10,6 +10,7 @@ use App\Models\RecipeFoodstuff;
 use App\Models\Scope;
 use App\Models\User;
 use App\Models\UserRecipe;
+use App\Models\UserRecipeFoodstuff;
 use App\Models\UserWater;
 use App\Models\UserWeight;
 use App\Repositories\UserRecipeRepository;
@@ -486,12 +487,12 @@ class UserController extends Controller
 
         foreach ($recipes as $recipe) {
             foreach ($recipe->foodstuffs as $foodstuff) {
-                $foodstuffId = $foodstuff->pivot->foodstuff_id;
+                $foodstuffId = $foodstuff->foodstuff_id;
                 $fullFoodstuffModel = Foodstuff::find($foodstuffId);
                 $foodstuff->full_model = $fullFoodstuffModel;
                 $foodstuff->foodstuff_id = $foodstuffId;
-                $foodstuff->amount = $foodstuff->pivot->amount;
-                $foodstuff->purchased = $foodstuff->pivot->purchased;
+                $foodstuff->amount = $foodstuff->amount;
+                $foodstuff->purchased = $foodstuff->purchased;
                 $foodstuffs->push($foodstuff);
             }
         }
@@ -519,12 +520,12 @@ class UserController extends Controller
         $foodstuffs = collect();
 
         foreach ($recipe->foodstuffs as $foodstuff) {
-            $foodstuffId = $foodstuff->pivot->foodstuff_id;
+            $foodstuffId = $foodstuff->foodstuff_id;
             $fullFoodstuffModel = Foodstuff::find($foodstuffId);
             $foodstuff->full_model = $fullFoodstuffModel;
             $foodstuff->foodstuff_id = $foodstuffId;
-            $foodstuff->amount = $foodstuff->pivot->amount;
-            $foodstuff->purchased = $foodstuff->pivot->purchased;
+            $foodstuff->amount = $foodstuff->amount;
+            $foodstuff->purchased = $foodstuff->purchased;
             $foodstuffs->push($foodstuff);
         }
 
@@ -539,6 +540,20 @@ class UserController extends Controller
         })->values();
 
         return response()->json($foodstuffsFinal);
+    }
+
+    public function updateShopFoodstuffs(Request $request)
+    {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if (!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $foodstuff = UserRecipeFoodstuff::find($request->input('foodstuffId'));
+        $foodstuff->purchased = 1;
+        $foodstuff->save();
+
+        return response()->json('success', 200);
     }
 
 }
