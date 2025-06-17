@@ -225,6 +225,7 @@ class RecipeController
             $fixedCalories = $calories;
             $fixedProteins = $proteins;
             $fixedFats = $fats;
+            $fixedCarbohydrates = $carbohydrates;
 
             $holdersMap = [
                 'pHolder' => null,
@@ -266,6 +267,7 @@ class RecipeController
                     'fixedCalories' => $fixedCalories,
                     'fixedProteins' => $fixedProteins,
                     'fixedFats' => $fixedFats,
+                    'fixedCarbohydrates' => $fixedCarbohydrates,
                 ];
                 array_push($recipesFinal, $recipeFinal);
             }
@@ -320,6 +322,7 @@ class RecipeController
                     'fixedCalories' => $fixedCalories,
                     'fixedProteins' => $fixedProteins,
                     'fixedFats' => $fixedFats,
+                    'fixedCarbohydrates' => $fixedCarbohydrates,
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -389,6 +392,7 @@ class RecipeController
                     'fixedCalories' => $fixedCalories,
                     'fixedProteins' => $fixedProteins,
                     'fixedFats' => $fixedFats,
+                    'fixedCarbohydrates' => $fixedCarbohydrates
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -476,6 +480,7 @@ class RecipeController
                     'fixedCalories' => $fixedCalories,
                     'fixedProteins' => $fixedProteins,
                     'fixedFats' => $fixedFats,
+                    'fixedCarbohydrates' => $fixedCarbohydrates
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -531,6 +536,7 @@ class RecipeController
                     'fixedCalories' => $fixedCalories,
                     'fixedProteins' => $fixedProteins,
                     'fixedFats' => $fixedFats,
+                    'fixedCarbohydrates' => $fixedCarbohydrates
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -601,6 +607,7 @@ class RecipeController
                     'fixedCalories' => $fixedCalories,
                     'fixedProteins' => $fixedProteins,
                     'fixedFats' => $fixedFats,
+                    'fixedCarbohydrates' => $fixedCarbohydrates
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -656,6 +663,7 @@ class RecipeController
                     'fixedCalories' => $fixedCalories,
                     'fixedProteins' => $fixedProteins,
                     'fixedFats' => $fixedFats,
+                    'fixedCarbohydrates' => $fixedCarbohydrates
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -726,6 +734,7 @@ class RecipeController
                     'fixedCalories' => $fixedCalories,
                     'fixedProteins' => $fixedProteins,
                     'fixedFats' => $fixedFats,
+                    'fixedCarbohydrates' => $fixedCarbohydrates
                 ];
 
                  array_push($recipesFinal, $recipeFinal);
@@ -736,7 +745,7 @@ class RecipeController
         //dd($recipesFinal);
 
         foreach ($recipesFinal as $key => $recipe) {
-            echo $key . ',' . $recipe['id'] . ',' . $recipe['category'] . ',' . $recipe['calories_min'] . ',' . $recipe['proteins_min'] . ',' . $recipe['fats_min'] . ',' . $recipe['carbohydrates_min'] . ',' . $recipe['calories_max'] . ',' . $recipe['proteins_max'] . ',' . $recipe['fats_max'] . ',' . $recipe['carbohydrates_max'] . ',' . $recipe['tuna'] . ',' . $recipe['whey'] . ',' . $recipe['holders'] . ',' . $recipe['fixedCalories'] . ',' . $recipe['fixedProteins'] . ',' . $recipe['fixedFats'] . "<br>";
+            echo $key . ',' . $recipe['id'] . ',' . $recipe['category'] . ',' . $recipe['calories_min'] . ',' . $recipe['proteins_min'] . ',' . $recipe['fats_min'] . ',' . $recipe['carbohydrates_min'] . ',' . $recipe['calories_max'] . ',' . $recipe['proteins_max'] . ',' . $recipe['fats_max'] . ',' . $recipe['carbohydrates_max'] . ',' . $recipe['tuna'] . ',' . $recipe['whey'] . ',' . $recipe['holders'] . ',' . $recipe['fixedCalories'] . ',' . $recipe['fixedProteins'] . ',' . $recipe['fixedFats'] . ',' . $recipe['fixedCarbohydrates'] . "<br>";
         }
     }
 
