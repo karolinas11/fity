@@ -69,7 +69,10 @@
                 <textarea name="short_description" class="form-control" placeholder="Unesite kratki opis">{{ $recipe->short_description }}</textarea>
             </div>
 
-
+            <div class="form-group mb-3">
+                <label for="preparation_time">Vreme pripreme</label>
+                <input name="preparation_time" class="form-control" placeholder="Unesite vreme pripreme" value="{{ $recipe->preparation_time }}">
+            </div>
 
             <div class="form-group mb-3">
                 <label for="type">Tip obroka</label>
@@ -233,6 +236,7 @@
             formData.append('name', document.querySelector('input[name="name"]').value);
             formData.append('description', document.querySelector('textarea[name="description"]').value);
             formData.append('short_description', document.querySelector('textarea[name="short_description"]').value);
+            formData.append('preparation_time', document.querySelector('input[name="preparation_time"]').value);
             formData.append('type', document.querySelector('select[name="type"]').value);
             formData.append('insulin', document.querySelector('input[name="insulin"]').checked ? 1 : 0);
             formData.append('foodstuffs', JSON.stringify(foodstuffData));
