@@ -227,6 +227,12 @@ class RecipeDataTable extends DataTable
     {
         return [
             Column::make('name')->title('Recept')->searchable(true),
+            Column::computed('action')
+                ->title('Akcije')
+                ->exportable(false)
+                ->printable(false)
+                ->addClass('text-center text-nowrap')
+                ->width(150),
             Column::make('proteins')->title('Proteini')->searchable(false),
             Column::make('fats')->title('Masti')->searchable(false),
             Column::make('carbs')->title('Ugljeni hidrati')->searchable(false),
@@ -241,12 +247,6 @@ class RecipeDataTable extends DataTable
             Column::make('reduction')->title('Redukcija')->searchable(false),
             Column::make('stable')->title('Održavanje')->searchable(false),
             Column::make('increase')->title('Dobijanje')->searchable(false),
-            Column::computed('action')
-                ->title('Akcije')
-                ->exportable(false)
-                ->printable(false)
-                ->addClass('text-center')
-                ->width(150),
         ];
     }
 

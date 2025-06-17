@@ -11,6 +11,7 @@
         .container {
             max-width: 1400px;
         }
+
     </style>
 @endsection
 

@@ -80,15 +80,15 @@ class UserDataTable extends DataTable
                 return $user->days;
             })
             ->addColumn('target_calories', function(User $user,UserService $userService) {
-                $target= $userService->getMacrosForUser($user);
+                $target= $userService->getMacrosForUser2($user);
                 return round($target['calories'],2);
             })
             ->addColumn('target_proteins', function(User $user,UserService $userService) {
-                $target= $userService->getMacrosForUser($user);
+                $target= $userService->getMacrosForUser2($user);
                 return round($target['proteins'],2);
             })
             ->addColumn('target_fats', function(User $user,UserService $userService) {
-                $target= $userService->getMacrosForUser($user);
+                $target= $userService->getMacrosForUser2($user);
                 return round($target['fats'],2);
             })
             ->addColumn('action', function (User $user) {
