@@ -603,4 +603,13 @@ class UserController extends Controller
         return response()->json('success', 200);
     }
 
+    public function deleteUserWeights(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if (!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        UserWeight::find($request->input('weightId'))->delete();
+        return response()->json('success', 200);
+    }
+
 }
