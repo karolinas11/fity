@@ -621,4 +621,44 @@ class UserController extends Controller
         return response()->json('success', 200);
     }
 
+    public function updateUser(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if (!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $user = User::find($firebaseUid);
+        $user->name = $request->input('name');
+        $user->email = $request->input('email');
+        $user->save();
+
+        $base64Image = $request->input('avatar');
+
+        if ($base64Image && preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
+            $image = substr($base64Image, strpos($base64Image, ',') + 1);
+            $type = strtolower($type[1]);
+
+            if (!in_array($type, ['jpg', 'jpeg', 'png', 'gif'])) {
+                return response()->json(['error' => 'Invalid image type'], 422);
+            }
+
+            $image = base64_decode($image);
+
+            if ($image === false) {
+                return response()->json(['error' => 'Base64 decode failed'], 422);
+            }
+
+            $filename = 'user_' . $user->id . '_' . Str::random(10) . '.' . $type;
+
+            $path = 'user_photos/' . $filename;
+            Storage::disk('public')->put($path, $image);
+
+            $user->avatar = $path;
+            $user->save();
+            return response()->json($user);
+        }
+
+        return response()->json($user);
+    }
+
 }
