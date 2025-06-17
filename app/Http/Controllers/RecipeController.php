@@ -48,7 +48,8 @@ class RecipeController
             'description' => $request->input('description'),
             'short_description' => $request->input('short_description'),
             'type' => $request->input('type'),
-            'insulin'=> $request->input('insulin')
+            'insulin'=> $request->input('insulin'),
+            'preparation_time' => $request->input('preparation_time'),
         ];
 
         if ($request->hasFile('featured_image')) {
@@ -118,7 +119,8 @@ class RecipeController
             'description' => $request->input('description'),
             'short_description' => $request->input('short_description'),
             'insulin' => $request->input('insulin'),
-            'type' => $request->input('type')
+            'type' => $request->input('type'),
+            'preparation_time' => $request->input('preparation_time'),
         ];
 
         if ($request->hasFile('featured_image')) {
