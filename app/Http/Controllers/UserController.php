@@ -494,6 +494,8 @@ class UserController extends Controller
             'user_id' => $userId,
             'weight' => $request->input('weight'),
             ]);
+        $userWeight->created_at = Carbon::parse($request->input('created_at'))->format('Y-m-d H:i:s');
+        $userWeight->save();
         return response()->json($userWeight);
     }
 
