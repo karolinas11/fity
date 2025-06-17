@@ -627,7 +627,7 @@ class UserController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        $user = User::find($firebaseUid);
+        $user = User::where('firebase_uid', $firebaseUid)->first();
         $user->name = $request->input('name');
         $user->email = $request->input('email');
         $user->save();
