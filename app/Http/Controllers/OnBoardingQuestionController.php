@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\UserAllergy;
 use App\Models\UserRecipe;
 use App\Models\UserRecipeFoodstuff;
+use App\Models\UserWeight;
 use App\Services\OnBoardingQuestionService;
 use App\Services\RecipeFoodstuffService;
 use App\Services\UserService;
@@ -183,6 +184,10 @@ class OnBoardingQuestionController extends Controller {
             'insulin_resistance' => $insulinResistance
         ];
         $user = $this->userService->addUser($userData);
+        UserWeight::create([
+            'user_id' => $user->id,
+            'weight' => $wei
+        ]);
         $data = $this->onBoardingQuestionService->getOnBoardingQuestionsByIndexAndLang(2, 'en', $user);
 
         return response()->json($data, '200');

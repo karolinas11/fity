@@ -4,7 +4,10 @@ namespace App\DataTables;
 
 use App\Models\Foodstuff;
 use App\Models\Recipe;
+use App\Models\User;
+use App\Models\UserRecipe;
 use App\Services\RecipeFoodstuffService;
+use App\Services\UserService;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -18,10 +21,12 @@ class RecipeDataTable extends DataTable
 {
 
     protected RecipeFoodstuffService $recipeFoodstuffService;
+    protected UserService $userService;
     public function __construct()
     {
         parent::__construct();
         $this->recipeFoodstuffService = new RecipeFoodstuffService();
+        $this->userService = new UserService();
     }
 
     public function getRecipeData(Recipe $recipe) {
@@ -38,15 +43,35 @@ class RecipeDataTable extends DataTable
 
         $totalMass = $proteins + $fats + $carbs;
 
-        $proteinPercentage = $totalMass > 0 ? ($proteins / $totalMass) * 100 : 0;
-        $fatPercentage = $totalMass > 0 ? ($fats / $totalMass) * 100 : 0;
-        $carbPercentage = $totalMass > 0 ? ($carbs / $totalMass) * 100 : 0;
-
         $totalCal = ($proteins * 4) + ($fats * 9) + ($carbs * 4);
 
         $proteinCalPercentage = $totalCal > 0 ? (($proteins * 4) / $totalCal) * 100 : 0;
         $fatCalPercentage = $totalCal > 0 ? (($fats * 9) / $totalCal) * 100 : 0;
         $carbCalPercentage = $totalCal > 0 ? (($carbs * 4) / $totalCal) * 100 : 0;
+
+        $userRecipes = UserRecipe::where('recipe_id', $recipe->id)->get();
+        $userRecipesNum = $userRecipes->count();
+        $first = $second = $third = 0;
+        $reduction = $stable = $increase = 0;
+        foreach($userRecipes as $userRecipe) {
+            $user = User::find($userRecipe->user_id);
+            $calories = $this->userService->getMacrosForUser2($user)['calories'];
+            if($calories > 3000) {
+                $third++;
+            } else if($calories > 2000) {
+                $second++;
+            } else if($calories > 1000) {
+                $first++;
+            }
+            if($user->goal == 'reduction') {
+                $reduction++;
+            } elseif($user->goal == 'stable') {
+                $stable++;
+            } else {
+                $increase++;
+            }
+        }
+
 
         return [
             'proteins' => $proteins,
@@ -54,7 +79,14 @@ class RecipeDataTable extends DataTable
             'carbs' => $carbs,
             'proteinCalPercentage' => $proteinCalPercentage,
             'fatCalPercentage' => $fatCalPercentage,
-            'carbCalPercentage' => $carbCalPercentage
+            'carbCalPercentage' => $carbCalPercentage,
+            'userRecipesNum' => $userRecipesNum,
+            'first' => $first,
+            'second' => $second,
+            'third' => $third,
+            'reduction' => $reduction,
+            'stable' => $stable,
+            'increase' => $increase
         ];
     }
 
@@ -99,6 +131,34 @@ class RecipeDataTable extends DataTable
                     3 => 'Užina',
                     default => 'Doručak',
                 };
+            })
+            ->addColumn('num_users', function(Recipe $recipe) {
+                $macros = $this->getRecipeData($recipe);
+                return $macros['userRecipesNum'];
+            })
+            ->addColumn('first', function(Recipe $recipe) {
+                $macros = $this->getRecipeData($recipe);
+                return $macros['first'];
+            })
+            ->addColumn('second', function(Recipe $recipe) {
+                $macros = $this->getRecipeData($recipe);
+                return $macros['second'];
+            })
+            ->addColumn('third', function(Recipe $recipe) {
+                $macros = $this->getRecipeData($recipe);
+                return $macros['third'];
+            })
+            ->addColumn('reduction', function(Recipe $recipe) {
+                $macros = $this->getRecipeData($recipe);
+                return $macros['reduction'];
+            })
+            ->addColumn('stable', function(Recipe $recipe) {
+                $macros = $this->getRecipeData($recipe);
+                return $macros['stable'];
+            })
+            ->addColumn('increase', function(Recipe $recipe) {
+                $macros = $this->getRecipeData($recipe);
+                return $macros['increase'];
             })
             ->addColumn('action', function (Recipe $recipe) {
                 $editUrl = route('show-recipe-edit', $recipe->id);
@@ -174,6 +234,13 @@ class RecipeDataTable extends DataTable
             Column::make('fats_percentage')->title('Masti %')->searchable(false),
             Column::make('carbs_percentage')->title('Ugljeni hidrati %')->searchable(false),
             Column::make('type')->title('Tip obroka'),
+            Column::make('num_users')->title('Broj korisnika')->searchable(false),
+            Column::make('first')->title('1000-2000cal')->searchable(false),
+            Column::make('second')->title('2000-3000cal')->searchable(false),
+            Column::make('third')->title('Preko 3000cal')->searchable(false),
+            Column::make('reduction')->title('Redukcija')->searchable(false),
+            Column::make('stable')->title('Održavanje')->searchable(false),
+            Column::make('increase')->title('Dobijanje')->searchable(false),
             Column::computed('action')
                 ->title('Akcije')
                 ->exportable(false)

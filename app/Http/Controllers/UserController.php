@@ -150,6 +150,51 @@ class UserController extends Controller
 
 
         $data = $response->json();
+
+        $userRecipes = UserRecipe::where('user_id', $userId)->get();
+        foreach ($userRecipes as $userRecipe) {
+            UserRecipeFoodstuff::where('user_recipe_id', $userRecipe->id)->delete();
+            $userRecipe->delete();
+        }
+
+        $i = 0;
+        foreach ($data['daily_plans'] as $day) {
+            if(!$day['exists']) continue;
+            $date = date('Y-m-d', strtotime('+' . $i . ' days'));
+            $i++;
+            foreach ($day['meals'] as $meal) {
+                if($meal['same_meal_id'] == 33) {
+                    continue;
+                }
+                $userRecipe = UserRecipe::create([
+                    'user_id' => $userId,
+                    'recipe_id' => $meal['same_meal_id'],
+                    'status' => 'active',
+                    'date' => $date
+                ]);
+                $foodstuffs = $this->recipefoodstuffService->getRecipeFoodstuffs($meal['same_meal_id']);
+                foreach ($foodstuffs as $foodstuff) {
+                    if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->calories_holder == 0) {
+                        UserRecipeFoodstuff::create([
+                            'user_recipe_id' => $userRecipe->id,
+                            'foodstuff_id' => $foodstuff->foodstuff_id,
+                            'amount' => $foodstuff->amount,
+                            'purchased' => 0
+                        ]);
+                    }
+                }
+
+                foreach ($meal['holder_quantities'] as $key => $holder) {
+                    UserRecipeFoodstuff::create([
+                        'user_recipe_id' => $userRecipe->id,
+                        'foodstuff_id' => $key,
+                        'amount' => $holder,
+                        'purchased' => 0
+                    ]);
+                }
+            }
+        }
+
         foreach($data['daily_plans'] as &$day) {
             $dayCalories = $dayProteins = $dayFats = $dayCarbs = 0;
             foreach($day['meals'] as &$meal) {
