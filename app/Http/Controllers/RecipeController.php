@@ -875,18 +875,23 @@ class RecipeController
         $foodstuffs = $request->input('foodstuffs');
         $recipesFinal = [];
         foreach ($recipes as $recipe) {
-            if($types && !in_array($recipe->type, $types)) {
-                continue;
-            }
-            $hasFoodstuff = false;
-            foreach ($recipe->foodstuffs as $foodstuff) {
-                if(in_array($foodstuffs, $foodstuff->name)) {
-                    $hasFoodstuff = true;
+            if(!empty($types)) {
+                if(!in_array($recipe->type, $types)) {
+                    continue;
                 }
             }
 
-            if(!$hasFoodstuff) {
-                continue;
+            $hasFoodstuff = false;
+            if(!empty($foodstuffs)) {
+                foreach ($recipe->foodstuffs as $foodstuff) {
+                    if(in_array($foodstuffs, $foodstuff->name)) {
+                        $hasFoodstuff = true;
+                    }
+                }
+
+                if(!$hasFoodstuff) {
+                    continue;
+                }
             }
 
             if($request->input('bookmarked') == 1) {
