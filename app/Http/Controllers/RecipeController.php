@@ -875,7 +875,7 @@ class RecipeController
         $foodstuffs = (array) $request->input('foodstuffs');
         $recipesFinal = [];
 
-        Log::error('TYPES: ' . json_encode($types));
+        Log::error('TYPES: ' . json_encode($request->all()));
         Log::error('FOODSTUFFS: ' . json_encode($foodstuffs));
 
         foreach ($recipes as $recipe) {
