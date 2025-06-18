@@ -871,8 +871,8 @@ class RecipeController
         $user = User::where('firebase_uid', $firebaseUid)->get()->first();
 
         $recipes = Recipe::all();
-        $types = $request->input('types');
-        $foodstuffs = $request->input('foodstuffs');
+        $types = (array) $request->input('types');
+        $foodstuffs = (array) $request->input('foodstuffs');
         $recipesFinal = [];
 
         Log::error('TYPES: ' . json_encode($types));
