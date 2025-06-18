@@ -539,7 +539,7 @@ class UserController extends Controller
                 $fullFoodstuffModel = Foodstuff::find($foodstuffId);
                 $foodstuff->full_model = $fullFoodstuffModel;
                 $foodstuff->foodstuff_id = $foodstuffId;
-                $foodstuff->category = FoodstuffCategory::where('id', $fullFoodstuffModel->foodstuff_category_id)->get()[0]->name;
+                $foodstuff->category = FoodstuffCategory::where('id', $fullFoodstuffModel->foodstuff_category_id)->get()->first()->name;
                 $foodstuff->amount = $foodstuff->amount;
                 $foodstuff->purchased = $foodstuff->purchased;
                 $foodstuffs->push($foodstuff);
@@ -549,6 +549,7 @@ class UserController extends Controller
         $foodstuffsFinal = $foodstuffs->groupBy('foodstuff_id')->map(function ($group) {
             return [
                 'name' => $group->first()->full_model->name,
+                'category' => $group->first()->category,
                 'amount' => $group->where('purchased', 0)->sum('amount'),
                 'ingredient' => $group->first()->full_model,
                 'bought' => $group->every(fn ($f) => $f->purchased == 1),
@@ -582,6 +583,7 @@ class UserController extends Controller
         $foodstuffsFinal = $foodstuffs->groupBy('foodstuff_id')->map(function ($group) {
             return [
                 'name' => $group->first()->full_model->name,
+                'category' => $group->first()->category,
                 'amount' => $group->where('purchased', 0)->sum('amount'),
                 'ingredient' => $group->first()->full_model,
                 'bought' => $group->every(fn ($f) => $f->purchased == 1),
