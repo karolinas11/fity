@@ -875,9 +875,6 @@ class RecipeController
         $foodstuffs = (array) $request->input('foodstuffs');
         $recipesFinal = [];
 
-        Log::error('TYPES: ' . json_encode($request->all()));
-        Log::error('FOODSTUFFS: ' . json_encode($foodstuffs));
-
         foreach ($recipes as $recipe) {
             if(!empty($types)) {
                 if(!in_array($recipe->type, $types)) {
@@ -898,17 +895,17 @@ class RecipeController
                 }
             }
 
-            if($request->input('bookmarked') == 1) {
-                $bookmarkedRecipe = UserRecipe::where('recipe_id', $recipe->id)
-                    ->where('user_id', $user->id)
-                    ->where('bookmarked_status', 1)
-                    ->get()
-                    ->first();
-
-                if (!$bookmarkedRecipe) {
-                    continue;
-                }
-            }
+//            if($request->input('bookmarked') == 1) {
+//                $bookmarkedRecipe = UserRecipe::where('recipe_id', $recipe->id)
+//                    ->where('user_id', $user->id)
+//                    ->where('bookmarked_status', 1)
+//                    ->get()
+//                    ->first();
+//
+//                if (!$bookmarkedRecipe) {
+//                    continue;
+//                }
+//            }
 
             $recipesFinal[] = $recipe;
         }
