@@ -863,12 +863,12 @@ class RecipeController
     }
 
     public function filterRecipes(Request $request) {
-        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
-        if(!$firebaseUid) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
+//        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+//        if(!$firebaseUid) {
+//            return response()->json(['error' => 'Unauthorized'], 401);
+//        }
+//
+//        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
 
         $recipes = Recipe::all();
         $types = (array) $request->input('types');

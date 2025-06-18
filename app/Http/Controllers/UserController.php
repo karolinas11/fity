@@ -321,7 +321,7 @@ class UserController extends Controller
         if(!$firebaseUid) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        $recipe = $this->userRecipeService->getUserRecipeByUserIdAndRecipeId($request->recipeId);
+        $recipe = $this->userRecipeService->getUserRecipeByUserIdAndRecipeId($request->input('recipeId'), $request->input('screen'));
         return response()->json($recipe);
     }
 
