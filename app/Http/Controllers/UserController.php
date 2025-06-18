@@ -600,9 +600,16 @@ class UserController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        $foodstuff = UserRecipeFoodstuff::find($request->input('foodstuffId'));
-        $foodstuff->purchased = $request->input('purchased');
-        $foodstuff->save();
+        $user = User::where('firebase_uid', $firebaseUid)->first();
+        $userRecipes = UserRecipe::where('user_id', $user->id)->get();
+        foreach ($userRecipes as $recipe) {
+            foreach ($recipe->foodstuffs as $foodstuff) {
+                if($foodstuff->foodstuff_id == $request->input('foodstuffId')) {
+                    $foodstuff->purchased = $request->input('purchased');
+                    $foodstuff->save();
+                }
+            }
+        }
 
         return response()->json('success', 200);
     }

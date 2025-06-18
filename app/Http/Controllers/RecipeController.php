@@ -824,7 +824,11 @@ class RecipeController
         }
 
         $recipe = UserRecipe::find($request->recipeId);
-        $recipe->bookmarked_status = $request->bookmarked_status;
+        if($request->input('status') == 'bookmarked') {
+            $recipe->bookmarked_status = 1;
+        } else {
+            $recipe->bookmarked_status = 0;
+        }
         $recipe->save();
 
         return response()->json($recipe);
@@ -863,12 +867,12 @@ class RecipeController
     }
 
     public function filterRecipes(Request $request) {
-//        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
-//        if(!$firebaseUid) {
-//            return response()->json(['error' => 'Unauthorized'], 401);
-//        }
-//
-//        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
 
         $recipes = Recipe::all();
         $types = (array) $request->input('types');
@@ -895,17 +899,17 @@ class RecipeController
                 }
             }
 
-//            if($request->input('bookmarked') == 1) {
-//                $bookmarkedRecipe = UserRecipe::where('recipe_id', $recipe->id)
-//                    ->where('user_id', $user->id)
-//                    ->where('bookmarked_status', 1)
-//                    ->get()
-//                    ->first();
-//
-//                if (!$bookmarkedRecipe) {
-//                    continue;
-//                }
-//            }
+            if($request->input('onlyBookmarked') == 1) {
+                $bookmarkedRecipe = UserRecipe::where('recipe_id', $recipe->id)
+                    ->where('user_id', $user->id)
+                    ->where('bookmarked_status', 1)
+                    ->get()
+                    ->first();
+
+                if (!$bookmarkedRecipe) {
+                    continue;
+                }
+            }
 
             $recipesFinal[] = $recipe;
         }
