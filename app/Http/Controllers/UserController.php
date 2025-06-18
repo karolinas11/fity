@@ -537,7 +537,7 @@ class UserController extends Controller
             foreach ($recipe->foodstuffs as $foodstuff) {
                 $foodstuffId = $foodstuff->foodstuff_id;
                 $fullFoodstuffModel = Foodstuff::find($foodstuffId);
-                $fullFoodstuffModel->category = FoodstuffCategory::where('id', $fullFoodstuffModel->foodstuff_category_id)->get()->first()->name;
+                $fullFoodstuffModel->foodstuff_category = FoodstuffCategory::where('id', $fullFoodstuffModel->foodstuff_category_id)->get()->first()->name;
                 $foodstuff->full_model = $fullFoodstuffModel;
                 $foodstuff->foodstuff_id = $foodstuffId;
                 $foodstuff->amount = $foodstuff->amount;
@@ -572,7 +572,7 @@ class UserController extends Controller
         foreach ($recipe->foodstuffs as $foodstuff) {
             $foodstuffId = $foodstuff->foodstuff_id;
             $fullFoodstuffModel = Foodstuff::find($foodstuffId);
-            $fullFoodstuffModel->category = FoodstuffCategory::where('id', $fullFoodstuffModel->foodstuff_category_id)->get()->first()->name;
+            $fullFoodstuffModel->foodstuff_category = FoodstuffCategory::where('id', $fullFoodstuffModel->foodstuff_category_id)->get()->first()->name;
             $foodstuff->full_model = $fullFoodstuffModel;
             $foodstuff->foodstuff_id = $foodstuffId;
             $foodstuff->amount = $foodstuff->amount;
