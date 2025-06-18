@@ -874,6 +874,10 @@ class RecipeController
         $types = $request->input('types');
         $foodstuffs = $request->input('foodstuffs');
         $recipesFinal = [];
+
+        Log::error('TYPES: ' . $types);
+        Log::error('FOODSTUFFS: ' . $foodstuffs);
+
         foreach ($recipes as $recipe) {
             if(!empty($types)) {
                 if(!in_array($recipe->type, $types)) {
