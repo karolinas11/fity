@@ -880,7 +880,7 @@ class RecipeController
 
         foreach ($recipes as $recipe) {
             if(!empty($types)) {
-                if(!in_array($types, $recipe->type)) {
+                if(!in_array($recipe->type, $types)) {
                     continue;
                 }
             }
@@ -888,7 +888,7 @@ class RecipeController
             $hasFoodstuff = false;
             if(!empty($foodstuffs)) {
                 foreach ($recipe->foodstuffs as $foodstuff) {
-                    if(in_array($foodstuffs, $foodstuff->name)) {
+                    if(in_array($foodstuff->name, $foodstuffs)) {
                         $hasFoodstuff = true;
                     }
                 }
