@@ -600,7 +600,7 @@ class UserController extends Controller
         }
 
         $foodstuff = UserRecipeFoodstuff::find($request->input('foodstuffId'));
-        $foodstuff->purchased = 1;
+        $foodstuff->purchased = $request->input('purchased');
         $foodstuff->save();
 
         return response()->json('success', 200);
