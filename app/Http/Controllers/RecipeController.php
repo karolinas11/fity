@@ -868,6 +868,8 @@ class RecipeController
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
+        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
+
         $recipes = Recipe::all();
         $types = $request->input('types');
         $foodstuffs = $request->input('foodstuffs');
@@ -883,9 +885,23 @@ class RecipeController
                 }
             }
 
-            if($hasFoodstuff) {
-                $recipesFinal[] = $recipe;
+            if(!$hasFoodstuff) {
+                continue;
             }
+
+            if($request->input('bookmarked') == 1) {
+                $bookmarkedRecipe = UserRecipe::where('recipe_id', $recipe->id)
+                    ->where('user_id', $user->id)
+                    ->where('bookmarked_status', 1)
+                    ->get()
+                    ->first();
+
+                if (!$bookmarkedRecipe) {
+                    continue;
+                }
+            }
+
+            $recipesFinal[] = $recipe;
         }
 
         return response()->json($recipesFinal);
