@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DataTables\UserDataTable;
 use App\Models\Foodstuff;
+use App\Models\FoodstuffCategory;
 use App\Models\Photo;
 use App\Models\Recipe;
 use App\Models\RecipeFoodstuff;
@@ -538,6 +539,7 @@ class UserController extends Controller
                 $fullFoodstuffModel = Foodstuff::find($foodstuffId);
                 $foodstuff->full_model = $fullFoodstuffModel;
                 $foodstuff->foodstuff_id = $foodstuffId;
+                $foodstuff->category = FoodstuffCategory::where('id', $fullFoodstuffModel->foodstuff_category_id)->get()[0]->name;
                 $foodstuff->amount = $foodstuff->amount;
                 $foodstuff->purchased = $foodstuff->purchased;
                 $foodstuffs->push($foodstuff);
@@ -571,6 +573,7 @@ class UserController extends Controller
             $fullFoodstuffModel = Foodstuff::find($foodstuffId);
             $foodstuff->full_model = $fullFoodstuffModel;
             $foodstuff->foodstuff_id = $foodstuffId;
+            $foodstuff->category = FoodstuffCategory::where('id', $fullFoodstuffModel->foodstuff_category_id)->get()[0]->name;
             $foodstuff->amount = $foodstuff->amount;
             $foodstuff->purchased = $foodstuff->purchased;
             $foodstuffs->push($foodstuff);
