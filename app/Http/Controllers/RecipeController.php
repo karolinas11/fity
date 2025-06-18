@@ -875,8 +875,8 @@ class RecipeController
         $foodstuffs = $request->input('foodstuffs');
         $recipesFinal = [];
 
-        Log::error('TYPES: ' . $types);
-        Log::error('FOODSTUFFS: ' . $foodstuffs);
+        Log::error('TYPES: ' . json_encode($types));
+        Log::error('FOODSTUFFS: ' . json_encode($foodstuffs));
 
         foreach ($recipes as $recipe) {
             if(!empty($types)) {
@@ -885,8 +885,8 @@ class RecipeController
                 }
             }
 
-            $hasFoodstuff = false;
             if(!empty($foodstuffs)) {
+                $hasFoodstuff = false;
                 foreach ($recipe->foodstuffs as $foodstuff) {
                     if(in_array($foodstuff->name, $foodstuffs)) {
                         $hasFoodstuff = true;
