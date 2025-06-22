@@ -826,7 +826,9 @@ class RecipeController
         $recipe = UserRecipe::find($request->recipeId);
         if($request->input('status') == 'bookmarked') {
             $recipe->bookmarked_status = 1;
-        } else {
+        } else if ($request->input('status') == 'deleted') {
+	    $recipe->bookmarked_status = -1;
+	} else {
             $recipe->bookmarked_status = 0;
         }
         $recipe->save();
