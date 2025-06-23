@@ -916,4 +916,16 @@ class RecipeController
 
         return response()->json($recipesFinal);
     }
+
+    public function getFoodstuffsByCategory(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $category = FoodstuffCategory::where('name', '=', $request->category)->get()->first();
+
+        $foodstuffs = Foodstuff::where('foodstuff_category_id', '=', $category->id)->get();
+        return response()->json($foodstuffs);
+    }
 }
