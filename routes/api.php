@@ -5,6 +5,7 @@ use App\Http\Controllers\OnBoardingQuestionController;
 use App\Http\Controllers\OnBoardingQuestionOptionController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\FoodstuffController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -54,3 +55,4 @@ Route::get('/recipes/filter-recipes', [RecipeController::class, 'filterRecipes']
 Route::post('/recipes/update-shop-foodstuffs', [UserController::class, 'updateShopFoodstuffs'])->name('update-shop-foodstuffs');
 Route::post('/users/delete-user-scope', [UserController::class, 'deleteUserScope'])->name('delete-user-scope');
 Route::post('/users/update-user', [UserController::class, 'updateUser'])->name('update-user');
+Route::get('/foodstuff/foodstuff-categories', [FoodstuffController::class, 'foodstuffCategories'])->name('get-foodstuff-categories');

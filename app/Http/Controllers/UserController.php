@@ -597,7 +597,14 @@ class UserController extends Controller
             ];
         })->values();
 
-        return response()->json($foodstuffsFinal);
+	$recipe->ingredients = $foodstuffsFinal;
+
+	$ogRecipe = Recipe::find($recipe->recipe_id);
+
+	$recipe->title = $ogRecipe->name;
+	$recipe->imageUrl = $ogRecipe->featured_image;
+
+        return response()->json($recipe);
     }
 
     public function updateShopFoodstuffs(Request $request)

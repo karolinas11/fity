@@ -6,15 +6,18 @@ use App\DataTables\FoodstuffDataTable;
 use App\Models\Foodstuff;
 use App\Models\FoodstuffCategory;
 use App\Services\FoodstuffService;
+use App\Services\FoodstuffCategoryService;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 
 class FoodstuffController extends Controller
 {
      protected FoodstuffService $foodstuffService;
+     protected FoodstuffCategoryService $foodstuffCategoryService;
 
      public function __construct() {
          $this->foodstuffService = new FoodstuffService();
+         $this->foodstuffCategoryService = new FoodstuffCategoryService();
      }
 
      public function showAddFoodstuff() {
@@ -89,6 +92,10 @@ class FoodstuffController extends Controller
         $foodstuff = Foodstuff::find($id);
         $foodstuff->delete();
         return redirect()->route('show-foodstuffs-list');
+    }
+
+    public function foodstuffCategories() {
+        return $this->foodstuffCategoryService->getFoodstuffCategories();
     }
 
 }
