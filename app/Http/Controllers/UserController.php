@@ -338,7 +338,7 @@ class UserController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
         $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
-        $target = $this->userService->getMacrosForUser(User::find($userId));
+        $target = $this->userService->getMacrosForUser2(User::find($userId));
         return response()->json($target);
     }
 

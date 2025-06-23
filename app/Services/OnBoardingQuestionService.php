@@ -65,7 +65,7 @@ class OnBoardingQuestionService{
         if($index == 1) {
             return $responseQuestions;
         } else {
-            $macros = $this->userService->getMacrosForUser($user);
+            $macros = $this->userService->getMacrosForUser2($user);
             $i = 0;
             $answers = [];
             foreach ($macros as $key => $macro) {

@@ -194,6 +194,8 @@ class RecipeController
         foreach ($recipes as $recipe) {
             $recipeFoodstuffs = $this->recipeFoodstuffService->getRecipeFoodstuffs($recipe->id);
             $tunaContain = false;
+            $oatMeal = false;
+            $eggs = false;
             $whey = 0;
             foreach ($recipeFoodstuffs as $recipeFoodstuff) {
                 if($recipeFoodstuff->foodstuff_id == 17 ) {
@@ -201,6 +203,12 @@ class RecipeController
                 }
                 if($recipeFoodstuff->foodstuff_id == 105 ) {
                     $whey = $recipeFoodstuff->amount;
+                }
+                if($recipeFoodstuff->foodstuff_id == 36 ) {
+                    $oatMeal = true;
+                }
+                if($recipeFoodstuff->foodstuff_id == 9 || $recipeFoodstuff->foodstuff_id == 10) {
+                    $eggs = true;
                 }
             }
 
@@ -268,6 +276,8 @@ class RecipeController
                     'fixedProteins' => $fixedProteins,
                     'fixedFats' => $fixedFats,
                     'fixedCarbohydrates' => $fixedCarbohydrates,
+                    'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
+                    'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
                 ];
                 array_push($recipesFinal, $recipeFinal);
             }
@@ -323,6 +333,8 @@ class RecipeController
                     'fixedProteins' => $fixedProteins,
                     'fixedFats' => $fixedFats,
                     'fixedCarbohydrates' => $fixedCarbohydrates,
+                    'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
+                    'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -392,7 +404,9 @@ class RecipeController
                     'fixedCalories' => $fixedCalories,
                     'fixedProteins' => $fixedProteins,
                     'fixedFats' => $fixedFats,
-                    'fixedCarbohydrates' => $fixedCarbohydrates
+                    'fixedCarbohydrates' => $fixedCarbohydrates,
+                    'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
+                    'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -480,7 +494,9 @@ class RecipeController
                     'fixedCalories' => $fixedCalories,
                     'fixedProteins' => $fixedProteins,
                     'fixedFats' => $fixedFats,
-                    'fixedCarbohydrates' => $fixedCarbohydrates
+                    'fixedCarbohydrates' => $fixedCarbohydrates,
+                    'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
+                    'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -536,7 +552,9 @@ class RecipeController
                     'fixedCalories' => $fixedCalories,
                     'fixedProteins' => $fixedProteins,
                     'fixedFats' => $fixedFats,
-                    'fixedCarbohydrates' => $fixedCarbohydrates
+                    'fixedCarbohydrates' => $fixedCarbohydrates,
+                    'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
+                    'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -607,7 +625,9 @@ class RecipeController
                     'fixedCalories' => $fixedCalories,
                     'fixedProteins' => $fixedProteins,
                     'fixedFats' => $fixedFats,
-                    'fixedCarbohydrates' => $fixedCarbohydrates
+                    'fixedCarbohydrates' => $fixedCarbohydrates,
+                    'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
+                    'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -663,7 +683,9 @@ class RecipeController
                     'fixedCalories' => $fixedCalories,
                     'fixedProteins' => $fixedProteins,
                     'fixedFats' => $fixedFats,
-                    'fixedCarbohydrates' => $fixedCarbohydrates
+                    'fixedCarbohydrates' => $fixedCarbohydrates,
+                    'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
+                    'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -734,7 +756,9 @@ class RecipeController
                     'fixedCalories' => $fixedCalories,
                     'fixedProteins' => $fixedProteins,
                     'fixedFats' => $fixedFats,
-                    'fixedCarbohydrates' => $fixedCarbohydrates
+                    'fixedCarbohydrates' => $fixedCarbohydrates,
+                    'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
+                    'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
                 ];
 
                  array_push($recipesFinal, $recipeFinal);
@@ -745,7 +769,7 @@ class RecipeController
         //dd($recipesFinal);
 
         foreach ($recipesFinal as $key => $recipe) {
-            echo $key . ',' . $recipe['id'] . ',' . $recipe['category'] . ',' . $recipe['calories_min'] . ',' . $recipe['proteins_min'] . ',' . $recipe['fats_min'] . ',' . $recipe['carbohydrates_min'] . ',' . $recipe['calories_max'] . ',' . $recipe['proteins_max'] . ',' . $recipe['fats_max'] . ',' . $recipe['carbohydrates_max'] . ',' . $recipe['tuna'] . ',' . $recipe['whey'] . ',' . $recipe['holders'] . ',' . $recipe['fixedCalories'] . ',' . $recipe['fixedProteins'] . ',' . $recipe['fixedFats'] . "<br>";
+            echo $key . ',' . $recipe['id'] . ',' . $recipe['category'] . ',' . $recipe['calories_min'] . ',' . $recipe['proteins_min'] . ',' . $recipe['fats_min'] . ',' . $recipe['carbohydrates_min'] . ',' . $recipe['calories_max'] . ',' . $recipe['proteins_max'] . ',' . $recipe['fats_max'] . ',' . $recipe['carbohydrates_max'] . ',' . $recipe['tuna'] . ',' . $recipe['whey'] . ',' . $recipe['holders'] . ',' . $recipe['fixedCalories'] . ',' . $recipe['fixedProteins'] . ',' . $recipe['fixedFats'] . ',' . $recipe['fixedCarbohydrates'] . ',' . $recipe['eggBreakfast'] . ',' . $recipe['oatBreakfast'] . "<br>";
         }
     }
 

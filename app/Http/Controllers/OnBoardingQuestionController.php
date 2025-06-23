@@ -226,7 +226,7 @@ class OnBoardingQuestionController extends Controller {
         $user->days = 7;
         $user->save();
 
-        $target = $this->userService->getMacrosForUser($user);
+        $target = $this->userService->getMacrosForUser2($user);
         $response = Http::timeout(10000)
             ->withoutVerifying()
             ->post('https://fity-algorithm.fly.dev/meal-plan', [
