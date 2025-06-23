@@ -976,6 +976,9 @@ class RecipeController
         $category = FoodstuffCategory::where('name', '=', $request->category)->get()->first();
 
         $foodstuffs = Foodstuff::where('foodstuff_category_id', '=', $category->id)->get();
+        foreach ($foodstuffs as &$foodstuff) {
+            $foodstuff->foodstuff_category = $category->name;
+        }
         return response()->json($foodstuffs);
     }
 }

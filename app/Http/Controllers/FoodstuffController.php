@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DataTables\FoodstuffDataTable;
 use App\Models\Foodstuff;
 use App\Models\FoodstuffCategory;
+use App\Services\AuthService;
 use App\Services\FoodstuffService;
 use App\Services\FoodstuffCategoryService;
 use Illuminate\Routing\Controller;
@@ -14,10 +15,12 @@ class FoodstuffController extends Controller
 {
      protected FoodstuffService $foodstuffService;
      protected FoodstuffCategoryService $foodstuffCategoryService;
+     protected AuthService $authService;
 
      public function __construct() {
          $this->foodstuffService = new FoodstuffService();
          $this->foodstuffCategoryService = new FoodstuffCategoryService();
+         $this->authService = new AuthService();
      }
 
      public function showAddFoodstuff() {
@@ -94,8 +97,13 @@ class FoodstuffController extends Controller
         return redirect()->route('show-foodstuffs-list');
     }
 
-    public function foodstuffCategories() {
-        return $this->foodstuffCategoryService->getFoodstuffCategories();
+    public function foodstuffCategories(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        return response()->json($this->foodstuffCategoryService->getFoodstuffCategories());
     }
 
 }
