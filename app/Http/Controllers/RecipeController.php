@@ -824,9 +824,12 @@ class RecipeController
         }
 
         $recipe = UserRecipe::find($request->recipeId);
+
         if($request->input('status') == 'bookmarked') {
             $recipe->bookmarked_status = 1;
-        } else {
+        } else if ($request->input('status') == 'deleted') {
+	    $recipe->bookmarked_status = -1;
+	} else {
             $recipe->bookmarked_status = 0;
         }
         $recipe->save();
@@ -899,7 +902,7 @@ class RecipeController
                 }
             }
 
-            if($request->input('onlyBookmarked') == 1) {
+            if($request->input('bookmarkStatus') == 'bookmarked') {
                 $bookmarkedRecipe = UserRecipe::where('recipe_id', $recipe->id)
                     ->where('user_id', $user->id)
                     ->where('bookmarked_status', 1)
@@ -907,6 +910,16 @@ class RecipeController
                     ->first();
 
                 if (!$bookmarkedRecipe) {
+                    continue;
+                }
+            } else if($request->input('bookmarkStatus') == 'deleted') {
+                $deletedRecipe = UserRecipe::where('recipe_id', $recipe->id)
+                    ->where('user_id', $user->id)
+                    ->where('bookmarked_status', -1)
+                    ->get()
+                    ->first();
+
+                if (!$deletedRecipe) {
                     continue;
                 }
             }

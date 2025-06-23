@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FoodstuffController;
 use App\Http\Controllers\OnBoardingQuestionController;
 use App\Http\Controllers\OnBoardingQuestionOptionController;
 use App\Http\Controllers\RecipeController;
@@ -55,3 +56,4 @@ Route::post('/recipes/update-shop-foodstuffs', [UserController::class, 'updateSh
 Route::post('/users/delete-user-scope', [UserController::class, 'deleteUserScope'])->name('delete-user-scope');
 Route::post('/users/update-user', [UserController::class, 'updateUser'])->name('update-user');
 Route::get('/recipes/get-foodstuffs-by-category', [RecipeController::class, 'getFoodstuffsByCategory'])->name('get-foodstuffs-by-category');
+Route::get('/foodstuff/foodstuff-categories', [FoodstuffController::class, 'foodstuffCategories'])->name('get-foodstuff-categories');

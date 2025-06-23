@@ -322,6 +322,13 @@ class UserController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
         $recipe = $this->userRecipeService->getUserRecipeByUserIdAndRecipeId($request->input('recipeId'), $request->input('screen'));
+	if ($recipe->bookmark_status == 1) {
+		$recipe->bookmark_status = 'bookmarked';
+	} else if ($recipe->bookmark_status == -1) {
+                $recipe->bookmark_status = 'deleted';
+	} else {
+                $recipe->bookmark_status = 'active';
+	}
         return response()->json($recipe);
     }
 
@@ -590,7 +597,14 @@ class UserController extends Controller
             ];
         })->values();
 
-        return response()->json($foodstuffsFinal);
+	$recipe->ingredients = $foodstuffsFinal;
+
+	$ogRecipe = Recipe::find($recipe->recipe_id);
+
+	$recipe->title = $ogRecipe->name;
+	$recipe->imageUrl = $ogRecipe->featured_image;
+
+        return response()->json($recipe);
     }
 
     public function updateShopFoodstuffs(Request $request)
