@@ -199,6 +199,7 @@ class UserController extends Controller
         foreach($data['daily_plans'] as &$day) {
             $dayCalories = $dayProteins = $dayFats = $dayCarbs = 0;
             foreach($day['meals'] as &$meal) {
+                $meal['carbohydrates'] = 0;
                 $foodstuffs = $this->recipefoodstuffService->getRecipeFoodstuffs($meal['same_meal_id']);
                 foreach ($meal['holder_quantities'] as $key => $holder) {
                     $f = Foodstuff::find($key);
