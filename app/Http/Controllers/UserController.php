@@ -323,11 +323,11 @@ class UserController extends Controller
         }
         $recipe = $this->userRecipeService->getUserRecipeByUserIdAndRecipeId($request->input('recipeId'), $request->input('screen'));
         if ($recipe->bookmarked_status == 1) {
-            $recipe->bookmark_status = 'bookmarked';
+            $recipe->bookmarked_status = 'bookmarked';
         } else if ($recipe->bookmarked_status == -1) {
-            $recipe->bookmark_status = 'deleted';
+            $recipe->bookmarked_status = 'deleted';
         } else {
-            $recipe->bookmark_status = 'active';
+            $recipe->bookmarked_status = 'active';
         }
         return response()->json($recipe);
     }
