@@ -68,9 +68,9 @@ class OnBoardingQuestionService{
             $macros = $this->userService->getMacrosForUser2($user);
 
             $total = $macros['proteins'] + $macros['fats'] + $macros['carbohydrates'];
-            $proteinsPercentage = $macros['proteins'] / $total;
-            $fatsPercentage = $macros['fats'] / $total;
-            $carbohydratesPercentage = $macros['carbohydrates'] / $total;
+            $proteinsPercentage = number_format($macros['proteins'] / $total, 1, '.', '');
+            $fatsPercentage = number_format($macros['fats'] / $total, 1, '.', '');
+            $carbohydratesPercentage = number_format($macros['carbohydrates'] / $total, 1, '.', '');
 
             $i = 0;
             $answers = [];
