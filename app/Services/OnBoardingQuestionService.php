@@ -76,6 +76,7 @@ class OnBoardingQuestionService{
                     case 'calories': $name = 'Kalorije'; $unit = ' kcal'; break;
                     case 'fats': $name ='Masti'; $unit = 'g' . ',0.7'; break;
                     case 'proteins': $name ='Proteini'; $unit = 'g' . ',0.7'; break;
+                    case 'carbohydrates': $name ='Ugljeni hidrati'; $unit = 'g' . ',0.7'; break;
                     default: $name = $key; $unit = 'g';
                 }
                 $singleAnswer = [
