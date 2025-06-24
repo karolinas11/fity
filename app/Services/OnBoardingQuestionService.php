@@ -66,13 +66,6 @@ class OnBoardingQuestionService{
             return $responseQuestions;
         } else {
             $macros = $this->userService->getMacrosForUser2($user);
-
-            $total = $macros['proteins'] + $macros['fats'] + $macros['carbohydrates'];
-            $proteinsPercentage = $macros['proteins'] / $total;
-            $fatsPercentage = $macros['fats'] / $total;
-            $carbohydratesPercentage = $macros['carbohydrates'] / $total;
-
-
             $i = 0;
             $answers = [];
             foreach ($macros as $key => $macro) {
