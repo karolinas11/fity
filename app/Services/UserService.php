@@ -222,12 +222,15 @@ class UserService
             };
         }
 
+
+        $carbs = ($calories - ($proteins * 4) - ($fats * 9)) / 4;
+
         return  [
-            'calories' => $calories,
-            'proteins' => $proteins,
-            'fats' => $fats,
+            'calories' => number_format($calories, 0),
+            'proteins' => number_format($proteins, 0),
+            'fats' => number_format($fats, 0),
             'weight' => $weight,
-            'carbohydrates' => ($calories - ($proteins * 4) - ($fats * 9)) / 4
+            'carbohydrates' => number_format($carbs, 0)
         ];
 
     }

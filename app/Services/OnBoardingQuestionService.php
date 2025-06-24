@@ -66,6 +66,12 @@ class OnBoardingQuestionService{
             return $responseQuestions;
         } else {
             $macros = $this->userService->getMacrosForUser2($user);
+
+            $total = $macros['proteins'] + $macros['fats'] + $macros['carbohydrates'];
+            $proteinsPercentage = $macros['proteins'] / $total;
+            $fatsPercentage = $macros['fats'] / $total;
+            $carbohydratesPercentage = $macros['carbohydrates'] / $total;
+
             $i = 0;
             $answers = [];
             foreach ($macros as $key => $macro) {
@@ -74,9 +80,9 @@ class OnBoardingQuestionService{
                 $unit = '';
                 switch($key) {
                     case 'calories': $name = 'Kalorije'; $unit = ' kcal'; break;
-                    case 'fats': $name ='Masti'; $unit = 'g' . ',0.7'; break;
-                    case 'proteins': $name ='Proteini'; $unit = 'g' . ',0.7'; break;
-                    case 'carbohydrates': $name ='Ugljeni hidrati'; $unit = 'g' . ',0.7'; break;
+                    case 'fats': $name ='Masti'; $unit = 'g' . ',' . $fatsPercentage; break;
+                    case 'proteins': $name ='Proteini'; $unit = 'g' . ',' . $proteinsPercentage; break;
+                    case 'carbohydrates': $name ='Ugljeni hidrati'; $unit = 'g' . ',' . $carbohydratesPercentage; break;
                     default: $name = $key; $unit = 'g';
                 }
                 $singleAnswer = [
