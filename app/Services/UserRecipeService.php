@@ -83,7 +83,7 @@ class UserRecipeService
             $recipe = UserRecipe::find($recipeId);
             $r = Recipe::where('id', $recipe->recipe_id)->first();
             $recipe->foodstuffs = $recipe->foodstuffs;
-            $recipe->type = $r->type;
+            $recipe->type = (string) $r->type;
             $recipe->name = $r->name;
             $recipe->preparation_time = $r->preparation_time;
             $recipe->featured_image = $r->featured_image;
