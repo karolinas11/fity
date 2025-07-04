@@ -687,4 +687,25 @@ class UserController extends Controller
         return response()->json($user);
     }
 
+    public function changeUserRecipe(Request $request)
+    {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if (!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $user = User::where('firebase_uid', $firebaseUid)->first();
+        $userRecipe = UserRecipe::where('user_id', $user->id)
+            ->where('recipe_id', $request->input('recipeId'))
+            ->get()
+            ->first();
+        $userRecipe->status = $request->input('status');
+        $userRecipe->save();
+        $newUserRecipe = UserRecipe::where('user_id', $user->id)
+            ->where('recipe_id', '!=', $request->input('recipeId'))
+            ->get()
+            ->first();
+
+        return response()->json($newUserRecipe);
+    }
 }

@@ -57,3 +57,4 @@ Route::post('/users/delete-user-scope', [UserController::class, 'deleteUserScope
 Route::post('/users/update-user', [UserController::class, 'updateUser'])->name('update-user');
 Route::get('/recipes/get-foodstuffs-by-category', [RecipeController::class, 'getFoodstuffsByCategory'])->name('get-foodstuffs-by-category');
 Route::get('/foodstuff/foodstuff-categories', [FoodstuffController::class, 'foodstuffCategories'])->name('get-foodstuff-categories');
+Route::get('/users/change-user-recipe', [UserController::class, 'changeUserRecipe'])->name('change-user-recipe');
