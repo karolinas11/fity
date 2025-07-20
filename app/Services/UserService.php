@@ -227,7 +227,8 @@ class UserService
             'proteins' => $proteins,
             'fats' => $fats,
             'weight' => $weight,
-            'carbohydrates' => ($calories - ($proteins * 4) - ($fats * 9)) / 4
+            'carbohydrates' => ($calories - ($proteins * 4) - ($fats * 9)) / 4,
+            'water' => $weight * 0.03
         ];
 
     }

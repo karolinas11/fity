@@ -704,4 +704,20 @@ class UserController extends Controller
 
         return response()->json($userRecipe);
     }
+
+    public function generateNewMealPlan(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if (!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        return response()->json('success', 200);
+    }
+
+    public function updateMealCalendar(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if (!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        return response()->json('success', 200);
+    }
 }

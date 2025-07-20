@@ -58,3 +58,5 @@ Route::post('/users/update-user', [UserController::class, 'updateUser'])->name('
 Route::get('/recipes/get-foodstuffs-by-category', [RecipeController::class, 'getFoodstuffsByCategory'])->name('get-foodstuffs-by-category');
 Route::get('/foodstuff/foodstuff-categories', [FoodstuffController::class, 'foodstuffCategories'])->name('get-foodstuff-categories');
 Route::get('/users/change-user-recipe', [UserController::class, 'changeUserRecipe'])->name('change-user-recipe');
+Route::post('/users/generate-new-meal-plan', [UserController::class, 'generateNewMealPlan'])->name('generate-new-meal-plan');
+Route::post('/users/update-meal-calendar', [UserController::class, 'updateMealCalendar'])->name('update-meal-calendar');
