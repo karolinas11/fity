@@ -60,3 +60,4 @@ Route::get('/foodstuff/foodstuff-categories', [FoodstuffController::class, 'food
 Route::get('/users/change-user-recipe', [UserController::class, 'changeUserRecipe'])->name('change-user-recipe');
 Route::post('/users/generate-new-meal-plan', [UserController::class, 'generateNewMealPlan'])->name('generate-new-meal-plan');
 Route::post('/users/update-meal-calendar', [UserController::class, 'updateMealCalendar'])->name('update-meal-calendar');
+Route::get('/users/repeat-meals', [UserController::class, 'repeatMeals'])->name('repeat-meals');
