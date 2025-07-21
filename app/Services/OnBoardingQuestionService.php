@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use App\Repositories\FoodstuffCategoryRepository;
 use App\Repositories\OnBoardingQuestionRepository;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class OnBoardingQuestionService{
@@ -65,6 +66,9 @@ class OnBoardingQuestionService{
         if($index == 1) {
             return $responseQuestions;
         } else {
+            if($user == null) {
+                $user = Auth::user();
+            }
             $macros = $this->userService->getMacrosForUser2($user);
             $i = 0;
             $answers = [];
