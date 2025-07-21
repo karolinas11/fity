@@ -152,6 +152,7 @@ class UserController extends Controller
 
 
         $data = $response->json();
+        dd($data);
 
         $userRecipes = UserRecipe::where('user_id', $userId)->get();
         foreach ($userRecipes as $userRecipe) {
