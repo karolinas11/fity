@@ -524,6 +524,7 @@ class UserController extends Controller
             array_push($meals, 'uzina2');
         }
         $user->meals = $meals;
+        $user->macros = $this->userService->getMacrosForUser2($user);
         return response()->json($user);
     }
 
