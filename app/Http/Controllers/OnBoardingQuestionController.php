@@ -368,7 +368,7 @@ class OnBoardingQuestionController extends Controller {
         $question6 = json_decode($answers['question_6'], true);
 
         $mealsNum = 0;
-        $defaultUserMealsNum = 4;
+        $defaultUserMealsNum = 5;
         foreach ($question7 as $value) {
             if($value['value'] == 'true') {
                 $mealsNum++;
