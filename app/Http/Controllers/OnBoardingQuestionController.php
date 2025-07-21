@@ -368,11 +368,15 @@ class OnBoardingQuestionController extends Controller {
         $question6 = json_decode($answers['question_6'], true);
 
         $mealsNum = 0;
+        $defaultUserMealsNum = 4;
         foreach ($question7 as $value) {
             if($value['value'] == 'true') {
                 $mealsNum++;
             }
         }
+
+        $user->meals_num = $mealsNum > 2 ? $mealsNum : $defaultUserMealsNum;
+        $user->save();
 
         $foodstuffsArray = [];
         if($question6 && $question6[0]) {
