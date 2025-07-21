@@ -491,6 +491,7 @@ class UserController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
         $user = User::where('firebase_uid', $firebaseUid)->first();
+        $user->macros = $this->userService->getMacrosForUser2($user);
         $activity = '';
         switch ($user->activity) {
             case 1.2:
@@ -525,7 +526,6 @@ class UserController extends Controller
             array_push($meals, 'uzina2');
         }
         $user->meals = $meals;
-        $user->macros = $this->userService->getMacrosForUser2($user);
         return response()->json($user);
     }
 
