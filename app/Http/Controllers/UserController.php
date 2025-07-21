@@ -516,6 +516,14 @@ class UserController extends Controller
             $removedFoodstuffs[] = $allergy;
         }
         $user->removedFoodstuffs = $removedFoodstuffs;
+        $meals = ['dorucak, rucak, vecera'];
+        if($user->meals_num > 3) {
+            array_push($meals, 'uzina1');
+        }
+        if($user->meals_num > 4) {
+            array_push($meals, 'uzina2');
+        }
+        $user->meals = $meals;
         return response()->json($user);
     }
 
