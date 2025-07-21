@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\Foodstuff;
+use App\Models\Recipe;
 use App\Models\RecipeFoodstuff;
 use App\Models\User;
 use App\Models\UserAllergy;
@@ -248,16 +249,22 @@ class OnBoardingQuestionController extends Controller {
             if(!$day['exists']) continue;
             $date = date('Y-m-d', strtotime('+' . $i . ' days'));
             $i++;
+            $lunch = false;
             foreach ($day['meals'] as $meal) {
-                if($meal['same_meal_id'] == 33) {
-                    continue;
-                }
+//                if($meal['same_meal_id'] == 33) {
+//                    continue;
+//                }
+                $r = Recipe::find($meal['same_meal_id']);
                 $userRecipe = UserRecipe::create([
                     'user_id' => $userId,
                     'recipe_id' => $meal['same_meal_id'],
                     'status' => 'active',
-                    'date' => $date
+                    'date' => $date,
+                    'type' => $lunch && $r->type == 2? 4: $r->type
                 ]);
+                if($r->type == 2) {
+                    $lunch = true;
+                }
                 $foodstuffs = $this->recipefoodstuffService->getRecipeFoodstuffs($meal['same_meal_id']);
                 foreach ($foodstuffs as $foodstuff) {
                     if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->calories_holder == 0) {
