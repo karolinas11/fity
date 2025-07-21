@@ -106,11 +106,12 @@ class UserService
             $calories = 655.1 + (9.563 * $user->weight) + (1.85 * $user->height) - (4.676 * $user->age);
             $weight = 45 + (0.9 * ($user->height - 152.4));
         }
-        $calories = $calories * $user->activity;
+        $calories = $calories * (double)$user->activity;
 
         $proteins = 0;
         $fats = 0;
 
+        $weightNew = null;
         switch ($user->activity) {
             case '1.2':
                 $proteins = 1.6 * $weight;
@@ -198,6 +199,8 @@ class UserService
             $calories += 300;
             $proteins = 2 * $weight;
             $fats = 1.2 * $weight;
+
+            $weightNew = $user->weight + 1.29;
         } else {
             switch ($user->activity) {
                 case '1.375':
@@ -226,7 +229,7 @@ class UserService
             'calories' => $calories,
             'proteins' => $proteins,
             'fats' => $fats,
-            'weight' => $weight,
+            'weight' => $weightNew? $weightNew :$weight,
             'carbohydrates' => ($calories - ($proteins * 4) - ($fats * 9)) / 4,
             'water' => $weight * 0.03
         ];
