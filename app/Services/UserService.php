@@ -226,12 +226,12 @@ class UserService
         }
 
         return  [
-            'calories' => $calories,
-            'proteins' => $proteins,
-            'fats' => $fats,
+            'calories' => number_format($calories, 0),
+            'proteins' => number_format($proteins, 0),
+            'fats' => number_format($fats, 0),
             'weight' => $weightNew? $weightNew :$weight,
-            'carbohydrates' => ($calories - ($proteins * 4) - ($fats * 9)) / 4,
-            'water' => $weight * 0.03
+            'carbohydrates' => number_format(($calories - ($proteins * 4) - ($fats * 9)) / 4, 0),
+            'water' => number_format($weight * 0.03, 0)
         ];
 
     }
