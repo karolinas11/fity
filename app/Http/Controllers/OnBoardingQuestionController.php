@@ -8,23 +8,30 @@ use App\Models\UserAllergy;
 use App\Models\UserRecipe;
 use App\Models\UserRecipeFoodstuff;
 use App\Models\UserWeight;
+use App\Repositories\FoodstuffCategoryRepository;
+use App\Services\AuthService;
 use App\Services\OnBoardingQuestionService;
 use App\Services\RecipeFoodstuffService;
 use App\Services\UserService;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class OnBoardingQuestionController extends Controller {
     protected OnBoardingQuestionService $onBoardingQuestionService;
     protected RecipeFoodstuffService $recipefoodstuffService;
+    protected FoodstuffCategoryRepository $foodstuffCategoryRepository;
+    protected AuthService $authService;
 
     protected UserService $userService;
     public function __construct() {
         $this->onBoardingQuestionService =new OnBoardingQuestionService();
         $this->userService = new UserService();
+        $this->foodstuffCategoryRepository = new FoodstuffCategoryRepository();
         $this->recipefoodstuffService= new RecipeFoodstuffService();
+        $this->authService = new AuthService();
     }
     public function index() {
         $questions = $this->onBoardingQuestionService->getOnBoardingQuestions();
@@ -99,6 +106,162 @@ class OnBoardingQuestionController extends Controller {
     public function getOnboardingQuestions($questionSetIndex, $language) {
         $data = $this->onBoardingQuestionService->getOnBoardingQuestionsByIndexAndLang($questionSetIndex, $language);
         return response()->json($data, '200');
+    }
+
+    public function getOnboardingQuestion2(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
+
+        $questions = $this->onBoardingQuestionService->getOnBoardingQuestions();
+        $finalQuestions = [];
+        $macros = $this->userService->getMacrosForUser2($user);
+        $i = 0;
+        $answers = [];
+        foreach ($macros as $key => $macro) {
+            if($key == 'weight') continue;
+            $name = '';
+            $unit = '';
+            switch($key) {
+                case 'calories': $name = 'Kalorije'; $unit = ' kcal'; break;
+                case 'fats': $name ='Masti'; $unit = 'g' . ',0.7'; break;
+                case 'proteins': $name ='Proteini'; $unit = 'g' . ',0.7'; break;
+                case 'carbohydrates': $name ='Ugljeni hidrati'; $unit = 'g' . ',0.7'; break;
+                case 'water': $name = 'Voda'; $unit = 'l' . ',0.7'; break;
+                default: $name = $key; $unit = 'g';
+            }
+            $singleAnswer = [
+                'answerIndex' => $i,
+                'answerTitle' => $name,
+                'answerDetail' => $macro . $unit,
+                'dataType' => $key,
+                'dataValue' => null
+            ];
+            array_push($answers, $singleAnswer);
+            $i++;
+        }
+
+        $singleQuestion = [
+            'id' => 5,
+            'question' => 'Tvoj dnevni plan unosa kalorija i makrosa',
+            'description' => '',
+            'type' => 'calculation',
+            'answers' => $answers,
+        ];
+
+        array_push($finalQuestions, $singleQuestion);
+
+        $answers = [];
+
+        $goal = '';
+        switch ($user->goal) {
+            case 'reduction':
+                $goal = 'gubitak';
+                break;
+            case 'increase':
+                $goal = 'dobitak';
+                break;
+            default:
+                $goal = 'nema';
+        }
+
+        $weightDiff = abs($user->weight - $macros['weight']);
+        $weightDiffTo = $weightDiff + 2;
+        $answers[0] = [
+            'answerIndex' => 0,
+            'answerTitle' => 'Očekivani ' . $goal . ' telesne mase na mesečnom nivou iznosi,' . 'od ' . $weightDiff . 'kg do ' . $weightDiffTo . 'kg',
+            'answerDetail' => $user->weight . ',' . $macros['weight'],
+            'dataType' => 'weight',
+            'dataValue' => null
+        ];
+
+        $singleQuestion = [
+            'id' => 6,
+            'question' => 'Kako će izgledati tvoj napredak',
+            'description' => '',
+            'type' => 'chart',
+            'answers' => $answers
+        ];
+
+        array_push($finalQuestions, $singleQuestion);
+
+        $foodstuffCategories = $this->foodstuffCategoryRepository->getFoodstuffCategoriesAll();
+        $answers = [];
+        $i = 0;
+        foreach ($foodstuffCategories as $foodstuffCategory) {
+            $foodstuffs = '';
+            foreach ($foodstuffCategory->foodstuffsOption as $foodstuff) {
+                $foodstuffs .= $foodstuff->name . ',';
+            }
+            $singleAnswer = [
+                'answerIndex' => $i,
+                'answerTitle' => $foodstuffCategory->name,
+                'answerDetail' => $foodstuffs,
+                'dataType' => 'ingredients',
+                'dataValue' => null
+            ];
+            array_push($answers, $singleAnswer);
+            $i++;
+        }
+
+        $singleQuestion = [
+            'id' => 7,
+            'question' => 'Isključi namirnice koje ne želiš u ishrani ili na koje si alergičan/a',
+            'description' => '',
+            'type' => 'ingredients',
+            'answers' => $answers
+        ];
+        array_push($finalQuestions, $singleQuestion);
+
+        $answers = [];
+        for($i = 0; $i < 5; $i++) {
+            $title = '';
+            switch ($i) {
+                case 0:
+                    $title = 'Doručak';
+                    break;
+                case 1:
+                    $title = 'Ručak';
+                    break;
+                case 2:
+                    $title = 'Večera';
+                    break;
+                case 3:
+                    $title = 'Užina 1';
+                    break;
+                case 4:
+                    $title = 'Užina 2';
+                    break;
+            }
+            $singleAnswer = [
+                'answerIndex' => $i,
+                'answerTitle' => $title,
+                'answerDetail' => '',
+                'dataType' => 'meal',
+                'dataValue' => null
+            ];
+            array_push($answers, $singleAnswer);
+        }
+        $singleQuestion = [
+            'id' => 8,
+            'question' => 'Odaberi broj i tip obroka tokom dana',
+            'description' => 'Kako biste osigurali najbolje rezultate i održivost zdravog načina ishrane preporuka je da tokom dana minimum imate tri glavna obroka i jednu užinu.',
+            'type' => 'toggle',
+            'answers' => $answers
+        ];
+        array_push($finalQuestions, $singleQuestion);
+
+        $responseQuestions = [
+            'questionsPageCount' => 8,
+            'submitForCalculationAfterId' => 4,
+            'submitForResultAfterId' => 8,
+            'questions' => $finalQuestions,
+            'userId' => (string)$user->id
+        ];
+
+        return $responseQuestions;
     }
 
     function saveFirstAnswers(Request $request) {
