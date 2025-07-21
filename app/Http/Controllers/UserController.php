@@ -737,10 +737,7 @@ class UserController extends Controller
         }
 
         $user = User::where('firebase_uid', $firebaseUid)->first();
-        $userRecipe = UserRecipe::where('user_id', $user->id)
-            ->where('recipe_id', $request->input('recipeId'))
-            ->get()
-            ->first();
+        $userRecipe = UserRecipe::find($request->input('recipeId'));
         $userRecipe->status = $request->input('status');
         $userRecipe->save();
 
