@@ -152,7 +152,6 @@ class UserController extends Controller
 
 
         $data = $response->json();
-        dd($data);
 
         $userRecipes = UserRecipe::where('user_id', $userId)->get();
         foreach ($userRecipes as $userRecipe) {
@@ -510,19 +509,6 @@ class UserController extends Controller
                 break;
         }
         $user->activity = $activity;
-        $goal = '';
-        switch ($user->goal) {
-            case 'reduction':
-                $goal = 'Redukcija telesne mase';
-                break;
-            case 'stable':
-                $goal = 'Odrzavanje telesne mase';
-                break;
-            case 'increase':
-                $goal = 'Uvećanje telesne mase';
-                break;
-        }
-        $user->goal = $goal;
         $userAllergies = UserAllergy::where('user_id', $user->id)->get();
         $removedFoodstuffs = [];
         foreach($userAllergies as $userAllergy) {
