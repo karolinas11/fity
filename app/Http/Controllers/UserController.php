@@ -10,6 +10,7 @@ use App\Models\Recipe;
 use App\Models\RecipeFoodstuff;
 use App\Models\Scope;
 use App\Models\User;
+use App\Models\UserAllergy;
 use App\Models\UserRecipe;
 use App\Models\UserRecipeFoodstuff;
 use App\Models\UserWater;
@@ -484,6 +485,45 @@ class UserController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
         $user = User::where('firebase_uid', $firebaseUid)->first();
+        $activity = '';
+        switch ($user->activity) {
+            case 1.2:
+                $activity = 'Nimalo aktivni';
+                break;
+            case 1.375:
+                $activity = 'Slabo aktivni';
+                break;
+            case 1.55:
+                $activity = 'Srednje aktivni';
+                break;
+            case 1.725:
+                $activity = 'Vrlo aktivni';
+                break;
+            case 1.95:
+                $activity = 'Ekstremno aktivni';
+                break;
+        }
+        $user->activity = $activity;
+        $goal = '';
+        switch ($user->goal) {
+            case 'reduction':
+                $goal = 'Redukcija telesne mase';
+                break;
+            case 'stable':
+                $goal = 'Odrzavanje telesne mase';
+                break;
+            case 'increase':
+                $goal = 'Uvećanje telesne mase';
+                break;
+        }
+        $user->goal = $goal;
+        $userAllergies = UserAllergy::where('user_id', $user->id)->get();
+        $removedFoodstuffs = [];
+        foreach($userAllergies as $userAllergy) {
+            $allergy = Foodstuff::find($userAllergy->foodstuff_id);
+            $removedFoodstuffs[] = $allergy;
+        }
+        $user->removedFoodstuffs = $removedFoodstuffs;
         return response()->json($user);
     }
 
