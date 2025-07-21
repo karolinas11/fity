@@ -169,6 +169,7 @@ class UserController extends Controller
 //                if($meal['same_meal_id'] == 33) {
 //                    continue;
 //                }
+                $r = Recipe::find($meal['same_meal_id']);
                 $userRecipe = UserRecipe::create([
                     'user_id' => $userId,
                     'recipe_id' => $meal['same_meal_id'],
