@@ -212,7 +212,7 @@ class OnBoardingQuestionController extends Controller {
         }
 
         $foodstuffsArray = [];
-        if($question6[0]) {
+        if($question6 && $question6[0]) {
             $foodstuffs = $question6[0]['value'];
             $foodstuffsArray = explode(',', $foodstuffs);
             foreach ($foodstuffsArray as $foodstuff) {
