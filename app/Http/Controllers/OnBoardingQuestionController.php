@@ -390,6 +390,7 @@ class OnBoardingQuestionController extends Controller {
             }
         }
 
+        Log::error('MEALS NUM: ' . $mealsNum);
 //        $user->meals_num = 4;
         $user->days = 7;
         $user->save();
