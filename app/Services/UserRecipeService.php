@@ -47,7 +47,7 @@ class UserRecipeService
         	} else {
                 	$recipe["bookmarked_status"] = 'active';
             }
-	    foreach ($recipe->foodstuffs as &$foodstuff) {
+	        foreach ($recipe->foodstuffs as &$foodstuff) {
                 $f = Foodstuff::where('id', $foodstuff->foodstuff_id)->get()[0];
                 $cal += $foodstuff->amount * ($f->calories / 100);
                 $prot += $foodstuff->amount * ($f->proteins / 100);

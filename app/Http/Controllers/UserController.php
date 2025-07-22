@@ -170,35 +170,35 @@ class UserController extends Controller
 //                    continue;
 //                }
                 $r = Recipe::find($meal['same_meal_id']);
-                $userRecipe = UserRecipe::create([
-                    'user_id' => $userId,
-                    'recipe_id' => $meal['same_meal_id'],
-                    'status' => 'active',
-                    'date' => $date,
-                    'type' => $lunch && $r->type == 2? 4: $r->type
-                ]);
+//                $userRecipe = UserRecipe::create([
+//                    'user_id' => $userId,
+//                    'recipe_id' => $meal['same_meal_id'],
+//                    'status' => 'active',
+//                    'date' => $date,
+//                    'type' => $lunch && $r->type == 2? 4: $r->type
+//                ]);
                 if($r->type == 2) {
                     $lunch = true;
                 }
                 $foodstuffs = $this->recipefoodstuffService->getRecipeFoodstuffs($meal['same_meal_id']);
                 foreach ($foodstuffs as $foodstuff) {
                     if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->calories_holder == 0) {
-                        UserRecipeFoodstuff::create([
-                            'user_recipe_id' => $userRecipe->id,
-                            'foodstuff_id' => $foodstuff->foodstuff_id,
-                            'amount' => $foodstuff->amount,
-                            'purchased' => 0
-                        ]);
+//                        UserRecipeFoodstuff::create([
+//                            'user_recipe_id' => $userRecipe->id,
+//                            'foodstuff_id' => $foodstuff->foodstuff_id,
+//                            'amount' => $foodstuff->amount,
+//                            'purchased' => 0
+//                        ]);
                     }
                 }
 
                 foreach ($meal['holder_quantities'] as $key => $holder) {
-                    UserRecipeFoodstuff::create([
-                        'user_recipe_id' => $userRecipe->id,
-                        'foodstuff_id' => $key,
-                        'amount' => $holder,
-                        'purchased' => 0
-                    ]);
+//                    UserRecipeFoodstuff::create([
+//                        'user_recipe_id' => $userRecipe->id,
+//                        'foodstuff_id' => $key,
+//                        'amount' => $holder,
+//                        'purchased' => 0
+//                    ]);
                 }
             }
         }

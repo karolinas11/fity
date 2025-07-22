@@ -435,7 +435,7 @@ class OnBoardingQuestionController extends Controller {
                 }
                 $foodstuffs = $this->recipefoodstuffService->getRecipeFoodstuffs($meal['same_meal_id']);
                 foreach ($foodstuffs as $foodstuff) {
-                    if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->calories_holder == 0) {
+                    if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->carbohydrates_holder == 0) {
                         UserRecipeFoodstuff::create([
                             'user_recipe_id' => $userRecipe->id,
                             'foodstuff_id' => $foodstuff->foodstuff_id,
