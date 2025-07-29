@@ -769,7 +769,7 @@ class RecipeController
         //dd($recipesFinal);
 
         foreach ($recipesFinal as $key => $recipe) {
-            echo $key . ',' . $recipe['id'] . ',' . $recipe['category'] . ',' . $recipe['calories_min'] . ',' . $recipe['proteins_min'] . ',' . $recipe['fats_min'] . ',' . $recipe['carbohydrates_min'] . ',' . $recipe['calories_max'] . ',' . $recipe['proteins_max'] . ',' . $recipe['fats_max'] . ',' . $recipe['carbohydrates_max'] . ',' . $recipe['tuna'] . ',' . $recipe['whey'] . ',' . $recipe['holders'] . ',' . $recipe['fixedCalories'] . ',' . $recipe['fixedProteins'] . ',' . $recipe['fixedFats'] . ',' . $recipe['fixedCarbohydrates'] . ',' . $recipe['eggBreakfast'] . ',' . $recipe['oatBreakfast'] . "<br>";
+            echo $key . ',' . $recipe['id'] . ',' . $recipe['category'] . ',' . $recipe['calories_min'] . ',' . $recipe['proteins_min'] . ',' . $recipe['fats_min'] . ',' . $recipe['carbohydrates_min'] . ',' . $recipe['calories_max'] . ',' . $recipe['proteins_max'] . ',' . $recipe['fats_max'] . ',' . $recipe['carbohydrates_max'] . ',' . $recipe['tuna'] . ',' . $recipe['whey'] . ',' . $recipe['holders'] . ',' . $recipe['fixedCalories'] . ',' . $recipe['fixedProteins'] . ',' . $recipe['fixedFats'] . ',' . $recipe['fixedCarbohydrates'] . "<br>";
         }
     }
 
