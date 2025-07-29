@@ -195,6 +195,7 @@ class UserService
             }
 
             $calories -= $caloriesAdd;
+            $weightNew = $user->weight - 1.29;
         } else if($user->goal == 'increase') {
             $calories += 300;
             $proteins = 2 * $weight;
@@ -223,6 +224,8 @@ class UserService
                 '1.375' => 1.8 * $weight,
                 default => 2 * $weight,
             };
+
+            $weightNew = $user->weight;
         }
 
         return  [

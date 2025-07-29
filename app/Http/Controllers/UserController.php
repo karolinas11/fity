@@ -137,18 +137,26 @@ class UserController extends Controller
         } else {
             $target = $this->userService->getMacrosForUser2($user);
         }
+
+        $userAllergies = UserAllergy::where('user_id', $userId)->get();
+        $allergyIds = [];
+        foreach ($userAllergies as $userAllergy) {
+            $allergyIds[] = $userAllergy->foodstuff_id;
+        }
+
         $response = Http::timeout(10000)
             ->withoutVerifying()
             ->post('https://fity-algorithm.fly.dev/meal-plan', [
-            'target_calories' => $target['calories'],
-            'target_protein' => $target['proteins'],
-            'target_fat' => $target['fats'],
-            'meals_num' => $user->meals_num,
-            'tolerance_calories' => $user->tolerance_calories,
-            'tolerance_proteins' => $user->tolerance_proteins,
-            'tolerance_fats' => $user->tolerance_fats,
-            'days' => $user->days
-        ]);
+                'target_calories' => $target['calories'],
+                'target_protein' => $target['proteins'],
+                'target_fat' => $target['fats'],
+                'meals_num' => $user->meals_num,
+                'tolerance_calories' => $user->tolerance_calories,
+                'tolerance_proteins' => $user->tolerance_proteins,
+                'tolerance_fats' => $user->tolerance_fats,
+                'days' => $user->days,
+                'allergy_holder_ids' => $allergyIds
+            ]);
 
 
         $data = $response->json();

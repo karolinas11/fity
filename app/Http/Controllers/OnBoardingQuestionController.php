@@ -395,6 +395,12 @@ class OnBoardingQuestionController extends Controller {
         $user->days = 7;
         $user->save();
 
+        $userAllergies = UserAllergy::where('user_id', $userId)->get();
+        $allergyIds = [];
+        foreach ($userAllergies as $userAllergy) {
+            $allergyIds[] = $userAllergy->foodstuff_id;
+        }
+
         $target = $this->userService->getMacrosForUser2($user);
         $response = Http::timeout(10000)
             ->withoutVerifying()
@@ -406,55 +412,59 @@ class OnBoardingQuestionController extends Controller {
                 'tolerance_calories' => $user->tolerance_calories,
                 'tolerance_proteins' => $user->tolerance_proteins,
                 'tolerance_fats' => $user->tolerance_fats,
-                'days' => $user->days
+                'days' => $user->days,
+                'allergy_holder_ids' => $allergyIds
             ]);
 
 
         $data = $response->json();
 
         $i = 0;
-        foreach ($data['daily_plans'] as $day) {
-            if(!$day['exists']) continue;
-            $date = date('Y-m-d', strtotime('+' . $i . ' days'));
-            $i++;
-            $lunch = false;
-            foreach ($day['meals'] as $meal) {
+        for($k = 0; $k < 5; $k++) {
+            foreach ($data['daily_plans'] as $day) {
+                if(!$day['exists']) continue;
+                $date = date('Y-m-d', strtotime('+' . $i . ' days'));
+                $i++;
+                $lunch = false;
+                foreach ($day['meals'] as $meal) {
 //                if($meal['same_meal_id'] == 33) {
 //                    continue;
 //                }
-                $r = Recipe::find($meal['same_meal_id']);
-                $userRecipe = UserRecipe::create([
-                    'user_id' => $userId,
-                    'recipe_id' => $meal['same_meal_id'],
-                    'status' => 'active',
-                    'date' => $date,
-                    'type' => $lunch && $r->type == 2? 4: $r->type
-                ]);
-                if($r->type == 2) {
-                    $lunch = true;
-                }
-                $foodstuffs = $this->recipefoodstuffService->getRecipeFoodstuffs($meal['same_meal_id']);
-                foreach ($foodstuffs as $foodstuff) {
-                    if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->carbohydrates_holder == 0) {
+                    $r = Recipe::find($meal['same_meal_id']);
+                    $userRecipe = UserRecipe::create([
+                        'user_id' => $userId,
+                        'recipe_id' => $meal['same_meal_id'],
+                        'status' => 'active',
+                        'date' => $date,
+                        'type' => $lunch && $r->type == 2? 4: $r->type
+                    ]);
+                    if($r->type == 2) {
+                        $lunch = true;
+                    }
+                    $foodstuffs = $this->recipefoodstuffService->getRecipeFoodstuffs($meal['same_meal_id']);
+                    foreach ($foodstuffs as $foodstuff) {
+                        if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->carbohydrates_holder == 0) {
+                            UserRecipeFoodstuff::create([
+                                'user_recipe_id' => $userRecipe->id,
+                                'foodstuff_id' => $foodstuff->foodstuff_id,
+                                'amount' => $foodstuff->amount,
+                                'purchased' => 0
+                            ]);
+                        }
+                    }
+
+                    foreach ($meal['holder_quantities'] as $key => $holder) {
                         UserRecipeFoodstuff::create([
                             'user_recipe_id' => $userRecipe->id,
-                            'foodstuff_id' => $foodstuff->foodstuff_id,
-                            'amount' => $foodstuff->amount,
+                            'foodstuff_id' => $key,
+                            'amount' => $holder,
                             'purchased' => 0
                         ]);
                     }
                 }
-
-                foreach ($meal['holder_quantities'] as $key => $holder) {
-                    UserRecipeFoodstuff::create([
-                        'user_recipe_id' => $userRecipe->id,
-                        'foodstuff_id' => $key,
-                        'amount' => $holder,
-                        'purchased' => 0
-                    ]);
-                }
             }
         }
+
 
         return response()->json($userId, '200');
     }
