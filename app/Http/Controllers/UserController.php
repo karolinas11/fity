@@ -600,6 +600,7 @@ class UserController extends Controller
                 $foodstuff->foodstuff_id = $foodstuffId;
                 $foodstuff->amount = $foodstuff->amount;
                 $foodstuff->purchased = $foodstuff->purchased;
+                $foodstuff->featured_image = $fullFoodstuffModel->featured_image;
                 $foodstuffs->push($foodstuff);
             }
         }
@@ -635,6 +636,7 @@ class UserController extends Controller
             $foodstuff->foodstuff_id = $foodstuffId;
             $foodstuff->amount = $foodstuff->amount;
             $foodstuff->purchased = $foodstuff->purchased;
+            $foodstuff->featured_image = $fullFoodstuffModel->featured_image;
             $foodstuffs->push($foodstuff);
         }
 

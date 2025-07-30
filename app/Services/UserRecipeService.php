@@ -102,6 +102,7 @@ class UserRecipeService
                 $ch += $foodstuff->amount * ($f->carbohydrates / 100);
                 $foodstuff->foodstuff_category = FoodstuffCategory::where('id', $f->foodstuff_category_id)->get()[0]->name;
                 $foodstuff->name = $f->name;
+                $foodstuff->featured_image = $f->featured_image;
             }
 
             $recipe->calAmount = $cal;
@@ -129,6 +130,7 @@ class UserRecipeService
                 $ch += $foodstuff->amount * ($f->carbohydrates / 100);
                 $foodstuff->foodstuff_category = FoodstuffCategory::where('id', $f->foodstuff_category_id)->get()[0]->name;
                 $foodstuff->name = $f->name;
+                $foodstuff->featured_image = $f->featured_image;
             }
 
             $recipe->calAmount = $cal;
