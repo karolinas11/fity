@@ -107,11 +107,11 @@ class UserRecipeService
                     $pieces = $foodstuff->amount / $f->piece_amount;
                     $output = $pieces;
                     if($pieces == 1) {
-                        $output .= $f->piece_1;
+                        $output .= ' ' . $f->piece_1;
                     } else if($pieces > 1 && $pieces < 5) {
-                        $output .= $f->pieces_2_4;
+                        $output .= ' ' . $f->pieces_2_4;
                     } else {
-                        $output .= $f->pieces_5_9;
+                        $output .= ' ' . $f->pieces_5_9;
                     }
                     $foodstuff->description = $output;
                 } else {
@@ -149,11 +149,11 @@ class UserRecipeService
                     $pieces = $foodstuff->amount / $f->piece_amount;
                     $output = $pieces;
                     if($pieces == 1) {
-                        $output .= $f->piece_1;
+                        $output .= ' ' . $f->piece_1;
                     } else if($pieces > 1 && $pieces < 5) {
-                        $output .= $f->pieces_2_4;
+                        $output .= ' ' . $f->pieces_2_4;
                     } else {
-                        $output .= $f->pieces_5_9;
+                        $output .= ' ' . $f->pieces_5_9;
                     }
                     $foodstuff->description = $output;
                 } else {

@@ -600,11 +600,11 @@ class UserController extends Controller
                     $pieces = $foodstuff->amount / $fullFoodstuffModel->piece_amount;
                     $output = $pieces;
                     if($pieces == 1) {
-                        $output .= $fullFoodstuffModel->piece_1;
+                        $output .= ' ' . $fullFoodstuffModel->piece_1;
                     } else if($pieces > 1 && $pieces < 5) {
-                        $output .= $fullFoodstuffModel->pieces_2_4;
+                        $output .= ' ' . $fullFoodstuffModel->pieces_2_4;
                     } else {
-                        $output .= $fullFoodstuffModel->pieces_5_9;
+                        $output .= ' ' . $fullFoodstuffModel->pieces_5_9;
                     }
                     $foodstuff->description = $output;
                 } else {
@@ -650,11 +650,11 @@ class UserController extends Controller
                 $pieces = $foodstuff->amount / $fullFoodstuffModel->piece_amount;
                 $output = $pieces;
                 if($pieces == 1) {
-                    $output .= $fullFoodstuffModel->piece_1;
+                    $output .= ' ' . $fullFoodstuffModel->piece_1;
                 } else if($pieces > 1 && $pieces < 5) {
-                    $output .= $fullFoodstuffModel->pieces_2_4;
+                    $output .= ' ' . $fullFoodstuffModel->pieces_2_4;
                 } else {
-                    $output .= $fullFoodstuffModel->pieces_5_9;
+                    $output .= ' ' . $fullFoodstuffModel->pieces_5_9;
                 }
                 $foodstuff->description = $output;
             } else {
