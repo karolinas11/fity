@@ -921,6 +921,8 @@ class RecipeController
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
+        Log::error('FILTER: ' . print_r($request->all(), true));
+
         $user = User::where('firebase_uid', $firebaseUid)->get()->first();
 
         $recipes = Recipe::all();
