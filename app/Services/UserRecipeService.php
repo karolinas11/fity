@@ -113,9 +113,9 @@ class UserRecipeService
                     } else {
                         $output .= $f->pieces_5_9;
                     }
-                    $foodstuff->by_piece = $output;
+                    $foodstuff->description = $output;
                 } else {
-                    $foodstuff->by_piece = null;
+                    $foodstuff->description = null;
                 }
             }
 
@@ -155,9 +155,9 @@ class UserRecipeService
                     } else {
                         $output .= $f->pieces_5_9;
                     }
-                    $foodstuff->by_piece = $output;
+                    $foodstuff->description = $output;
                 } else {
-                    $foodstuff->by_piece = null;
+                    $foodstuff->description = null;
                 }
             }
 

@@ -606,9 +606,9 @@ class UserController extends Controller
                     } else {
                         $output .= $fullFoodstuffModel->pieces_5_9;
                     }
-                    $foodstuff->by_piece = $output;
+                    $foodstuff->description = $output;
                 } else {
-                    $foodstuff->by_piece = null;
+                    $foodstuff->description = null;
                 }
                 $foodstuffs->push($foodstuff);
             }
@@ -656,9 +656,9 @@ class UserController extends Controller
                 } else {
                     $output .= $fullFoodstuffModel->pieces_5_9;
                 }
-                $foodstuff->by_piece = $output;
+                $foodstuff->description = $output;
             } else {
-                $foodstuff->by_piece = null;
+                $foodstuff->description = null;
             }
             $foodstuffs->push($foodstuff);
         }
