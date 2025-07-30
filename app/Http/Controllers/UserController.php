@@ -161,12 +161,6 @@ class UserController extends Controller
 
         $data = $response->json();
 
-        $userRecipes = UserRecipe::where('user_id', $userId)->get();
-        foreach ($userRecipes as $userRecipe) {
-            UserRecipeFoodstuff::where('user_recipe_id', $userRecipe->id)->delete();
-            $userRecipe->delete();
-        }
-
         $i = 0;
         foreach ($data['daily_plans'] as $day) {
             if(!$day['exists']) continue;
