@@ -102,7 +102,21 @@ class UserRecipeService
                 $ch += $foodstuff->amount * ($f->carbohydrates / 100);
                 $foodstuff->foodstuff_category = FoodstuffCategory::where('id', $f->foodstuff_category_id)->get()[0]->name;
                 $foodstuff->name = $f->name;
-                $foodstuff->featured_image = $f->featured_image;
+                $foodstuff->imageUrl = $f->featured_image;
+                if($f->has_piece == 1) {
+                    $pieces = $foodstuff->amount / $f->piece_amount;
+                    $output = $pieces;
+                    if($pieces == 1) {
+                        $output .= $f->piece_1;
+                    } else if($pieces > 1 && $pieces < 5) {
+                        $output .= $f->pieces_2_4;
+                    } else {
+                        $output .= $f->pieces_5_9;
+                    }
+                    $foodstuff->by_piece = $output;
+                } else {
+                    $foodstuff->by_piece = null;
+                }
             }
 
             $recipe->calAmount = $cal;
@@ -130,7 +144,21 @@ class UserRecipeService
                 $ch += $foodstuff->amount * ($f->carbohydrates / 100);
                 $foodstuff->foodstuff_category = FoodstuffCategory::where('id', $f->foodstuff_category_id)->get()[0]->name;
                 $foodstuff->name = $f->name;
-                $foodstuff->featured_image = $f->featured_image;
+                $foodstuff->imageUrl = $f->featured_image;
+                if($f->has_piece == 1) {
+                    $pieces = $foodstuff->amount / $f->piece_amount;
+                    $output = $pieces;
+                    if($pieces == 1) {
+                        $output .= $f->piece_1;
+                    } else if($pieces > 1 && $pieces < 5) {
+                        $output .= $f->pieces_2_4;
+                    } else {
+                        $output .= $f->pieces_5_9;
+                    }
+                    $foodstuff->by_piece = $output;
+                } else {
+                    $foodstuff->by_piece = null;
+                }
             }
 
             $recipe->calAmount = $cal;

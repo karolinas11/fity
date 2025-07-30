@@ -11,7 +11,7 @@
             @if($foodstuff->featured_image)
                 <div class="row mb-3">
                     <div class="col-md-2">
-                        <img id="preview-image" src="{{ asset('storage/featured_foodstuffs/' . $foodstuff->featured_image) }}" alt="Glavna slika" style="width: 100px; height: auto;">
+                        <img id="preview-image" src="{{ asset('storage/foodstuffs/' . $foodstuff->featured_image) }}" alt="Glavna slika" style="width: 100px; height: auto;">
                     </div>
                 </div>
             @else

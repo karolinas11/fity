@@ -146,7 +146,7 @@ class UserController extends Controller
 
         $response = Http::timeout(10000)
             ->withoutVerifying()
-            ->post('https://fity-algorithm.fly.dev/meal-plan', [
+            ->post('https://fity-algorithm-develop.fly.dev/meal-plan/', [
                 'target_calories' => $target['calories'],
                 'target_protein' => $target['proteins'],
                 'target_fat' => $target['fats'],
@@ -161,6 +161,7 @@ class UserController extends Controller
 
         $data = $response->json();
 
+        dd($data);
         $i = 0;
         foreach ($data['daily_plans'] as $day) {
             if(!$day['exists']) continue;
@@ -594,7 +595,21 @@ class UserController extends Controller
                 $foodstuff->foodstuff_id = $foodstuffId;
                 $foodstuff->amount = $foodstuff->amount;
                 $foodstuff->purchased = $foodstuff->purchased;
-                $foodstuff->featured_image = $fullFoodstuffModel->featured_image;
+                $foodstuff->imageUrl = $fullFoodstuffModel->featured_image;
+                if($fullFoodstuffModel->has_piece == 1) {
+                    $pieces = $foodstuff->amount / $fullFoodstuffModel->piece_amount;
+                    $output = $pieces;
+                    if($pieces == 1) {
+                        $output .= $fullFoodstuffModel->piece_1;
+                    } else if($pieces > 1 && $pieces < 5) {
+                        $output .= $fullFoodstuffModel->pieces_2_4;
+                    } else {
+                        $output .= $fullFoodstuffModel->pieces_5_9;
+                    }
+                    $foodstuff->by_piece = $output;
+                } else {
+                    $foodstuff->by_piece = null;
+                }
                 $foodstuffs->push($foodstuff);
             }
         }
@@ -630,7 +645,21 @@ class UserController extends Controller
             $foodstuff->foodstuff_id = $foodstuffId;
             $foodstuff->amount = $foodstuff->amount;
             $foodstuff->purchased = $foodstuff->purchased;
-            $foodstuff->featured_image = $fullFoodstuffModel->featured_image;
+            $foodstuff->imageUrl = $fullFoodstuffModel->featured_image;
+            if($fullFoodstuffModel->has_piece == 1) {
+                $pieces = $foodstuff->amount / $fullFoodstuffModel->piece_amount;
+                $output = $pieces;
+                if($pieces == 1) {
+                    $output .= $fullFoodstuffModel->piece_1;
+                } else if($pieces > 1 && $pieces < 5) {
+                    $output .= $fullFoodstuffModel->pieces_2_4;
+                } else {
+                    $output .= $fullFoodstuffModel->pieces_5_9;
+                }
+                $foodstuff->by_piece = $output;
+            } else {
+                $foodstuff->by_piece = null;
+            }
             $foodstuffs->push($foodstuff);
         }
 

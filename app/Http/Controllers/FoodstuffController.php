@@ -46,7 +46,7 @@ class FoodstuffController extends Controller
          if ($request->hasFile('featured_image')) {
              $image = $request->file('featured_image');
              $imageName = $image->getClientOriginalName();
-             $image->storeAs('public/featured_foodstuffs', $imageName);
+             $image->storeAs('public/foodstuffs', $imageName);
              $foodstuffData['featured_image'] = $imageName;
          }
 
@@ -82,7 +82,7 @@ class FoodstuffController extends Controller
         if ($request->hasFile('featured_image')) {
             $image = $request->file('featured_image');
             $imageName = $image->getClientOriginalName();
-            $image->storeAs('public/featured_foodstuffs', $imageName);
+            $image->storeAs('public/foodstuffs', $imageName);
             $foodstuffData['featured_image'] = $imageName;
         }
 
