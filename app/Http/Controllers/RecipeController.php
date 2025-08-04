@@ -197,6 +197,12 @@ class RecipeController
             $oatMeal = false;
             $eggs = false;
             $whey = 0;
+            $hasFruit = false;
+
+            if($recipe->id <= 160 && $recipe->id >= 139) {
+                $hasFruit = true;
+            }
+
             foreach ($recipeFoodstuffs as $recipeFoodstuff) {
                 if($recipeFoodstuff->foodstuff_id == 17 ) {
                     $tunaContain = true;
@@ -278,6 +284,7 @@ class RecipeController
                     'fixedCarbohydrates' => $fixedCarbohydrates,
                     'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
                     'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
+                    'hasFruit' => $hasFruit ? 1 : 0,
                 ];
                 array_push($recipesFinal, $recipeFinal);
             }
@@ -335,6 +342,7 @@ class RecipeController
                     'fixedCarbohydrates' => $fixedCarbohydrates,
                     'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
                     'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
+                    'hasFruit' => $hasFruit ? 1 : 0,
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -407,6 +415,7 @@ class RecipeController
                     'fixedCarbohydrates' => $fixedCarbohydrates,
                     'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
                     'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
+                    'hasFruit' => $hasFruit ? 1 : 0,
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -497,6 +506,7 @@ class RecipeController
                     'fixedCarbohydrates' => $fixedCarbohydrates,
                     'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
                     'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
+                    'hasFruit' => $hasFruit ? 1 : 0,
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -555,6 +565,7 @@ class RecipeController
                     'fixedCarbohydrates' => $fixedCarbohydrates,
                     'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
                     'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
+                    'hasFruit' => $hasFruit ? 1 : 0,
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -628,6 +639,7 @@ class RecipeController
                     'fixedCarbohydrates' => $fixedCarbohydrates,
                     'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
                     'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
+                    'hasFruit' => $hasFruit ? 1 : 0,
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -686,6 +698,7 @@ class RecipeController
                     'fixedCarbohydrates' => $fixedCarbohydrates,
                     'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
                     'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
+                    'hasFruit' => $hasFruit ? 1 : 0,
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -759,6 +772,7 @@ class RecipeController
                     'fixedCarbohydrates' => $fixedCarbohydrates,
                     'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
                     'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
+                    'hasFruit' => $hasFruit ? 1 : 0,
                 ];
 
                  array_push($recipesFinal, $recipeFinal);
@@ -769,7 +783,7 @@ class RecipeController
         //dd($recipesFinal);
 
         foreach ($recipesFinal as $key => $recipe) {
-            echo $key . ',' . $recipe['id'] . ',' . $recipe['category'] . ',' . $recipe['calories_min'] . ',' . $recipe['proteins_min'] . ',' . $recipe['fats_min'] . ',' . $recipe['carbohydrates_min'] . ',' . $recipe['calories_max'] . ',' . $recipe['proteins_max'] . ',' . $recipe['fats_max'] . ',' . $recipe['carbohydrates_max'] . ',' . $recipe['tuna'] . ',' . $recipe['whey'] . ',' . $recipe['holders'] . ',' . $recipe['fixedCalories'] . ',' . $recipe['fixedProteins'] . ',' . $recipe['fixedFats'] . ',' . $recipe['fixedCarbohydrates'] . ',' . $recipe['eggBreakfast'] . ',' . $recipe['oatBreakfast'] . "<br>";
+            echo $key . ',' . $recipe['id'] . ',' . $recipe['category'] . ',' . $recipe['calories_min'] . ',' . $recipe['proteins_min'] . ',' . $recipe['fats_min'] . ',' . $recipe['carbohydrates_min'] . ',' . $recipe['calories_max'] . ',' . $recipe['proteins_max'] . ',' . $recipe['fats_max'] . ',' . $recipe['carbohydrates_max'] . ',' . $recipe['tuna'] . ',' . $recipe['whey'] . ',' . $recipe['holders'] . ',' . $recipe['fixedCalories'] . ',' . $recipe['fixedProteins'] . ',' . $recipe['fixedFats'] . ',' . $recipe['fixedCarbohydrates'] . ',' . $recipe['eggBreakfast'] . ',' . $recipe['oatBreakfast'] . ',' . $recipe['hasFruit'] . "<br>";
         }
     }
 
@@ -916,14 +930,14 @@ class RecipeController
     }
 
     public function filterRecipes(Request $request) {
-        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
-        if(!$firebaseUid) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+//        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+//        if(!$firebaseUid) {
+//            return response()->json(['error' => 'Unauthorized'], 401);
+//        }
 
         Log::error('FILTER: ' . print_r($request->all(), true));
 
-        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
+//        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
 
         $recipes = Recipe::all();
         $types = (array) $request->input('types');
@@ -950,42 +964,42 @@ class RecipeController
                 }
             }
 
-            if($request->input('bookmarkStatus') == 'bookmarked') {
-                $bookmarkedRecipe = UserRecipe::where('recipe_id', $recipe->id)
-                    ->where('user_id', $user->id)
-                    ->where('bookmarked_status', 1)
-                    ->get()
-                    ->first();
+//            if($request->input('bookmarkStatus') == 'bookmarked') {
+//                $bookmarkedRecipe = UserRecipe::where('recipe_id', $recipe->id)
+//                    ->where('user_id', $user->id)
+//                    ->where('bookmarked_status', 1)
+//                    ->get()
+//                    ->first();
+//
+//                if (!$bookmarkedRecipe) {
+//                    continue;
+//                }
+//            } else if($request->input('bookmarkStatus') == 'deleted') {
+//                $deletedRecipe = UserRecipe::where('recipe_id', $recipe->id)
+//                    ->where('user_id', $user->id)
+//                    ->where('bookmarked_status', -1)
+//                    ->get()
+//                    ->first();
+//
+//                if (!$deletedRecipe) {
+//                    continue;
+//                }
+//            }
 
-                if (!$bookmarkedRecipe) {
-                    continue;
-                }
-            } else if($request->input('bookmarkStatus') == 'deleted') {
-                $deletedRecipe = UserRecipe::where('recipe_id', $recipe->id)
-                    ->where('user_id', $user->id)
-                    ->where('bookmarked_status', -1)
-                    ->get()
-                    ->first();
-
-                if (!$deletedRecipe) {
-                    continue;
-                }
-            }
-
-            $userRecipes = UserRecipe::where('recipe_id', $recipe->id)
-                ->where('user_id', $user->id)
-                ->get();
-
-            $b = 'active';
-            foreach($userRecipes as $userRecipe) {
-                if($userRecipe->bookmarked_status == 1) {
-                    $b = 'bookmarked';
-                } else if($userRecipe->bookmarked_status == -1) {
-                    $b = 'deleted';
-                }
-            }
-
-            $recipe->bookmarked_status = $b;
+//            $userRecipes = UserRecipe::where('recipe_id', $recipe->id)
+//                ->where('user_id', $user->id)
+//                ->get();
+//
+//            $b = 'active';
+//            foreach($userRecipes as $userRecipe) {
+//                if($userRecipe->bookmarked_status == 1) {
+//                    $b = 'bookmarked';
+//                } else if($userRecipe->bookmarked_status == -1) {
+//                    $b = 'deleted';
+//                }
+//            }
+//
+//            $recipe->bookmarked_status = $b;
 
             $recipesFinal[] = $recipe;
         }
