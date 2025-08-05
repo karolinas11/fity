@@ -868,6 +868,8 @@ class RecipeController
 
         $user = User::where('firebase_uid', $firebaseUid)->get()->first();
 
+        Log::error('REQUEST: ' . json_encode($request->all()));
+
         if($request->screen == 'planer') {
             $recipe = UserRecipe::find($request->recipeId);
 
@@ -935,14 +937,14 @@ class RecipeController
     }
 
     public function filterRecipes(Request $request) {
-//        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
-//        if(!$firebaseUid) {
-//            return response()->json(['error' => 'Unauthorized'], 401);
-//        }
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
 
         Log::error('FILTER: ' . print_r($request->all(), true));
 
-//        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
+        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
 
         $recipes = Recipe::all();
         $types = (array) $request->input('types');
@@ -969,42 +971,42 @@ class RecipeController
                 }
             }
 
-//            if($request->input('bookmarkStatus') == 'bookmarked') {
-//                $bookmarkedRecipe = UserRecipe::where('recipe_id', $recipe->id)
-//                    ->where('user_id', $user->id)
-//                    ->where('bookmarked_status', 1)
-//                    ->get()
-//                    ->first();
-//
-//                if (!$bookmarkedRecipe) {
-//                    continue;
-//                }
-//            } else if($request->input('bookmarkStatus') == 'deleted') {
-//                $deletedRecipe = UserRecipe::where('recipe_id', $recipe->id)
-//                    ->where('user_id', $user->id)
-//                    ->where('bookmarked_status', -1)
-//                    ->get()
-//                    ->first();
-//
-//                if (!$deletedRecipe) {
-//                    continue;
-//                }
-//            }
+            if($request->input('bookmarkStatus') == 'bookmarked') {
+                $bookmarkedRecipe = UserRecipe::where('recipe_id', $recipe->id)
+                    ->where('user_id', $user->id)
+                    ->where('bookmarked_status', 1)
+                    ->get()
+                    ->first();
 
-//            $userRecipes = UserRecipe::where('recipe_id', $recipe->id)
-//                ->where('user_id', $user->id)
-//                ->get();
-//
-//            $b = 'active';
-//            foreach($userRecipes as $userRecipe) {
-//                if($userRecipe->bookmarked_status == 1) {
-//                    $b = 'bookmarked';
-//                } else if($userRecipe->bookmarked_status == -1) {
-//                    $b = 'deleted';
-//                }
-//            }
-//
-//            $recipe->bookmarked_status = $b;
+                if (!$bookmarkedRecipe) {
+                    continue;
+                }
+            } else if($request->input('bookmarkStatus') == 'deleted') {
+                $deletedRecipe = UserRecipe::where('recipe_id', $recipe->id)
+                    ->where('user_id', $user->id)
+                    ->where('bookmarked_status', -1)
+                    ->get()
+                    ->first();
+
+                if (!$deletedRecipe) {
+                    continue;
+                }
+            }
+
+            $userRecipes = UserRecipe::where('recipe_id', $recipe->id)
+                ->where('user_id', $user->id)
+                ->get();
+
+            $b = 'active';
+            foreach($userRecipes as $userRecipe) {
+                if($userRecipe->bookmarked_status == 1) {
+                    $b = 'bookmarked';
+                } else if($userRecipe->bookmarked_status == -1) {
+                    $b = 'deleted';
+                }
+            }
+
+            $recipe->bookmarked_status = $b;
 
             $recipesFinal[] = $recipe;
         }
