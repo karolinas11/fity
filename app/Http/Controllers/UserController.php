@@ -161,6 +161,7 @@ class UserController extends Controller
 
         $data = $response->json();
 
+        dd($data);
         $i = 0;
         foreach ($data['daily_plans'] as $day) {
             if(!$day['exists']) continue;
