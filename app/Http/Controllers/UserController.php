@@ -154,14 +154,13 @@ class UserController extends Controller
                 'tolerance_calories' => $user->tolerance_calories,
                 'tolerance_proteins' => $user->tolerance_proteins,
                 'tolerance_fats' => $user->tolerance_fats,
-                'days' => $user->days,
+                'days' => 30,
                 'allergy_holder_ids' => $allergyIds
             ]);
 
 
         $data = $response->json();
 
-        dd($data);
         $i = 0;
         foreach ($data['daily_plans'] as $day) {
             if(!$day['exists']) continue;
