@@ -620,7 +620,8 @@ class UserController extends Controller
                 'amount' => $group->where('purchased', 0)->sum('amount'),
                 'ingredient' => $group->first()->full_model,
                 'bought' => $group->every(fn ($f) => $f->purchased == 1),
-                'unit' => 'g'
+                'unit' => 'g',
+                'imageUrl' => $group->first()->full_model->featured_image
             ];
         })->values();
 
@@ -668,7 +669,8 @@ class UserController extends Controller
                 'amount' => $group->where('purchased', 0)->sum('amount'),
                 'ingredient' => $group->first()->full_model,
                 'bought' => $group->every(fn ($f) => $f->purchased == 1),
-                'unit' => 'g'
+                'unit' => 'g',
+                'imageUrl' => $group->first()->full_model->featured_image
             ];
         })->values();
 
@@ -772,6 +774,26 @@ class UserController extends Controller
         $userRecipe = UserRecipe::find($request->input('recipeId'));
         $userRecipe->status = $request->input('status');
         $userRecipe->save();
+
+        $cal = 0;
+        $prot = 0;
+        $fat = 0;
+        $ch = 0;
+        foreach ($userRecipe->foodstuffs as &$foodstuff) {
+            $f = Foodstuff::where('id', $foodstuff->foodstuff_id)->get()[0];
+            $cal += $foodstuff->amount * ($f->calories / 100);
+            $prot += $foodstuff->amount * ($f->proteins / 100);
+            $fat += $foodstuff->amount * ($f->fats / 100);
+            $ch += $foodstuff->amount * ($f->carbohydrates / 100);
+        }
+
+        $type = $userRecipe->type == 4 ? 2: $userRecipe->type;
+        $recipes = Recipe::where('type', $type)->get();
+        $combinations = [];
+
+        foreach ($recipes as $recipe) {
+
+        }
 
         return response()->json($userRecipe);
     }
