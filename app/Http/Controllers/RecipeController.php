@@ -9,12 +9,15 @@ use App\Models\Foodstuff;
 use App\Models\FoodstuffCategory;
 use App\Models\Recipe;
 use App\Models\User;
+use App\Models\UserAllergy;
 use App\Models\UserRecipe;
+use App\Models\UserRecipeFoodstuff;
 use App\Services\AuthService;
 use App\Services\ImagesService;
 use App\Services\RecipeFoodstuffService;
 use App\Services\RecipeService;
 use App\Services\UserRecipeService;
+use App\Services\UserService;
 use Dotenv\Parser\Parser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -28,6 +31,7 @@ class RecipeController
     protected ImagesService $imagesService;
     protected UserRecipeService $userRecipeService;
     protected AuthService $authService;
+    protected UserService $userService;
 
     public function __construct() {
         $this->recipeService = new RecipeService();
@@ -35,6 +39,7 @@ class RecipeController
         $this->imagesService = new ImagesService();
         $this->userRecipeService = new UserRecipeService();
         $this->authService = new AuthService();
+        $this->userService = new UserService();
     }
     public function showAddRecipe() {
         $foodstuffs = Foodstuff::all();
@@ -1020,5 +1025,117 @@ class RecipeController
             $foodstuff->foodstuff_category = $category->name;
         }
         return response()->json($foodstuffs);
+    }
+
+    public function generateNewPlan(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if(!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
+        $user->weight = $request->weight;
+        $user->goal = $request->goal;
+        $user->num_meals = $request->meals;
+        $activity = 1.2;
+        switch ($request->activity) {
+            case 'nimalo aktivni':
+                $activity = 1.2;
+                break;
+            case 'slabo aktivni':
+                $activity = 1.375;
+                break;
+            case 'srednji aktivni':
+                $activity = 1.55;
+                break;
+            case 'vrlo aktivni':
+                $activity = 1.725;
+                break;
+            case 'ekstremno aktivni':
+                $activity = 1.9;
+                break;
+        }
+        $user->activity = $activity;
+        $foodstuffs = $request->removed_foodstuffs;
+        $userAllergies = UserAllergy::where('user_id', $user->id)->get();
+        foreach($userAllergies as $userAllergy) {
+            $userAllergy->delete();
+        }
+
+        $allergyIds = [];
+        foreach($foodstuffs as $foodstuff) {
+            $f = Foodstuff::where('name', $foodstuff)->get()->first();
+            $ua = UserAllergy::create(['user_id' => $user->id, 'foodstuff_id' => $f->id]);
+            $allergyIds[] = $ua->id;
+        }
+
+        $ur = UserRecipe::where('user_id', $user->id)
+            ->where('date', '>=', date('Y-m-d'))
+            ->get();
+        $ur->delete();
+
+        $target = $this->userService->getMacrosForUser2($user);
+        $response = Http::timeout(10000)
+            ->withoutVerifying()
+            ->post('https://fity-algorithm.fly.dev/meal-plan', [
+                'target_calories' => $target['calories'],
+                'target_protein' => $target['proteins'],
+                'target_fat' => $target['fats'],
+                'meals_num' => $user->meals_num,
+                'tolerance_calories' => $user->tolerance_calories,
+                'tolerance_proteins' => $user->tolerance_proteins,
+                'tolerance_fats' => $user->tolerance_fats,
+                'days' => $user->days,
+                'allergy_holder_ids' => $allergyIds
+            ]);
+
+
+        $data = $response->json();
+
+        $i = 1;
+        for($k = 0; $k < 5; $k++) {
+            foreach ($data['daily_plans'] as $day) {
+                if(!$day['exists']) continue;
+                $date = date('Y-m-d', strtotime('+' . $i . ' days'));
+                $i++;
+                $lunch = false;
+                foreach ($day['meals'] as $meal) {
+//                if($meal['same_meal_id'] == 33) {
+//                    continue;
+//                }
+                    $r = Recipe::find($meal['same_meal_id']);
+                    $userRecipe = UserRecipe::create([
+                        'user_id' => $user->id,
+                        'recipe_id' => $meal['same_meal_id'],
+                        'status' => 'active',
+                        'date' => $date,
+                        'type' => $lunch && $r->type == 2? 4: $r->type
+                    ]);
+                    if($r->type == 2) {
+                        $lunch = true;
+                    }
+                    $foodstuffs = $this->recipefoodstuffService->getRecipeFoodstuffs($meal['same_meal_id']);
+                    foreach ($foodstuffs as $foodstuff) {
+                        if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->carbohydrates_holder == 0) {
+                            UserRecipeFoodstuff::create([
+                                'user_recipe_id' => $userRecipe->id,
+                                'foodstuff_id' => $foodstuff->foodstuff_id,
+                                'amount' => $foodstuff->amount,
+                                'purchased' => 0
+                            ]);
+                        }
+                    }
+
+                    foreach ($meal['holder_quantities'] as $key => $holder) {
+                        UserRecipeFoodstuff::create([
+                            'user_recipe_id' => $userRecipe->id,
+                            'foodstuff_id' => $key,
+                            'amount' => $holder,
+                            'purchased' => 0
+                        ]);
+                    }
+                }
+            }
+        }
     }
 }
