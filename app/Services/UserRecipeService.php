@@ -136,25 +136,26 @@ class UserRecipeService
             $fat = 0;
             $ch = 0;
             $foodstuffs = RecipeFoodstuff::where('recipe_id', '=', $recipeId)->get();
-            foreach ($foodstuffs as &$foodstuff) {
-
-                $f = Foodstuff::where('id', $foodstuff->foodstuff_id)->get()[0];
-                $cal += $foodstuff->amount * ($f->calories / 100);
-                $prot += $foodstuff->amount * ($f->proteins / 100);
-                $fat += $foodstuff->amount * ($f->fats / 100);
-                $ch += $foodstuff->amount * ($f->carbohydrates / 100);
-                $foodstuff->foodstuff_category = FoodstuffCategory::where('id', $f->foodstuff_category_id)->get()[0]->name;
-                $foodstuff->name = $f->name;
-                $foodstuff->imageUrl = $f->featured_image;
-                if($f->has_piece == 1) {
-                    $pieces = $foodstuff->amount / $f->piece_amount;
+            foreach ($recipe->foodstuffs as &$foodstuff) {
+                $fr = RecipeFoodstuff::where('recipe_id', '=', $recipeId)
+                    ->where('foodstuff_id', '=', $foodstuff->id)
+                    ->get()
+                    ->first();
+                $cal += $fr->amount * ($foodstuff->calories / 100);
+                $prot += $fr->amount * ($foodstuff->proteins / 100);
+                $fat += $fr->amount * ($foodstuff->fats / 100);
+                $ch += $fr->amount * ($foodstuff->carbohydrates / 100);
+                $foodstuff->foodstuff_category = FoodstuffCategory::where('id', $foodstuff->foodstuff_category_id)->get()[0]->name;
+                $foodstuff->imageUrl = $foodstuff->featured_image;
+                if($foodstuff->has_piece == 1) {
+                    $pieces = $fr->amount / $foodstuff->piece_amount;
                     $output = $pieces;
                     if($pieces == 1) {
-                        $output .= ' ' . $f->piece_1;
+                        $output .= ' ' . $foodstuff->piece_1;
                     } else if($pieces > 1 && $pieces < 5) {
-                        $output .= ' ' . $f->pieces_2_4;
+                        $output .= ' ' . $foodstuff->pieces_2_4;
                     } else {
-                        $output .= ' ' . $f->pieces_5_9;
+                        $output .= ' ' . $foodstuff->pieces_5_9;
                     }
                     $foodstuff->description = $output;
                 } else {
