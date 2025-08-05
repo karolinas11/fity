@@ -586,7 +586,7 @@ class UserController extends Controller
         $recipes = $this->userRecipeRepository->getUserRecipes($userId, $startDate, $endDate);
 
         foreach ($recipes as $recipe) {
-            foreach ($recipe->foodstuffs as $foodstuff) {
+            foreach ($recipe->foodstuffs as &$foodstuff) {
                 $foodstuffId = $foodstuff->foodstuff_id;
                 $fullFoodstuffModel = Foodstuff::find($foodstuffId);
                 $fullFoodstuffModel->foodstuff_category = FoodstuffCategory::where('id', $fullFoodstuffModel->foodstuff_category_id)->get()->first()->name;
@@ -637,7 +637,7 @@ class UserController extends Controller
         $recipe = UserRecipe::find($request->input('recipeId'));
         $foodstuffs = collect();
 
-        foreach ($recipe->foodstuffs as $foodstuff) {
+        foreach ($recipe->foodstuffs as &$foodstuff) {
             $foodstuffId = $foodstuff->foodstuff_id;
             $fullFoodstuffModel = Foodstuff::find($foodstuffId);
             $fullFoodstuffModel->foodstuff_category = FoodstuffCategory::where('id', $fullFoodstuffModel->foodstuff_category_id)->get()->first()->name;
