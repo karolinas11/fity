@@ -20,6 +20,7 @@ use App\Services\UserRecipeService;
 use App\Services\UserService;
 use Dotenv\Parser\Parser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use function Pest\Laravel\json;
@@ -1073,7 +1074,7 @@ class RecipeController
         }
 
         $ur = UserRecipe::where('user_id', $user->id)
-            ->where('date', '>=', date('Y-m-d'))
+            ->where('date', '>=', DB::raw('CURDATE()'))
             ->get();
         foreach ($ur as $u) {
             $u->delete();
