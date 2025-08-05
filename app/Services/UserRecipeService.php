@@ -137,6 +137,7 @@ class UserRecipeService
             $ch = 0;
             $foodstuffs = RecipeFoodstuff::where('recipe_id', '=', $recipeId)->get();
             foreach ($foodstuffs as &$foodstuff) {
+
                 $f = Foodstuff::where('id', $foodstuff->foodstuff_id)->get()[0];
                 $cal += $foodstuff->amount * ($f->calories / 100);
                 $prot += $foodstuff->amount * ($f->proteins / 100);
