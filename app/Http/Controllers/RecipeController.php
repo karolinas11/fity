@@ -1073,7 +1073,9 @@ class RecipeController
         $ur = UserRecipe::where('user_id', $user->id)
             ->where('date', '>=', date('Y-m-d'))
             ->get();
-        $ur->delete();
+        foreach ($ur as $u) {
+            $u->delete();
+        }
 
         $target = $this->userService->getMacrosForUser2($user);
         $response = Http::timeout(10000)
