@@ -146,7 +146,7 @@ class UserController extends Controller
 
         $response = Http::timeout(10000)
             ->withoutVerifying()
-            ->post('https://fity-algorithm-develop.fly.dev/meal-plan/', [
+            ->post('https://fity-algorithm.fly.dev/meal-plan/', [
                 'target_calories' => $target['calories'],
                 'target_protein' => $target['proteins'],
                 'target_fat' => $target['fats'],
@@ -161,7 +161,6 @@ class UserController extends Controller
 
         $data = $response->json();
 
-        dd($data);
         $i = 0;
         foreach ($data['daily_plans'] as $day) {
             if(!$day['exists']) continue;
