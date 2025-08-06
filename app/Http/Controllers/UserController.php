@@ -802,7 +802,7 @@ class UserController extends Controller
                 $f = RecipeFoodstuff::where('foodstuff_id', $fm->id)
                     ->where('recipe_id', $recipe->id)
                     ->get()[0];
-                if($fm->proteins_holder == 0 && $fm->fats_holder == 0 && $fm->carbohydrates_holder == 0) {
+                if($f->proteins_holder == 0 && $f->fats_holder == 0 && $f->carbohydrates_holder == 0) {
                     $rCal += $f->amount * ($fm->calories / 100);
                     $rProt += $f->amount * ($fm->proteins / 100);
                     $rFat += $f->amount * ($fm->fats / 100);
