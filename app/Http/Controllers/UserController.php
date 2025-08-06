@@ -796,9 +796,10 @@ class UserController extends Controller
             $rProt = $prot;
             $rFat = $fat;
             $rCh = $ch;
-            foreach ($recipe->foodstuffs as $f) {
-                dd($f);
-                $fm = Foodstuff::where('id', $f->foodstuff_id)->get()[0];
+            foreach ($recipe->foodstuffs as $fm) {
+                $f = RecipeFoodstuff::where('foodstuff_id', $f->foodstuff_id)
+                    ->where('recipe_id', $recipe->id)
+                    ->get()[0];
                 if($fm->proteins_holder == 0 && $fm->fats_holder == 0 && $fm->carbohydrates_holder == 0) {
                     $rCal += $f->amount * ($fm->calories / 100);
                     $rProt += $f->amount * ($fm->proteins / 100);
