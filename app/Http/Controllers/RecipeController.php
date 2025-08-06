@@ -1036,6 +1036,8 @@ class RecipeController
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
+        Log::error('GENERATE PLAN REQUEST: ' . print_r($request->all(), true));
+
         $user = User::where('firebase_uid', $firebaseUid)->get()->first();
         $user->weight = $request->input('weight');
         $user->goal = $request->input('goal');
