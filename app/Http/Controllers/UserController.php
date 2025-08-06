@@ -621,7 +621,8 @@ class UserController extends Controller
                 'ingredient' => $group->first()->full_model,
                 'bought' => $group->every(fn ($f) => $f->purchased == 1),
                 'unit' => 'g',
-                'imageUrl' => $group->first()->full_model->featured_image
+                'imageUrl' => $group->first()->full_model->featured_image,
+                'description' => $group->first()->description
             ];
         })->values();
 
@@ -670,7 +671,8 @@ class UserController extends Controller
                 'ingredient' => $group->first()->full_model,
                 'bought' => $group->every(fn ($f) => $f->purchased == 1),
                 'unit' => 'g',
-                'imageUrl' => $group->first()->full_model->featured_image
+                'imageUrl' => $group->first()->full_model->featured_image,
+                'description' => $group->first()->description
             ];
         })->values();
 
