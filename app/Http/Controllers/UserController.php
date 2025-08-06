@@ -645,7 +645,6 @@ class UserController extends Controller
             $foodstuff->amount = $foodstuff->amount;
             $foodstuff->purchased = $foodstuff->purchased;
             $foodstuff->full_model->imageUrl = $fullFoodstuffModel->featured_image;
-            $foodstuff->full_model->amount = 12;
             if($fullFoodstuffModel->has_piece == 1) {
                 $pieces = $foodstuff->amount / $fullFoodstuffModel->piece_amount;
                 $output = $pieces;
@@ -673,12 +672,13 @@ class UserController extends Controller
             ];
         })->values();
 
-	$recipe->ingredients = $foodstuffsFinal;
+        $recipe->ingredients = $foodstuffsFinal;
+        $recipe->foodstuffs = $foodstuffsFinal;
 
-	$ogRecipe = Recipe::find($recipe->recipe_id);
+        $ogRecipe = Recipe::find($recipe->recipe_id);
 
-	$recipe->title = $ogRecipe->name;
-	$recipe->imageUrl = $ogRecipe->featured_image;
+        $recipe->title = $ogRecipe->name;
+        $recipe->imageUrl = $ogRecipe->featured_image;
 
         return response()->json($recipe);
     }
