@@ -108,12 +108,13 @@ class UserService
             $weight = 45 + (0.9 * ($user->height - 152.4));
         }
         $calories = $calories * (double)$user->activity;
+        $strAct = (string)$user->activity;
 
         $proteins = 0;
         $fats = 0;
 
         $weightNew = null;
-        switch ($user->activity) {
+        switch ($strAct) {
             case '1.2':
                 $proteins = 1.6 * $weight;
                 $fats = $weight;
@@ -142,25 +143,25 @@ class UserService
             if($user->gender == 'm') {
                 $abs = abs($user->weight - $weight);
                 if($abs > 30) {
-                    $caloriesAdd = match ($user->activity) {
+                    $caloriesAdd = match ($strAct) {
                         '1.2' => 700,
                         '1.375' => 1000,
                         default => 1500,
                     };
                 } else if($abs > 20) {
-                    $caloriesAdd = match ($user->activity) {
+                    $caloriesAdd = match ($strAct) {
                         '1.2' => 500,
                         '1.375' => 800,
                         default => 1200,
                     };
                 } else if($abs > 10) {
-                    $caloriesAdd = match ($user->activity) {
+                    $caloriesAdd = match ($strAct) {
                         '1.2' => 500,
                         '1.375' => 700,
                         default => 900,
                     };
                 } else if($abs > 0) {
-                    $caloriesAdd = match ($user->activity) {
+                    $caloriesAdd = match ($strAct) {
                         '1.2', '1.375' => 500,
                         default => 800,
                     };
@@ -171,23 +172,23 @@ class UserService
 
                 $abs = abs($user->weight - $weight);
                 if($abs > 30) {
-                    $caloriesAdd = match ($user->activity) {
+                    $caloriesAdd = match ($strAct) {
                         '1.2' => 500,
                         '1.375' => 600,
                         default => 800,
                     };
                 } else if($abs > 20) {
-                    $caloriesAdd = match ($user->activity) {
+                    $caloriesAdd = match ($strAct) {
                         '1.2', '1.375' => 500,
                         default => 600,
                     };
                 } else if($abs > 10) {
-                    $caloriesAdd = match ($user->activity) {
+                    $caloriesAdd = match ($strAct) {
                         '1.2', '1.375' => 500,
                         default => 600,
                     };
                 } else if($abs > 0) {
-                    $caloriesAdd = match ($user->activity) {
+                    $caloriesAdd = match ($strAct) {
                         '1.2' => 200,
                         '1.375' => 500,
                         default => 500,
@@ -204,7 +205,7 @@ class UserService
 
             $weightNew = $user->weight + 1.29;
         } else {
-            switch ($user->activity) {
+            switch ($strAct) {
                 case '1.375':
                 case '1.55':
                 case '1.2':
@@ -220,7 +221,7 @@ class UserService
                     break;
             }
 
-            $proteins = match ($user->activity) {
+            $proteins = match ($strAct) {
                 '1.2' => 1.6 * $weight,
                 '1.375' => 1.8 * $weight,
                 default => 2 * $weight,
