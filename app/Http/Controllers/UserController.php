@@ -621,8 +621,6 @@ class UserController extends Controller
                 'ingredient' => $group->first()->full_model,
                 'bought' => $group->every(fn ($f) => $f->purchased == 1),
                 'unit' => 'g',
-                'imageUrl' => $group->first()->full_model->featured_image,
-                'description' => $group->first()->description
             ];
         })->values();
 
@@ -647,6 +645,7 @@ class UserController extends Controller
             $foodstuff->amount = $foodstuff->amount;
             $foodstuff->purchased = $foodstuff->purchased;
             $foodstuff->full_model->imageUrl = $fullFoodstuffModel->featured_image;
+            $foodstuff->full_model->amount = 12;
             if($fullFoodstuffModel->has_piece == 1) {
                 $pieces = $foodstuff->amount / $fullFoodstuffModel->piece_amount;
                 $output = $pieces;
@@ -671,8 +670,6 @@ class UserController extends Controller
                 'ingredient' => $group->first()->full_model,
                 'bought' => $group->every(fn ($f) => $f->purchased == 1),
                 'unit' => 'g',
-                'imageUrl' => $group->first()->full_model->featured_image,
-                'description' => $group->first()->description
             ];
         })->values();
 
