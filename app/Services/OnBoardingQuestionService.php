@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Repositories\FoodstuffCategoryRepository;
 use App\Repositories\OnBoardingQuestionRepository;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class OnBoardingQuestionService{
@@ -70,6 +71,7 @@ class OnBoardingQuestionService{
                 $user = Auth::user();
             }
             $macros = $this->userService->getMacrosForUser2($user);
+            Log::error('USER AND MACROS: ' . json_encode($user) . ' ' . json_encode($macros));
             $i = 0;
             $answers = [];
             foreach ($macros as $key => $macro) {
