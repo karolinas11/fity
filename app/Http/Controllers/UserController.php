@@ -594,7 +594,7 @@ class UserController extends Controller
                 $foodstuff->foodstuff_id = $foodstuffId;
                 $foodstuff->amount = $foodstuff->amount;
                 $foodstuff->purchased = $foodstuff->purchased;
-                $foodstuff->imageUrl = $fullFoodstuffModel->featured_image;
+                $foodstuff->full_model->imageUrl = $fullFoodstuffModel->featured_image;
                 if($fullFoodstuffModel->has_piece == 1) {
                     $pieces = $foodstuff->amount / $fullFoodstuffModel->piece_amount;
                     $output = $pieces;
@@ -605,9 +605,9 @@ class UserController extends Controller
                     } else {
                         $output .= ' ' . $fullFoodstuffModel->pieces_5_9;
                     }
-                    $foodstuff->description = $output;
+                    $foodstuff->full_model->description = $output;
                 } else {
-                    $foodstuff->description = null;
+                    $foodstuff->full_model->description = null;
                 }
                 $foodstuffs->push($foodstuff);
             }
@@ -646,7 +646,7 @@ class UserController extends Controller
             $foodstuff->foodstuff_id = $foodstuffId;
             $foodstuff->amount = $foodstuff->amount;
             $foodstuff->purchased = $foodstuff->purchased;
-            $foodstuff->imageUrl = $fullFoodstuffModel->featured_image;
+            $foodstuff->full_model->imageUrl = $fullFoodstuffModel->featured_image;
             if($fullFoodstuffModel->has_piece == 1) {
                 $pieces = $foodstuff->amount / $fullFoodstuffModel->piece_amount;
                 $output = $pieces;
@@ -657,9 +657,9 @@ class UserController extends Controller
                 } else {
                     $output .= ' ' . $fullFoodstuffModel->pieces_5_9;
                 }
-                $foodstuff->description = $output;
+                $foodstuff->full_model->description = $output;
             } else {
-                $foodstuff->description = null;
+                $foodstuff->full_model->description = null;
             }
             $foodstuffs->push($foodstuff);
         }
