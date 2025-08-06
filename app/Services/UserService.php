@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Log;
 
 class UserService
 {
@@ -227,6 +228,8 @@ class UserService
 
             $weightNew = $user->weight;
         }
+
+        Log::error('CALORIES: ' . $calories . ' PROTEINS: ' . $proteins . ' FATS: ' . $fats . ' USERID: ' . $user->id);
 
         return  [
             'calories' => number_format($calories, 0, '.', ''),
