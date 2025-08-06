@@ -597,7 +597,7 @@ class UserController extends Controller
                 $foodstuff->full_model->imageUrl = $fullFoodstuffModel->featured_image;
                 if($fullFoodstuffModel->has_piece == 1) {
                     $pieces = $foodstuff->amount / $fullFoodstuffModel->piece_amount;
-                    $output = $pieces;
+                    $output = round($pieces);
                     if($pieces == 1) {
                         $output .= ' ' . $fullFoodstuffModel->piece_1;
                     } else if($pieces > 1 && $pieces < 5) {
@@ -647,7 +647,7 @@ class UserController extends Controller
             $foodstuff->full_model->imageUrl = $fullFoodstuffModel->featured_image;
             if($fullFoodstuffModel->has_piece == 1) {
                 $pieces = $foodstuff->amount / $fullFoodstuffModel->piece_amount;
-                $output = $pieces;
+                $output = round($pieces);
                 if($pieces == 1) {
                     $output .= ' ' . $fullFoodstuffModel->piece_1;
                 } else if($pieces > 1 && $pieces < 5) {
@@ -673,7 +673,6 @@ class UserController extends Controller
         })->values();
 
         $recipe->ingredients = $foodstuffsFinal;
-        $recipe->foodstuffs = $foodstuffsFinal;
 
         $ogRecipe = Recipe::find($recipe->recipe_id);
 

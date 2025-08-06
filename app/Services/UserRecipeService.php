@@ -105,7 +105,7 @@ class UserRecipeService
                 $foodstuff->imageUrl = $f->featured_image;
                 if($f->has_piece == 1) {
                     $pieces = $foodstuff->amount / $f->piece_amount;
-                    $output = $pieces;
+                    $output = round($pieces);
                     if($pieces == 1) {
                         $output .= ' ' . $f->piece_1;
                     } else if($pieces > 1 && $pieces < 5) {
@@ -149,7 +149,7 @@ class UserRecipeService
                 $foodstuff->imageUrl = $foodstuff->featured_image;
                 if($foodstuff->has_piece == 1) {
                     $pieces = $fr->amount / $foodstuff->piece_amount;
-                    $output = $pieces;
+                    $output = round($pieces);
                     if($pieces == 1) {
                         $output .= ' ' . $foodstuff->piece_1;
                     } else if($pieces > 1 && $pieces < 5) {
