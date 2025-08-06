@@ -797,7 +797,7 @@ class UserController extends Controller
             $rFat = $fat;
             $rCh = $ch;
             foreach ($recipe->foodstuffs as $fm) {
-                $f = RecipeFoodstuff::where('foodstuff_id', $f->foodstuff_id)
+                $f = RecipeFoodstuff::where('foodstuff_id', $fm->id)
                     ->where('recipe_id', $recipe->id)
                     ->get()[0];
                 if($fm->proteins_holder == 0 && $fm->fats_holder == 0 && $fm->carbohydrates_holder == 0) {
