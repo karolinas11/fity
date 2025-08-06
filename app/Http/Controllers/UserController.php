@@ -796,6 +796,8 @@ class UserController extends Controller
             $rProt = $prot;
             $rFat = $fat;
             $rCh = $ch;
+
+            $holders = [];
             foreach ($recipe->foodstuffs as $fm) {
                 $f = RecipeFoodstuff::where('foodstuff_id', $fm->id)
                     ->where('recipe_id', $recipe->id)
