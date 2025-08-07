@@ -892,7 +892,7 @@ class UserController extends Controller
             $newCombinations = [];
 
             if(count($newHolders) == 1) {
-                $step = $newHolders[0]->step?? $newHolders->min;
+                $step = $newHolders[0]->step?? $newHolders[0]->min;
                 for($i = $newHolders[0]->min; $i <= $newHolders[0]->max; $i += $step) {
                     $newCombinations[] = [
                         'calories' => $i * ($newHolders[0]->calories / 100) + $fixCal,
@@ -982,7 +982,7 @@ class UserController extends Controller
             foreach ($foodstuffs as $fn) {
                 if($fn->proteins_holder == 0 && $fn->fats_holder == 0 && $fn->carbohydrates_holder == 0) {
                     UserRecipeFoodstuff::create([
-                        'user_recipe_id' => $userRecipe->id,
+                        'user_recipe_id' => $newUserRecipe->id,
                         'foodstuff_id' => $fn->foodstuff_id,
                         'amount' => $fn->amount,
                         'purchased' => 0
