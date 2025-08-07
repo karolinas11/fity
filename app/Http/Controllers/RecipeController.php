@@ -188,9 +188,9 @@ class RecipeController
             } else if($foodstuff->name == 'Whey protein') {
                 $step = 16;
             }
-//            if($foodstuff->min != null && $foodstuff->max != null) {
+            if($foodstuff->min != null && $foodstuff->max != null) {
                 echo $foodstuff->id . ',' . $foodstuff->calories . ',' . $foodstuff->proteins . ',' . $foodstuff->fats . ',' . $foodstuff->carbohydrates . ',' . $foodstuff->min . ',' . $foodstuff->max . ',' . $step . '<br/>';
-//            }
+            }
         }
     }
 
