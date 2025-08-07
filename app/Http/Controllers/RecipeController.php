@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\RecipeDataTable;
-use App\DataTables\RecipesDataTable;
 use App\Models\Faq;
 use App\Models\Foodstuff;
 use App\Models\FoodstuffCategory;
@@ -18,6 +17,7 @@ use App\Services\RecipeFoodstuffService;
 use App\Services\RecipeService;
 use App\Services\UserRecipeService;
 use App\Services\UserService;
+use Carbon\Carbon;
 use Dotenv\Parser\Parser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -1056,14 +1056,14 @@ class RecipeController
         $user->goal = $request->input('goal');
         $user->meals_num = $request->input('meals');
         $activity = 1.2;
-        switch ($request->input('activity')) {
+        switch (strtolower($request->input('activity'))) {
             case 'nimalo aktivni':
                 $activity = 1.2;
                 break;
             case 'slabo aktivni':
                 $activity = 1.375;
                 break;
-            case 'srednji aktivni':
+            case 'srednje aktivni':
                 $activity = 1.55;
                 break;
             case 'vrlo aktivni':
@@ -1088,11 +1088,14 @@ class RecipeController
             $allergyIds[] = $f->id;
         }
 
-        $ur = UserRecipe::where('user_id', $user->id)
-            ->where('date', '>=', DB::raw('CURDATE()'))
+        $rawStart = $request->input('start_date');
+        $startDate = Carbon::parse($rawStart)
+            ->toDateString();
+        $userRecipes = UserRecipe::where('user_id', $user->id)
+            ->where('date', '>=', $startDate)
             ->get();
-        foreach ($ur as $u) {
-            $u->delete();
+        foreach ($userRecipes as $ur) {
+            $ur->delete();
         }
 
         $target = $this->userService->getMacrosForUser2($user);
@@ -1113,11 +1116,14 @@ class RecipeController
 
         $data = $response->json();
 
-        $i = 1;
+        $i = 0;
         for($k = 0; $k < 5; $k++) {
             foreach ($data['daily_plans'] as $day) {
                 if(!$day['exists']) continue;
-                $date = date('Y-m-d', strtotime('+' . $i . ' days'));
+                $date = date(
+                    'Y-m-d',
+                    strtotime($startDate . " +{$i} days")
+                );
                 $i++;
                 $lunch = false;
                 foreach ($day['meals'] as $meal) {
