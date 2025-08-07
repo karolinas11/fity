@@ -19,6 +19,7 @@ use App\Repositories\UserRecipeRepository;
 use App\Services\AuthService;
 use App\Services\PhotoService;
 use App\Services\RecipeFoodstuffService;
+use App\Services\RecipeService;
 use App\Services\ScopeService;
 use App\Services\UserAllergyService;
 use App\Services\UserService;
@@ -48,6 +49,7 @@ class UserController extends Controller
     protected ScopeService $scopeService;
     protected PhotoService $photoService;
     protected UserRecipeRepository $userRecipeRepository;
+    protected RecipeService $recipeService;
 //    protected $firebaseAuth;
 
     public function __construct() {
@@ -64,6 +66,7 @@ class UserController extends Controller
         $this->scopeService = new ScopeService();
         $this->photoService = new PhotoService();
         $this->userRecipeRepository = new UserRecipeRepository();
+        $this->recipeService = new RecipeService();
     }
 
     public function showAddUser()
@@ -763,12 +766,12 @@ class UserController extends Controller
 
     public function changeUserRecipe(Request $request)
     {
-//        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
-//        if (!$firebaseUid) {
-//            return response()->json(['error' => 'Unauthorized'], 401);
-//        }
-//
-//        $user = User::where('firebase_uid', $firebaseUid)->first();
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if (!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $user = User::where('firebase_uid', $firebaseUid)->first();
         $userRecipe = UserRecipe::find($request->input('recipeId'));
         $userRecipe->status = $request->input('status');
         $userRecipe->save();
@@ -790,81 +793,215 @@ class UserController extends Controller
         $combinations = [];
 
         foreach ($recipes as $recipe) {
-            $rCal = $cal;
-            $rProt = $prot;
-            $rFat = $fat;
-            $rCh = $ch;
+            $rCal = 0;
+            $rProt = 0;
+            $rFat = 0;
+            $rCh = 0;
 
             $holders = [];
-//            foreach ($recipe->foodstuffs as $fm) {
-//                $f = RecipeFoodstuff::where('foodstuff_id', $fm->id)
-//                    ->where('recipe_id', $recipe->id)
-//                    ->get()[0];
-//                if($f->proteins_holder == 0 && $f->fats_holder == 0 && $f->carbohydrates_holder == 0) {
-//                    $rCal += $f->amount * ($fm->calories / 100);
-//                    $rProt += $f->amount * ($fm->proteins / 100);
-//                    $rFat += $f->amount * ($fm->fats / 100);
-//                    $rCh += $f->amount * ($fm->carbohydrates / 100);
-//                } else {
-//                    $holders[] = $fm;
-//                }
-//
-//                if(count($holders) == 1) {
-//                    for($i = $holders[0]->min; $i <= $holders[0]->max; $i += $holders[0]->step) {
-//                        $rCal += $i * ($holders[0]->calories / 100);
-//                        $rProt += $i * ($holders[0]->proteins / 100);
-//                        $rFat += $i * ($holders[0]->fats / 100);
-//                        $rCh += $i * ($holders[0]->carbohydrates / 100);
-//
-//                        $combinations[] = [
-//                            'calories' => $rCal,
-//                            'proteins' => $rProt,
-//                            'fats' => $rFat,
-//                            'carbohydrates' => $rCh,
-//                            'recipe' => $recipe->id
-//                        ];
-//                    }
-//                } else if(count($holders) == 2) {
-//                    for($i = $holders[0]->min; $i <= $holders[0]->max; $i += $holders[0]->step) {
-//                        for($j = $holders[1]->min; $j <= $holders[1]->max; $j += $holders[1]->step) {
-//                            $rCal += $i * ($holders[0]->calories / 100) + $j * ($holders[1]->calories / 100);
-//                            $rProt += $i * ($holders[0]->proteins / 100) + $j * ($holders[1]->proteins / 100);
-//                            $rFat += $i * ($holders[0]->fats / 100) + $j * ($holders[1]->fats / 100);
-//                            $rCh += $i * ($holders[0]->carbohydrates / 100) + $j * ($holders[1]->carbohydrates / 100);
-//
-//                            $combinations[] = [
-//                                'calories' => $rCal,
-//                                'proteins' => $rProt,
-//                                'fats' => $rFat,
-//                                'carbohydrates' => $rCh,
-//                                'recipe' => $recipe->id
-//                            ];
-//                        }
-//                    }
-//                } else if(count($holders) == 3) {
-//                    for($i = $holders[0]->min; $i <= $holders[0]->max; $i += $holders[0]->step) {
-//                        for($j = $holders[1]->min; $j <= $holders[1]->max; $j += $holders[1]->step) {
-//                            for($k = $holders[2]->min; $k <= $holders[2]->max; $k += $holders[2]->step) {
-//                                $rCal += $i * ($holders[0]->calories / 100) + $j * ($holders[1]->calories / 100) + $k * ($holders[2]->calories / 100);
-//                                $rProt += $i * ($holders[0]->proteins / 100) + $j * ($holders[1]->proteins / 100) + $k * ($holders[2]->proteins / 100);
-//                                $rFat += $i * ($holders[0]->fats / 100) + $j * ($holders[1]->fats / 100) + $k * ($holders[2]->fats / 100);
-//                                $rCh += $i * ($holders[0]->carbohydrates / 100) + $j * ($holders[1]->carbohydrates / 100) + $k * ($holders[2]->carbohydrates / 100);
-//
-//                                $combinations[] = [
-//                                    'calories' => $rCal,
-//                                    'proteins' => $rProt,
-//                                    'fats' => $rFat,
-//                                    'carbohydrates' => $rCh,
-//                                    'recipe' => $recipe->id
-//                                ];
-//                            }
-//                        }
-//                    }
-//                }
-//            }
+            foreach ($recipe->foodstuffs as $fm) {
+                $f = RecipeFoodstuff::where('foodstuff_id', $fm->id)
+                    ->where('recipe_id', $recipe->id)
+                    ->get()[0];
+                if($f->proteins_holder == 0 && $f->fats_holder == 0 && $f->carbohydrates_holder == 0) {
+                    $rCal += $f->amount * ($fm->calories / 100);
+                    $rProt += $f->amount * ($fm->proteins / 100);
+                    $rFat += $f->amount * ($fm->fats / 100);
+                    $rCh += $f->amount * ($fm->carbohydrates / 100);
+                } else {
+                    $holders[] = $fm;
+                }
+            }
+
+            if(count($holders) > 0) {
+                $rCalMin = $rProtMin = $rFatMin = $rChMin = 0;
+                $rCalMax = $rProtMax = $rFatMax = $rChMax = 0;
+
+                foreach ($holders as $h) {
+                    $rCalMin += $h->min * ($h->calories      / 100);
+                    $rProtMin += $h->min * ($h->proteins      / 100);
+                    $rFatMin += $h->min * ($h->fats          / 100);
+                    $rChMin  += $h->min * ($h->carbohydrates / 100);
+
+                    $rCalMax += $h->max * ($h->calories      / 100);
+                    $rProtMax += $h->max * ($h->proteins      / 100);
+                    $rFatMax += $h->max * ($h->fats          / 100);
+                    $rChMax  += $h->max * ($h->carbohydrates / 100);
+                }
+
+                $combinations[] = [
+                    'caloriesMin'      => $rCal   + $rCalMin,
+                    'proteinsMin'      => $rProt  + $rProtMin,
+                    'fatsMin'          => $rFat   + $rFatMin,
+                    'carbohydratesMin' => $rCh    + $rChMin,
+                    'caloriesMax'      => $rCal   + $rCalMax,
+                    'proteinsMax'      => $rProt  + $rProtMax,
+                    'fatsMax'          => $rFat   + $rFatMax,
+                    'carbohydratesMax' => $rCh    + $rChMax,
+                    'recipe'           => $recipe->id,
+                ];
+            } else {
+                $combinations[] = [
+                    'caloriesMin' => $rCal,
+                    'proteinsMin' => $rProt,
+                    'fatsMin' => $rFat,
+                    'carbohydratesMin' => $rCh,
+                    'caloriesMax' => $rCal,
+                    'proteinsMax' => $rProt,
+                    'fatsMax' => $rFat,
+                    'carbohydratesMax' => $rCh,
+                    'recipe' => $recipe->id
+                ];
+            }
         }
 
-//        dd($combinations);
+        $usefullCombinations = [];
+
+        foreach($combinations as $combination) {
+            if($combination['caloriesMin'] <= $cal && $combination['caloriesMax'] >= $cal
+            && $combination['proteinsMin'] <= $prot && $combination['proteinsMax'] >= $prot
+            && $combination['fatsMin'] <= $fat && $combination['fatsMax'] >= $fat
+            && $combination['carbohydratesMin'] <= $ch && $combination['carbohydratesMax'] >= $ch
+            && $combination['recipe'] != $userRecipe->recipe_id) {
+                $usefullCombinations[] = $combination;
+            }
+        }
+
+        if(count($usefullCombinations) > 0) {
+            shuffle($usefullCombinations);
+            $randomNewRecipe = Recipe::where('id', $usefullCombinations[0]['recipe'])->get()[0];
+            $fixCal = 0;
+            $fixProt = 0;
+            $fixFat = 0;
+            $fixCh = 0;
+            $newHolders = [];
+            foreach ($randomNewRecipe->foodstuffs as $fm) {
+                $f = RecipeFoodstuff::where('foodstuff_id', $fm->id)
+                    ->where('recipe_id', $randomNewRecipe->id)
+                    ->get()[0];
+                if($f->proteins_holder == 0 && $f->fats_holder == 0 && $f->carbohydrates_holder == 0) {
+                    $fixCal += $f->amount * ($fm->calories / 100);
+                    $fixProt += $f->amount * ($fm->proteins / 100);
+                    $fixFat += $f->amount * ($fm->fats / 100);
+                    $fixCh += $f->amount * ($fm->carbohydrates / 100);
+                } else {
+                    $newHolders[] = $fm;
+                }
+            }
+
+            $newCombinations = [];
+
+            if(count($newHolders) == 1) {
+                $step = $newHolders[0]->step?? $newHolders->min;
+                for($i = $newHolders[0]->min; $i <= $newHolders[0]->max; $i += $step) {
+                    $newCombinations[] = [
+                        'calories' => $i * ($newHolders[0]->calories / 100) + $fixCal,
+                        'proteins' => $i * ($newHolders[0]->proteins / 100) + $fixProt,
+                        'fats' => $i * ($newHolders[0]->fats / 100) + $fixFat,
+                        'carbohydrates' => $i * ($newHolders[0]->carbohydrates / 100) + $fixCh,
+                        'foodstuff_id' => $newHolders[0]->id,
+                        'amounts' => $i,
+                        'recipe_id' => $randomNewRecipe->id
+                    ];
+                }
+            } else if(count($newHolders) == 2) {
+                $step = $newHolders[0]->step?? $newHolders[0]->min;
+                $step2 = $newHolders[1]->step?? $newHolders[1]->min;
+                for($i = $newHolders[0]->min; $i <= $newHolders[0]->max; $i += $step) {
+                    for ($j = $newHolders[1]->min; $j <= $newHolders[1]->max; $j += $step2) {
+                        $newCombinations[] = [
+                            'calories' => $i * ($newHolders[0]->calories / 100) + $j * ($newHolders[1]->calories / 100) + $fixCal,
+                            'proteins' => $i * ($newHolders[0]->proteins / 100) + $j * ($newHolders[1]->proteins / 100) + $fixProt,
+                            'fats' => $i * ($newHolders[0]->fats / 100) + $j * ($newHolders[1]->fats / 100) + $fixFat,
+                            'carbohydrates' => $i * ($newHolders[0]->carbohydrates / 100) + $j * ($newHolders[1]->carbohydrates / 100) + $fixCh,
+                            'foodstuff_id' => $newHolders[0]->id . '-' . $newHolders[1]->id,
+                            'amounts' => $i . '-' . $j,
+                            'recipe_id' => $randomNewRecipe->id
+                        ];
+                    }
+                }
+            } else if(count($newHolders) == 3) {
+                $step = $newHolders[0]->step?? $newHolders[0]->min;
+                $step2 = $newHolders[1]->step?? $newHolders[1]->min;
+                $step3 = $newHolders[2]->step?? $newHolders[2]->min;
+                for($i = $newHolders[0]->min; $i <= $newHolders[0]->max; $i += $step) {
+                    for ($j = $newHolders[1]->min; $j <= $newHolders[1]->max; $j += $step2) {
+                        for ($k = $newHolders[2]->min; $k <= $newHolders[2]->max; $k += $step3) {
+                            $newCombinations[] = [
+                                'calories' => $i * ($newHolders[0]->calories / 100) + $j * ($newHolders[1]->calories / 100) + $k * ($newHolders[2]->calories / 100) + $fixCal,
+                                'proteins' => $i * ($newHolders[0]->proteins / 100) + $j * ($newHolders[1]->proteins / 100) + $k * ($newHolders[2]->proteins / 100) + $fixProt,
+                                'fats' => $i * ($newHolders[0]->fats / 100) + $j * ($newHolders[1]->fats / 100) + $k * ($newHolders[2]->fats / 100) + $fixFat,
+                                'carbohydrates' => $i * ($newHolders[0]->carbohydrates / 100) + $j * ($newHolders[1]->carbohydrates / 100) + $k * ($newHolders[2]->carbohydrates / 100) + $fixCh,
+                                'foodstuff_id' => $newHolders[0]->id . '-' . $newHolders[1]->id . '-' . $newHolders[2]->id,
+                                'amounts' => $i . '-' . $j . '-' . $k,
+                                'recipe_id' => $randomNewRecipe->id
+                            ];
+                        }
+                    }
+                }
+            } else {
+                dd('0 HOLDERA');
+            }
+
+            $best     = null;
+            $minDist2 = PHP_INT_MAX;  // čuvamo najmanju kvadratnu distancu
+
+            foreach ($newCombinations as $cand) {
+                $dCal  = $cand['calories']      - $cal;
+                $dProt = $cand['proteins']      - $prot;
+                $dFat  = $cand['fats']          - $fat;
+                $dCh   = $cand['carbohydrates'] - $ch;
+
+                // kvadrat Euklidske distance (bez sqrt jer nam dovoljna komparacija)
+                $dist2 = $dCal*$dCal
+                    + $dProt*$dProt
+                    + $dFat*$dFat
+                    + $dCh*$dCh;
+
+                if ($dist2 < $minDist2) {
+                    $minDist2 = $dist2;
+                    $best     = $cand;
+                }
+            }
+
+            $newHs = explode('-', $best['foodstuff_id']);
+            $newH = array_map('intval', $newHs);
+            $newAs = explode('-', $best['amounts']);
+            $newA = array_map('intval', $newAs);
+            $newRecipe = Recipe::find($best['recipe_id']);
+
+            $newUserRecipe = UserRecipe::create([
+                'user_id' => $user->id,
+                'recipe_id' => $newRecipe->id,
+                'status' => 'active',
+                'type' => $userRecipe->type,
+                'date' => $userRecipe->date
+            ]);
+
+            $foodstuffs = $this->recipefoodstuffService->getRecipeFoodstuffs($newRecipe->id);
+            foreach ($foodstuffs as $fn) {
+                if($fn->proteins_holder == 0 && $fn->fats_holder == 0 && $fn->carbohydrates_holder == 0) {
+                    UserRecipeFoodstuff::create([
+                        'user_recipe_id' => $userRecipe->id,
+                        'foodstuff_id' => $fn->foodstuff_id,
+                        'amount' => $fn->amount,
+                        'purchased' => 0
+                    ]);
+                }
+            }
+
+            for($i = 0; $i < count($newH); $i++) {
+                UserRecipeFoodstuff::create([
+                    'user_recipe_id' => $newUserRecipe->id,
+                    'foodstuff_id' => $newH[$i],
+                    'amount' => $newA[$i],
+                    'purchased' => 0
+                ]);
+            }
+
+        } else {
+            dd('0 NOVIH KOMBINACIJA');
+        }
 
         return response()->json($userRecipe);
     }
