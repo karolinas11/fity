@@ -188,9 +188,9 @@ class RecipeController
             } else if($foodstuff->name == 'Whey protein') {
                 $step = 16;
             }
-            if($foodstuff->min != null && $foodstuff->max != null) {
+//            if($foodstuff->min != null && $foodstuff->max != null) {
                 echo $foodstuff->id . ',' . $foodstuff->calories . ',' . $foodstuff->proteins . ',' . $foodstuff->fats . ',' . $foodstuff->carbohydrates . ',' . $foodstuff->min . ',' . $foodstuff->max . ',' . $step . '<br/>';
-            }
+//            }
         }
     }
 
@@ -204,6 +204,7 @@ class RecipeController
             $eggs = false;
             $whey = 0;
             $hasFruit = false;
+            $mealIngredients = '';
 
             if($recipe->id <= 160 && $recipe->id >= 139) {
                 $hasFruit = true;
@@ -240,7 +241,11 @@ class RecipeController
                 } else {
                     array_push($holders, $recipeFoodstuff);
                 }
+
+                $mealIngredients .= $recipeFoodstuff->foodstuff_id . '-';
             }
+
+            $mealIngredients = substr($mealIngredients, 0, -1);
 
             $fixedCalories = $calories;
             $fixedProteins = $proteins;
@@ -291,6 +296,7 @@ class RecipeController
                     'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
                     'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
                     'hasFruit' => $hasFruit ? 1 : 0,
+                    'mealIngredients' => $mealIngredients,
                 ];
                 array_push($recipesFinal, $recipeFinal);
             }
@@ -349,6 +355,7 @@ class RecipeController
                     'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
                     'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
                     'hasFruit' => $hasFruit ? 1 : 0,
+                    'mealIngredients' => $mealIngredients,
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -422,6 +429,7 @@ class RecipeController
                     'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
                     'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
                     'hasFruit' => $hasFruit ? 1 : 0,
+                    'mealIngredients' => $mealIngredients,
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -513,6 +521,7 @@ class RecipeController
                     'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
                     'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
                     'hasFruit' => $hasFruit ? 1 : 0,
+                    'mealIngredients' => $mealIngredients,
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -572,6 +581,7 @@ class RecipeController
                     'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
                     'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
                     'hasFruit' => $hasFruit ? 1 : 0,
+                    'mealIngredients' => $mealIngredients,
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -646,6 +656,7 @@ class RecipeController
                     'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
                     'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
                     'hasFruit' => $hasFruit ? 1 : 0,
+                    'mealIngredients' => $mealIngredients,
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -705,6 +716,7 @@ class RecipeController
                     'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
                     'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
                     'hasFruit' => $hasFruit ? 1 : 0,
+                    'mealIngredients' => $mealIngredients,
                 ];
 
                 array_push($recipesFinal, $recipeFinal);
@@ -779,6 +791,7 @@ class RecipeController
                     'eggBreakfast' => $eggs && $recipe->type == 1 ? 1 : 0,
                     'oatBreakfast' => $oatMeal && $recipe->type == 1 ? 1 : 0,
                     'hasFruit' => $hasFruit ? 1 : 0,
+                    'mealIngredients' => $mealIngredients,
                 ];
 
                  array_push($recipesFinal, $recipeFinal);
@@ -789,7 +802,7 @@ class RecipeController
         //dd($recipesFinal);
 
         foreach ($recipesFinal as $key => $recipe) {
-            echo $key . ',' . $recipe['id'] . ',' . $recipe['category'] . ',' . $recipe['calories_min'] . ',' . $recipe['proteins_min'] . ',' . $recipe['fats_min'] . ',' . $recipe['carbohydrates_min'] . ',' . $recipe['calories_max'] . ',' . $recipe['proteins_max'] . ',' . $recipe['fats_max'] . ',' . $recipe['carbohydrates_max'] . ',' . $recipe['tuna'] . ',' . $recipe['whey'] . ',' . $recipe['holders'] . ',' . $recipe['fixedCalories'] . ',' . $recipe['fixedProteins'] . ',' . $recipe['fixedFats'] . ',' . $recipe['fixedCarbohydrates'] . ',' . $recipe['eggBreakfast'] . ',' . $recipe['oatBreakfast'] . ',' . $recipe['hasFruit'] . "<br>";
+            echo $key . ',' . $recipe['id'] . ',' . $recipe['category'] . ',' . $recipe['calories_min'] . ',' . $recipe['proteins_min'] . ',' . $recipe['fats_min'] . ',' . $recipe['carbohydrates_min'] . ',' . $recipe['calories_max'] . ',' . $recipe['proteins_max'] . ',' . $recipe['fats_max'] . ',' . $recipe['carbohydrates_max'] . ',' . $recipe['tuna'] . ',' . $recipe['whey'] . ',' . $recipe['holders'] . ',' . $recipe['fixedCalories'] . ',' . $recipe['fixedProteins'] . ',' . $recipe['fixedFats'] . ',' . $recipe['fixedCarbohydrates'] . ',' . $recipe['eggBreakfast'] . ',' . $recipe['oatBreakfast'] . ',' . $recipe['hasFruit'] . ',' . $recipe['mealIngredients'] . "<br>";
         }
     }
 
@@ -1072,7 +1085,7 @@ class RecipeController
         foreach($foodstuffs as $foodstuff) {
             $f = Foodstuff::where('name', $foodstuff)->get()->first();
             $ua = UserAllergy::create(['user_id' => $user->id, 'foodstuff_id' => $f->id]);
-            $allergyIds[] = $ua->id;
+            $allergyIds[] = $f->id;
         }
 
         $ur = UserRecipe::where('user_id', $user->id)
