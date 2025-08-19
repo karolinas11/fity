@@ -9,6 +9,7 @@ use App\Models\Photo;
 use App\Models\Recipe;
 use App\Models\RecipeFoodstuff;
 use App\Models\Scope;
+use App\Models\Subscriber;
 use App\Models\User;
 use App\Models\UserAllergy;
 use App\Models\UserRecipe;
@@ -646,6 +647,7 @@ class UserController extends Controller
             $foodstuff->full_model = $fullFoodstuffModel;
             $foodstuff->foodstuff_id = $foodstuffId;
             $foodstuff->amount = $foodstuff->amount;
+            $foodstuff->am = $foodstuff->amount;
             $foodstuff->purchased = $foodstuff->purchased;
             $foodstuff->full_model->imageUrl = $fullFoodstuffModel->featured_image;
             if($fullFoodstuffModel->has_piece == 1) {
@@ -668,7 +670,7 @@ class UserController extends Controller
         $foodstuffsFinal = $foodstuffs->groupBy('foodstuff_id')->map(function ($group) {
             return [
                 'name' => $group->first()->full_model->name,
-                'amount' => $group->where('purchased', 0)->sum('amount'),
+                'amount' => $group->where('purchased', 0)->sum('am'),
                 'ingredient' => $group->first()->full_model,
                 'bought' => $group->every(fn ($f) => $f->purchased == 1),
                 'unit' => 'g',
@@ -1028,5 +1030,16 @@ class UserController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
         return response()->json('success', 200);
+    }
+
+    public function getSubscribers() {
+        return Subscriber::all()->count();
+    }
+
+    public function addSubscriber(Request $request) {
+        return Subscriber::create([
+            'name' => $request->subscriberName,
+            'email' => $request->subscriberEmail
+        ]);
     }
 }
