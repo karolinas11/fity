@@ -640,13 +640,13 @@ class UserController extends Controller
         $recipe = UserRecipe::find($request->input('recipeId'));
         $foodstuffs = collect();
 
-        foreach ($recipe->foodstuffs as $foodstuff) {
+        foreach ($recipe->foodstuffs as &$foodstuff) {
             $foodstuffId = $foodstuff->foodstuff_id;
             $fullFoodstuffModel = Foodstuff::find($foodstuffId);
             $fullFoodstuffModel->foodstuff_category = FoodstuffCategory::where('id', $fullFoodstuffModel->foodstuff_category_id)->get()->first()->name;
             $foodstuff->full_model = $fullFoodstuffModel;
             $foodstuff->foodstuff_id = $foodstuffId;
-            //$foodstuff->amount = $foodstuff->amount;
+            $foodstuff->amount = $foodstuff->amount;
             $foodstuff->purchased = $foodstuff->purchased;
             $foodstuff->full_model->imageUrl = $fullFoodstuffModel->featured_image;
             if($fullFoodstuffModel->has_piece == 1) {
@@ -663,19 +663,13 @@ class UserController extends Controller
             } else {
                 $foodstuff->full_model->description = null;
             }
-            $foodstuffs->push((object)[
-                'foodstuff_id' => $fullFoodstuffModel->id,
-                'purchased'    => (int) $foodstuff->purchased ?? (int)($foodstuff->pivot->purchased ?? 0),
-                'amount'       => (float)($foodstuff->amount ?? $foodstuff->pivot->amount),
-                'full_model'   => $fullFoodstuffModel,
-            ]);
+            $foodstuffs->push($foodstuff);
         }
 
         $foodstuffsFinal = $foodstuffs->groupBy('foodstuff_id')->map(function ($group) {
             return [
                 'name' => $group->first()->full_model->name,
-                'amount' => 12,
-//                'amount' => $group->where('purchased', 0)->sum('amount'),
+                'amount' => $group->where('purchased', 0)->sum('amount'),
                 'ingredient' => $group->first()->full_model,
                 'bought' => $group->every(fn ($f) => $f->purchased == 1),
                 'unit' => 'g',
