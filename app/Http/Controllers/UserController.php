@@ -674,7 +674,8 @@ class UserController extends Controller
         $foodstuffsFinal = $foodstuffs->groupBy('foodstuff_id')->map(function ($group) {
             return [
                 'name' => $group->first()->full_model->name,
-                'amount' => $group->where('purchased', 0)->sum('amount'),
+                'amount' => 12,
+//                'amount' => $group->where('purchased', 0)->sum('amount'),
                 'ingredient' => $group->first()->full_model,
                 'bought' => $group->every(fn ($f) => $f->purchased == 1),
                 'unit' => 'g',
