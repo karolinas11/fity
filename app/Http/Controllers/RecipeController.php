@@ -962,6 +962,9 @@ class RecipeController
 
         $recipes = Recipe::all();
         $types = (array) $request->input('types');
+        $types = array_map(function ($t) {
+            return (int) $t === 4 ? 2 : (int) $t;
+        }, $types);
         $foodstuffs = (array) $request->input('foodstuffs');
         $recipesFinal = [];
 
