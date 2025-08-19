@@ -648,6 +648,7 @@ class UserController extends Controller
             $foodstuff->foodstuff_id = $foodstuffId;
             $foodstuff->amount = $foodstuff->amount;
             $foodstuff->purchased = $foodstuff->purchased;
+            $foodstuff->full_model->amount = $foodstuff->amount;
             $foodstuff->full_model->imageUrl = $fullFoodstuffModel->featured_image;
             if($fullFoodstuffModel->has_piece == 1) {
                 $pieces = $foodstuff->amount / $fullFoodstuffModel->piece_amount;
