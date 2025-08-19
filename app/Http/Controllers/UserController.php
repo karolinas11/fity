@@ -647,7 +647,7 @@ class UserController extends Controller
             $foodstuff->full_model = $fullFoodstuffModel;
             $foodstuff->foodstuff_id = $foodstuffId;
             $foodstuff->amount = $foodstuff->amount;
-            $foodstuff->am = $foodstuff->pivot->amount;
+            $foodstuff->am = $foodstuff->amount;
             $foodstuff->purchased = $foodstuff->purchased;
             $foodstuff->full_model->imageUrl = $fullFoodstuffModel->featured_image;
             if($fullFoodstuffModel->has_piece == 1) {
@@ -664,7 +664,12 @@ class UserController extends Controller
             } else {
                 $foodstuff->full_model->description = null;
             }
-            $foodstuffs->push($foodstuff);
+            $foodstuffs->push((object)[
+                'foodstuff_id' => $fullFoodstuffModel->id,
+                'purchased'    => (int) $foodstuff->purchased ?? (int)($foodstuff->pivot->purchased ?? 0),
+                'amount'       => (float)($foodstuff->amount ?? $foodstuff->pivot->amount),
+                'full_model'   => $fullFoodstuffModel,
+            ]);
         }
 
         $foodstuffsFinal = $foodstuffs->groupBy('foodstuff_id')->map(function ($group) {
