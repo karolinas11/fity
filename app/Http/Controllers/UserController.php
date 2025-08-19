@@ -647,7 +647,7 @@ class UserController extends Controller
             $foodstuff->full_model = $fullFoodstuffModel;
             $foodstuff->foodstuff_id = $foodstuffId;
             $foodstuff->amount = $foodstuff->amount;
-            $foodstuff->am = $foodstuff->amount;
+            $foodstuff->am = $foodstuff->pivot->amount;
             $foodstuff->purchased = $foodstuff->purchased;
             $foodstuff->full_model->imageUrl = $fullFoodstuffModel->featured_image;
             if($fullFoodstuffModel->has_piece == 1) {
