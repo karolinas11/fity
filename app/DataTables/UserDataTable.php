@@ -3,6 +3,7 @@
 namespace App\DataTables;
 
 use App\Models\User;
+use App\Models\UserRecipe;
 use App\Services\UserService;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
@@ -77,7 +78,11 @@ class UserDataTable extends DataTable
                 return $user->tolerance_calories;
             })
             ->addColumn('days', function(User $user) {
-                return $user->days;
+                $userRecipesByDay = UserRecipe::where('user_id', $user->id)
+                    ->groupBy('date')
+                    ->get()
+                    ->count();
+                return $userRecipesByDay/5;
             })
             ->addColumn('target_calories', function(User $user,UserService $userService) {
                 $target= $userService->getMacrosForUser2($user);
