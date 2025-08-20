@@ -83,7 +83,7 @@ class OnBoardingQuestionService{
                     case 'fats': $name ='Masti'; $unit = 'g' . ',0.7'; break;
                     case 'proteins': $name ='Proteini'; $unit = 'g' . ',0.7'; break;
                     case 'carbohydrates': $name ='Ugljeni hidrati'; $unit = 'g' . ',0.7'; break;
-                    case 'water': $name = 'Voda'; $unit = 'l' . ',0.7'; break;
+                    case 'water': $name = 'Voda'; $unit = 'l' . ',1.0'; break;
                     default: $name = $key; $unit = 'g';
                 }
                 $singleAnswer = [

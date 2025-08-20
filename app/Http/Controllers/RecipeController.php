@@ -1077,6 +1077,7 @@ class RecipeController
                 break;
         }
         $user->activity = $activity;
+        $user->plan_generated = now();
         $user->save();
         $foodstuffs = $request->removed_foodstuffs;
         $userAllergies = UserAllergy::where('user_id', $user->id)->get();

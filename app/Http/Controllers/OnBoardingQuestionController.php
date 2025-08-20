@@ -394,7 +394,8 @@ class OnBoardingQuestionController extends Controller {
 
         Log::error('MEALS NUM: ' . $mealsNum);
 //        $user->meals_num = 4;
-        $user->days = 7;
+        $user->days = 30;
+        $user->plan_generated = now();
         $user->save();
 
         $userAllergies = UserAllergy::where('user_id', $userId)->get();
