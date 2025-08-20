@@ -132,7 +132,7 @@
                 </div>
                 <div class="col-md-3">
                     <h3>Ugljeni hidrati</h3>
-                    <p>{{ $target['carbohydrates'] }}</p>
+                    <p>{{ $target['carbohydrates'] }}g</p>
                 </div>
             </div>
             <div class="col-md-12 text-center mt-5">
