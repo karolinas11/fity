@@ -235,7 +235,7 @@ class UserController extends Controller
             $day['fats'] = $dayFats;
         }
 
-        return view('user-recipes', compact('user', 'target', 'data'));
+        return view('user-recipes', compact('user', 'target', 'data', 'userAllergies'));
     }
 
     public function showUsersList(UserDataTable $dataTable) {

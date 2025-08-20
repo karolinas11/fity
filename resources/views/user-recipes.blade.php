@@ -104,6 +104,16 @@
                     <button type="submit" id="editUserButton" class="btn btn-primary">Sačuvaj izmene</button>
                 </div>
 
+            <div class="col-md-12 text-center">
+                <h3>
+                    Isključene namirnice:
+                    @foreach($userAllergies)
+                        {{ \App\Models\Foodstuff::where('id', $userAllergies->foodstuff_id)->get()->first()->name }}
+                        @if(!$loop->last) - @endif
+                    @endforeach
+                </h3>
+            </div>
+
             <div class="col-md-12 text-center mt-5">
                 <h2 class="mb-4">Dnevni unos</h2>
             </div>
