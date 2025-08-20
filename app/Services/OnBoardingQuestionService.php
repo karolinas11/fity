@@ -76,9 +76,9 @@ class OnBoardingQuestionService{
             $answers = [];
 
             $total = $macros['proteins'] + $macros['fats'] + $macros['carbohydrates'];
-            $percentProteins = number_format(($macros['proteins'] / $total) * 100, 1, '.', '');
-            $percentFats = number_format(($macros['fats'] / $total) * 100, 1, '.', '');
-            $percentCarbs = number_format(($macros['carbohydrates'] / $total) * 100, 1, '.', '');
+            $percentProteins = number_format(($macros['proteins'] / $total), 1, '.', '');
+            $percentFats = number_format(($macros['fats'] / $total), 1, '.', '');
+            $percentCarbs = number_format(($macros['carbohydrates'] / $total), 1, '.', '');
 
             Log::error('PERCENTS: ' . $percentProteins . ' ' . $percentFats . ' ' . $percentCarbs);
 
