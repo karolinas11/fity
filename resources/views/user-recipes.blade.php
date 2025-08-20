@@ -107,8 +107,8 @@
             <div class="col-md-12 text-center">
                 <h3>
                     Isključene namirnice:
-                    @foreach($userAllergies)
-                        {{ \App\Models\Foodstuff::where('id', $userAllergies->foodstuff_id)->get()->first()->name }}
+                    @foreach($userAllergies as $userAllergy)
+                        {{ \App\Models\Foodstuff::where('id', $userAllergy->foodstuff_id)->get()->first()->name }}
                         @if(!$loop->last) - @endif
                     @endforeach
                 </h3>
