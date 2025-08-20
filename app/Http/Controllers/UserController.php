@@ -140,6 +140,7 @@ class UserController extends Controller
 //            $target = $this->userService->getMacrosForUser($user);
 //        } else {
             $target = $this->userService->getMacrosForUser2($user);
+            dd($target);
 //        }
 
         $userAllergies = UserAllergy::where('user_id', $userId)->get();
