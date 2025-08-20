@@ -136,11 +136,11 @@ class UserController extends Controller
     public function assignRecipesToUser($userId) {
 
         $user = User::find($userId);
-        if($user->macros_type == '1') {
-            $target = $this->userService->getMacrosForUser($user);
-        } else {
+//        if($user->macros_type == '1') {
+//            $target = $this->userService->getMacrosForUser($user);
+//        } else {
             $target = $this->userService->getMacrosForUser2($user);
-        }
+//        }
 
         $userAllergies = UserAllergy::where('user_id', $userId)->get();
         $allergyIds = [];
