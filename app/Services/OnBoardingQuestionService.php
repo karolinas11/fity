@@ -74,15 +74,21 @@ class OnBoardingQuestionService{
             Log::error('USER AND MACROS: ' . json_encode($user) . ' ' . json_encode($macros));
             $i = 0;
             $answers = [];
+
+            $total = $macros['proteins'] + $macros['fats'] + $macros['carbohydrates'];
+            $percentProteins = number_format(($macros['proteins'] / $total) * 100, 1, '.', '');
+            $percentFats = number_format(($macros['fats'] / $total) * 100, 1, '.', '');
+            $percentCarbs = number_format(($macros['carbohydrates'] / $total) * 100, 1, '.', '');
+
             foreach ($macros as $key => $macro) {
                 if($key == 'weight') continue;
                 $name = '';
                 $unit = '';
                 switch($key) {
                     case 'calories': $name = 'Kalorije'; $unit = ' kcal'; break;
-                    case 'fats': $name ='Masti'; $unit = 'g' . ',0.7'; break;
-                    case 'proteins': $name ='Proteini'; $unit = 'g' . ',0.7'; break;
-                    case 'carbohydrates': $name ='Ugljeni hidrati'; $unit = 'g' . ',0.7'; break;
+                    case 'fats': $name ='Masti'; $unit = 'g' . ',' . $percentFats; break;
+                    case 'proteins': $name ='Proteini'; $unit = 'g' . ',' . $percentProteins; break;
+                    case 'carbohydrates': $name ='Ugljeni hidrati'; $unit = 'g' . ',' . $percentCarbs; break;
                     case 'water': $name = 'Voda'; $unit = 'l' . ',1.0'; break;
                     default: $name = $key; $unit = 'g';
                 }
