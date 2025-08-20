@@ -78,11 +78,11 @@ class UserDataTable extends DataTable
                 return $user->tolerance_calories;
             })
             ->addColumn('days', function(User $user) {
-                $userRecipesByDay = UserRecipe::where('user_id', $user->id)
-                    ->groupBy('date')
-                    ->get()
-                    ->count();
-                return $userRecipesByDay/5;
+                $days = UserRecipe::where('user_id', $user->id)
+                    ->distinct('date')
+                    ->count('date');
+
+                return $days / 5;
             })
             ->addColumn('target_calories', function(User $user,UserService $userService) {
                 $target= $userService->getMacrosForUser2($user);
