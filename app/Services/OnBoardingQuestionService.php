@@ -80,6 +80,8 @@ class OnBoardingQuestionService{
             $percentFats = number_format(($macros['fats'] / $total) * 100, 1, '.', '');
             $percentCarbs = number_format(($macros['carbohydrates'] / $total) * 100, 1, '.', '');
 
+            Log::error('PERCENTS: ' . $percentProteins . ' ' . $percentFats . ' ' . $percentCarbs);
+
             foreach ($macros as $key => $macro) {
                 if($key == 'weight') continue;
                 $name = '';
