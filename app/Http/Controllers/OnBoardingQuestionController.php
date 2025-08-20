@@ -383,10 +383,12 @@ class OnBoardingQuestionController extends Controller {
             $foodstuffs = $question6[0]['value'];
             $foodstuffsArray = explode(',', $foodstuffs);
             foreach ($foodstuffsArray as $foodstuff) {
-                UserAllergy::create([
-                    'user_id' => $userId,
-                    'foodstuff_id' => Foodstuff::where('name', $foodstuff)->first()->id
-                ]);
+                if($foodstuff) {
+                    UserAllergy::create([
+                        'user_id' => $userId,
+                        'foodstuff_id' => Foodstuff::where('name', $foodstuff)->first()->id
+                    ]);
+                }
             }
         }
 
