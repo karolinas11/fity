@@ -118,17 +118,21 @@
                 <h2 class="mb-4">Dnevni unos</h2>
             </div>
             <div class="row text-center">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <h3>Kalorije</h3>
                     <p id="calories">{{ $target['calories'] }}</p>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <h3>Proteini</h3>
                     <p id="proteins">{{ $target['proteins'] }}g</p>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <h3>Masti</h3>
                     <p id="fats">{{ $target['fats'] }}g</p>
+                </div>
+                <div class="col-md-3">
+                    <h3>Ugljeni hidrati</h3>
+                    <p>{{ $target['carbs'] }}</p>
                 </div>
             </div>
             <div class="col-md-12 text-center mt-5">
