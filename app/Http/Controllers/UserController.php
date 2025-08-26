@@ -57,7 +57,7 @@ class UserController extends Controller
 
 //    protected $firebaseAuth;
 
-    public function __construct(private Messaging $messaging) {
+    public function __construct() {
         $this->userService = new UserService();
         $this->recipeFoodstuffService= new RecipeFoodstuffService();
         $this->userWaterService= new UserWaterService();
@@ -1090,15 +1090,15 @@ class UserController extends Controller
         return view('notification-test');
     }
 
-    public function sendNotificationTest() {
-        $user = User::find(351);
-        $message = CloudMessage::withTarget('token', $user->notification_token)
-            ->withNotification(Notification::create(
-                'Pozdrav ' . $user->name,
-                'Vaša obaveštenja su ažurirana.'
-            ));
-
-        $this->messaging->send($message);
-        return response()->json('success', 200);
-    }
+//    public function sendNotificationTest() {
+//        $user = User::find(351);
+//        $message = CloudMessage::withTarget('token', $user->notification_token)
+//            ->withNotification(Notification::create(
+//                'Pozdrav ' . $user->name,
+//                'Vaša obaveštenja su ažurirana.'
+//            ));
+//
+//        $this->messaging->send($message);
+//        return response()->json('success', 200);
+//    }
 }
