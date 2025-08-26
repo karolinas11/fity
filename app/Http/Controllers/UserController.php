@@ -354,7 +354,7 @@ class UserController extends Controller
         $hiddenFoodstuffs = [];
 
         foreach ($userAllergies as $userAllergy) {
-            if(Foodstuff::where('id', $userAllergy->foodstuff_id)->get()->foodstuff_category_id == 6) {
+            if(Foodstuff::where('id', $userAllergy->foodstuff_id)->get()->first()->foodstuff_category_id == 6) {
                 $hiddenFoodstuffs[] = $userAllergy->foodstuff_id;
             }
         }
