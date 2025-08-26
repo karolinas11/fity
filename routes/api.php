@@ -65,3 +65,5 @@ Route::get('/user/get-onboarding-2', [OnBoardingQuestionController::class, 'getO
 Route::post('/generate-new-plan', [RecipeController::class, 'generateNewPlan'])->name('generate-new-plan');
 Route::get('/users/get-subscribers', [UserController::class, 'getSubscribers'])->name('get-subscribers');
 Route::post('/users/add-subscriber', [UserController::class, 'addSubscriber'])->name('add-subscriber');
+Route::post('/users/update-notification-token', [UserController::class, 'updateNotificationToken'])->name('update-notification-token');
+Route::post('/users/update-notification-status', [UserController::class, 'updateNotificationStatus'])->name('update-notification-status');

@@ -1042,4 +1042,28 @@ class UserController extends Controller
             'email' => $request->subscriberEmail
         ]);
     }
+
+    public function updateNotificationToken(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if (!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
+        $user->notification_token = $request->notificationToken;
+        $user->save();
+        return response()->json('success', 200);
+    }
+
+    public function updateNotificationStatus(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if (!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
+        $user->notification_status = $request->notificationStatus;
+        $user->save();
+        return response()->json('success', 200);
+    }
 }
