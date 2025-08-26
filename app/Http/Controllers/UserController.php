@@ -33,7 +33,10 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Kreait\Firebase\Contract\Messaging;
 use Kreait\Firebase\Factory;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
@@ -51,9 +54,10 @@ class UserController extends Controller
     protected PhotoService $photoService;
     protected UserRecipeRepository $userRecipeRepository;
     protected RecipeService $recipeService;
+
 //    protected $firebaseAuth;
 
-    public function __construct() {
+    public function __construct(private Messaging $messaging) {
         $this->userService = new UserService();
         $this->recipeFoodstuffService= new RecipeFoodstuffService();
         $this->userWaterService= new UserWaterService();
@@ -1064,6 +1068,23 @@ class UserController extends Controller
         $user = User::where('firebase_uid', $firebaseUid)->get()->first();
         $user->notification_status = $request->notificationStatus;
         $user->save();
+
+        return response()->json('success', 200);
+    }
+
+    public function showNotificationTest() {
+        return view('notification-test');
+    }
+
+    public function sendNotificationTest() {
+        $user = User::find(351);
+        $message = CloudMessage::withTarget('token', $user->notification_token)
+            ->withNotification(Notification::create(
+                'Pozdrav ' . $user->name,
+                'Vaša obaveštenja su ažurirana.'
+            ));
+
+        $this->messaging->send($message);
         return response()->json('success', 200);
     }
 }

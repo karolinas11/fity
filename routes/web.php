@@ -50,3 +50,5 @@ Route::get('/test-curl', [RecipeController::class, 'testCurl'])->name('test-curl
 
 Route::get('/users', [UserController::class, 'showUsersList'])->name('show-users-list');
 Route::get('/boarding-question',[OnBoardingQuestionController::class, 'index']);
+
+Route::get('/not-test', [UserController::class, 'showNotificationTest'])->name('show-notification-test');
