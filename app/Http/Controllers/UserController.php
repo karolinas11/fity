@@ -57,7 +57,7 @@ class UserController extends Controller
 
 //    protected $firebaseAuth;
 
-    public function __construct() {
+    public function __construct(private Messaging $messaging) {
         $this->userService = new UserService();
         $this->recipeFoodstuffService= new RecipeFoodstuffService();
         $this->userWaterService= new UserWaterService();
@@ -149,6 +149,7 @@ class UserController extends Controller
         $userAllergies = UserAllergy::where('user_id', $userId)->get();
         $allergyIds = [];
         foreach ($userAllergies as $userAllergy) {
+            if(Foodstuff::where('id', $userAllergy->foodstuff_id)->get()->first()->foodstuff_category_id == 6) continue;
             $allergyIds[] = $userAllergy->foodstuff_id;
         }
 
@@ -339,6 +340,7 @@ class UserController extends Controller
         if(!$firebaseUid) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
+        $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
         $recipe = $this->userRecipeService->getUserRecipeByUserIdAndRecipeId($request->input('recipeId'), $request->input('screen'));
         if ($recipe->bookmarked_status == 1) {
             $recipe->bookmarked_status = 'bookmarked';
@@ -347,6 +349,18 @@ class UserController extends Controller
         } else {
             $recipe->bookmarked_status = 'active';
         }
+
+        $userAllergies = UserAllergy::where('user_id', $userId)->get();
+        $hiddenFoodstuffs = [];
+
+        foreach ($userAllergies as $userAllergy) {
+            if(Foodstuff::where('id', $userAllergy->foodstuff_id)->get()->foodstuff_category_id == 6) {
+                $hiddenFoodstuffs[] = $userAllergy->foodstuff_id;
+            }
+        }
+
+        $recipe->hidden_foodstuffs = $hiddenFoodstuffs;
+
         return response()->json($recipe);
     }
 
@@ -1076,15 +1090,15 @@ class UserController extends Controller
         return view('notification-test');
     }
 
-//    public function sendNotificationTest() {
-//        $user = User::find(351);
-//        $message = CloudMessage::withTarget('token', $user->notification_token)
-//            ->withNotification(Notification::create(
-//                'Pozdrav ' . $user->name,
-//                'Vaša obaveštenja su ažurirana.'
-//            ));
-//
-//        $this->messaging->send($message);
-//        return response()->json('success', 200);
-//    }
+    public function sendNotificationTest() {
+        $user = User::find(351);
+        $message = CloudMessage::withTarget('token', $user->notification_token)
+            ->withNotification(Notification::create(
+                'Pozdrav ' . $user->name,
+                'Vaša obaveštenja su ažurirana.'
+            ));
+
+        $this->messaging->send($message);
+        return response()->json('success', 200);
+    }
 }

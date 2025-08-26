@@ -1089,6 +1089,7 @@ class RecipeController
         foreach($foodstuffs as $foodstuff) {
             $f = Foodstuff::where('name', $foodstuff)->get()->first();
             $ua = UserAllergy::create(['user_id' => $user->id, 'foodstuff_id' => $f->id]);
+            if(Foodstuff::where('id', $ua->foodstuff_id)->get()->first()->foodstuff_category_id == 6) continue;
             $allergyIds[] = $f->id;
         }
 
