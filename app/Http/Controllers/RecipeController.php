@@ -910,7 +910,7 @@ class RecipeController
                 } else {
                     $userRecipe->bookmarked_status = 0;
                 }
-                $recipe->save();
+                $userRecipe->save();
             }
 
             return response()->json($recipe);

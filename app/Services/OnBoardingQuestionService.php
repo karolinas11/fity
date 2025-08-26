@@ -155,7 +155,11 @@ class OnBoardingQuestionService{
             foreach ($foodstuffCategories as $foodstuffCategory) {
                 $foodstuffs = '';
                 foreach ($foodstuffCategory->foodstuffsOption as $foodstuff) {
-                    $foodstuffs .= $foodstuff->name . ',';
+                    if(str_contains(strtolower($foodstuff->name), 'ulje')) {
+                        $foodstuffs .= 'l:' . $foodstuff->name . ',';
+                    } else {
+                        $foodstuffs .= $foodstuff->name . ',';
+                    }
                 }
                 $singleAnswer = [
                     'answerIndex' => $i,
