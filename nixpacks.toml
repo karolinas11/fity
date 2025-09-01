@@ -1,3 +1,8 @@
+[phases.build]
+cmds = [
+    "chmod +x /assets/start.sh",
+]
+
 [start]
 cmd = '/assets/start.sh'
 
