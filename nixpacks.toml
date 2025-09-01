@@ -145,35 +145,20 @@ http {
         index index.php;
      
         charset utf-8;
-     
 
-        $if(NIXPACKS_PHP_FALLBACK_PATH) (
-            location / {
-                try_files $uri $uri/ ${NIXPACKS_PHP_FALLBACK_PATH}?$query_string;
-            }
-        ) else (
-          location / {
-                try_files $uri $uri/ /index.php?$query_string;
-           }
-        )
-     
-        location = /favicon.ico { access_log off; log_not_found off; }
-        location = /robots.txt  { access_log off; log_not_found off; }
-     
-        $if(IS_LARAVEL) (
-            error_page 404 /index.php;
-        ) else ()
-     
         location ~ \.php$ {
-            fastcgi_pass 127.0.0.1:9000;
-            fastcgi_param QUERY_STRING $query_string;
-            fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
-            include $!{nginx}/conf/fastcgi_params;
-            include $!{nginx}/conf/fastcgi.conf;
+            try_files $uri =404;
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
+            fastcgi_pass app:9000;
+            fastcgi_index index.php;
+            include fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_param PATH_INFO $fastcgi_path_info;
         }
-     
-        location ~ /\.(?!well-known).* {
-            deny all;
+        
+        location / {
+            try_files $uri $uri/ /index.php?$query_string;
+            gzip_static on;
         }
     }
 }
