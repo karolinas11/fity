@@ -1,80 +1,39 @@
 [phases.build]
 cmds = [
-    "chmod +x /assets/start.sh",
+    "cp /assets/nginx.conf /etc/nginx.conf",
+    "..."
 ]
-
-[start]
-cmd = '/assets/start.sh'
 
 [staticAssets]
 
-"start.sh" = '''
-#!/bin/bash
-
-# Transform the nginx configuration
-cp /assets/nginx.conf /etc/nginx.conf
-'''
-
-"php-fpm.conf" = '''
-[www]
-listen = 127.0.0.1:9000
-user = www-data
-group = www-data
-listen.owner = www-data
-listen.group = www-data
-pm = dynamic
-pm.max_children = 50
-pm.min_spare_servers = 4
-pm.max_spare_servers = 32
-pm.start_servers = 18
-clear_env = no
-php_admin_value[post_max_size] = 35M
-php_admin_value[upload_max_filesize] = 30M
-'''
-
 "nginx.conf" = '''
-user www-data www-data;
-worker_processes 5;
-daemon off;
-
-worker_rlimit_nofile 8192;
-
 events {
-  worker_connections  4096;  # Default: 1024
+    worker_connections  1024;
 }
 
 http {
-    include    $!{nginx}/conf/mime.types;
-    index    index.html index.htm index.php;
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
 
-    default_type application/octet-stream;
-    log_format   main '$remote_addr - $remote_user [$time_local]  $status '
-        '"$request" $body_bytes_sent "$http_referer" '
-        '"$http_user_agent" "$http_x_forwarded_for"';
-    access_log /var/log/nginx-access.log;
-    error_log /var/log/nginx-error.log;
-    sendfile     on;
-    tcp_nopush   on;
-    server_names_hash_bucket_size 128; # this seems to be required for some vhosts
+    sendfile        on;
+    keepalive_timeout  65;
+
     server {
         listen 80;
-        server_name your_domain.com;
-        root /path/to/your/laravel/public; # Adjust this to your Laravel public directory
-    
-        index index.php index.html index.htm;
-    
+        server_name localhost;
+
+        root /var/www/public;
+        index index.php index.html;
+
         location / {
             try_files $uri $uri/ /index.php?$query_string;
         }
-    
+
         location ~ \.php$ {
-            fastcgi_pass unix:/var/run/php/php8.1-fpm.sock; # Adjust PHP-FPM socket path/version
+            fastcgi_pass php-fpm:9000;
             fastcgi_index index.php;
-            fastcgi_buffers 16 16k;
-            fastcgi_buffer_size 32k;
-            include fastcgi_params;
             fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-            fastcgi_param QUERY_STRING $query_string; # Explicitly pass the query string
+            include fastcgi_params;
         }
     }
 }
