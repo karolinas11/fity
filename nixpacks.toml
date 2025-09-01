@@ -1,4 +1,14 @@
+[start]
+cmd = '/assets/start.sh'
+
 [staticAssets]
+
+"start.sh" = '''
+#!/bin/bash
+
+# Transform the nginx configuration
+cp /assets/nginx.conf /etc/nginx.conf
+'''
 
 "php-fpm.conf" = '''
 [www]
