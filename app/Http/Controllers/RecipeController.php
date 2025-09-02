@@ -56,6 +56,7 @@ class RecipeController
             'type' => $request->input('type'),
             'insulin'=> $request->input('insulin'),
             'preparation_time' => $request->input('preparation_time'),
+            'unique_breakfast' => $request->input('unique_breakfast')
         ];
 
         if ($request->hasFile('featured_image')) {
@@ -125,6 +126,7 @@ class RecipeController
             'description' => $request->input('description'),
             'short_description' => $request->input('short_description'),
             'insulin' => $request->input('insulin'),
+            'unique_breakfast' => $request->input('unique_breakfast'),
             'type' => $request->input('type'),
             'preparation_time' => $request->input('preparation_time'),
         ];

@@ -89,6 +89,11 @@
                 <input  @if($recipe->insulin == 1) checked @endif type="checkbox" name="insulin">
             </div>
 
+            <div class="col-md-12">
+                <label>Doručak bez ograničenja</label>
+                <input  @if($recipe->unique_breakfast == 1) checked @endif type="checkbox" name="unique_breakfast">
+            </div>
+
             <div class="foodstuffs mb-4">
                 @foreach($recipeFoodstuffs as $recipeFoodstuff)
                     <div class="single-foodstuff row mb-3 mt-3">
@@ -239,6 +244,7 @@
             formData.append('preparation_time', document.querySelector('input[name="preparation_time"]').value);
             formData.append('type', document.querySelector('select[name="type"]').value);
             formData.append('insulin', document.querySelector('input[name="insulin"]').checked ? 1 : 0);
+            formData.append('unique_breakfast', document.querySelector('input[name="unique_breakfast"]').checked ? 1 : 0);
             formData.append('foodstuffs', JSON.stringify(foodstuffData));
 
             jQuery.ajax({
