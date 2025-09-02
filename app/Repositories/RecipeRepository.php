@@ -26,6 +26,7 @@ class RecipeRepository
             $recipe->type = $recipeData['type'];
             $recipe->featured_image = $recipeData['featured_image'] ?? $recipe->featured_image;
             $recipe->preparation_time = $recipeData['preparation_time'];
+            $recipe->unique_breakfast = $recipeData['unique_breakfast'];
             $recipe->save();
             return $recipe;
         } catch (QueryException $e) {
