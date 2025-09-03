@@ -208,6 +208,7 @@ class RecipeDataTable extends DataTable
                 }'
             ])
             ->orderBy(1)
+            ->pageLength(500)
             ->selectStyleSingle()
             ->buttons([
                 Button::make('excel'),
