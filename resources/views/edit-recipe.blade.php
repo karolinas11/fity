@@ -255,7 +255,6 @@
                 contentType: false,
                 success: function(result) {
                     alert('Recept uspešno izmenjen!');
-                    window.location.href = window.origin + '/recipes/';
                 }
             });
 
