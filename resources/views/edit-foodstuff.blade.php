@@ -145,7 +145,6 @@
                 contentType: false,
                 success: function(result) {
                     alert('Namirnica uspešno izmenjena!');
-                    window.location.href = window.origin + '/foodstuffs/';
                 },
                 error: function(xhr, status, error) {
                     console.log("Greška: ", status, error);

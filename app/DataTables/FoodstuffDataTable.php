@@ -58,7 +58,7 @@ class FoodstuffDataTable extends DataTable
                 $deleteUrl = route('delete-foodstuff', $foodstuff->id);
 
                 return '
-                <a href="'.$editUrl.'" class="btn btn-sm btn-primary">Izmeni</a>
+                <a href="'.$editUrl.'" target="_blank" class="btn btn-sm btn-primary">Izmeni</a>
                 <form action="'.$deleteUrl.'" method="POST" style="display:inline-block;">
                     '.csrf_field().'
                     '.method_field('DELETE').'
@@ -95,6 +95,7 @@ class FoodstuffDataTable extends DataTable
                     ->minifiedAjax()
                     //->dom('Bfrtip')
                     ->orderBy(1)
+                    ->pageLength(500)
                     ->selectStyleSingle()
                     ->buttons([
                         Button::make('excel'),
