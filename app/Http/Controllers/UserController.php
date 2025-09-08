@@ -343,7 +343,7 @@ class UserController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
         $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
-        $recipe = $this->userRecipeService->getUserRecipeByUserIdAndRecipeId($request->input('recipeId'), $request->input('screen'));
+        $recipe = $this->userRecipeService->getUserRecipeByUserIdAndRecipeId($request->input('recipeId'), $request->input('screen'), $userId);
         if ($recipe->bookmarked_status == 1) {
             $recipe->bookmarked_status = 'bookmarked';
         } else if ($recipe->bookmarked_status == -1) {
