@@ -68,3 +68,4 @@ Route::post('/users/add-subscriber', [UserController::class, 'addSubscriber'])->
 Route::post('/users/update-notification-token', [UserController::class, 'updateNotificationToken'])->name('update-notification-token');
 Route::post('/users/update-notification-status', [UserController::class, 'updateNotificationStatus'])->name('update-notification-status');
 Route::post('/notification-test', [UserController::class, 'sendNotificationTest'])->name('send-notification-test');
+Route::get('/users/get-user-recipe-alternatives', [UserController::class, 'getUserRecipeAlternatives'])->name('get-user-recipe-alternatives');
