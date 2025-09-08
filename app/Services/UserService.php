@@ -230,8 +230,6 @@ class UserService
             $weightNew = $user->weight;
         }
 
-        Log::error('CALORIES: ' . $calories . ' PROTEINS: ' . $proteins . ' FATS: ' . $fats . ' USERID: ' . $user->id);
-
         return  [
             'calories' => number_format($calories, 0, '.', ''),
             'proteins' => number_format($proteins, 0, '.', ''),
