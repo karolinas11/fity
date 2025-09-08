@@ -78,15 +78,23 @@ class UserRecipeService
         return $recipesArray;
     }
 
-    public function getUserRecipeByUserIdAndRecipeId($recipeId, $screen) {
+    public function getUserRecipeByUserIdAndRecipeId($recipeId, $screen, $userId) {
         if($screen == 'planer') {
             $recipe = UserRecipe::find($recipeId);
+
+            $recipeDates = UserRecipe::where('user_id', $recipe->user_id)->where('recipe_id', $recipe->recipe_id)->get();
+            $dates = [];
+            foreach ($recipeDates as $recipeDate) {
+                $dates[] = $recipeDate->date;
+            }
+
             $r = Recipe::where('id', $recipe->recipe_id)->first();
             $recipe->foodstuffs = $recipe->foodstuffs;
 //            $recipe->type = $r->type;
             $recipe->name = $r->name;
             $recipe->preparation_time = $r->preparation_time;
             $recipe->featured_image = $r->featured_image;
+            $recipe->dates = $dates;
             $description = str_replace('\n', "\n", $r->description);
             $recipe->steps = preg_split('/\r\n|\r|\n/', $description);
             $recipe->steps = array_filter($recipe->steps, fn($step) => trim($step) !== '');
@@ -127,7 +135,15 @@ class UserRecipeService
             return $recipe;
         } else {
             $recipe = Recipe::find($recipeId);
+
+            $recipeDates = UserRecipe::where('user_id', $userId)->where('recipe_id', $recipe->recipe_id)->get();
+            $dates = [];
+            foreach ($recipeDates as $recipeDate) {
+                $dates[] = $recipeDate->date;
+            }
+
             $recipe->foodstuffs = $recipe->foodstuffs;
+            $recipe->dates = $dates;
             $description = str_replace('\n', "\n", $recipe->description);
             $recipe->steps = preg_split('/\r\n|\r|\n/', $description);
             $recipe->steps = array_filter($recipe->steps, fn($step) => trim($step) !== '');
