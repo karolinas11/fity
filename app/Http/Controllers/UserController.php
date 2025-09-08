@@ -794,12 +794,17 @@ class UserController extends Controller
         }
 
         $user = User::where('firebase_uid', $firebaseUid)->first();
-        $user = User::find(3);
         $userRecipe = UserRecipe::find($request->input('recipeId'));
         $userRecipe->status = $request->input('status');
         $userRecipe->save();
 
-        $usefullCombinations = $this->recipeService->getRecipeAlternatives($userRecipe);
+        $data = $this->recipeService->getRecipeAlternatives($userRecipe);
+
+        $usefullCombinations = $data['combinations'];
+        $cal = $data['cal'];
+        $prot = $data['prot'];
+        $fat = $data['fat'];
+        $ch = $data['ch'];
 
         if(count($usefullCombinations) > 0) {
             shuffle($usefullCombinations);

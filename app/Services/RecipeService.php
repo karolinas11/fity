@@ -118,6 +118,12 @@ class RecipeService
             }
         }
 
-        return $usefullCombinations;
+        return [
+            'combinations' => $usefullCombinations,
+            'cal' => $cal,
+            'prot' => $prot,
+            'fat' => $fat,
+            'ch' => $ch
+        ];
     }
 }
