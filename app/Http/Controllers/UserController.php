@@ -962,7 +962,7 @@ class UserController extends Controller
 
         $schedule = $this->decodeSchedule($request->schedule);
 
-        Log::error('CALENDAR: ' . $schedule);
+        Log::error('CALENDAR: ' . json_encode($schedule));
 
         return response()->json('success', 200);
     }
