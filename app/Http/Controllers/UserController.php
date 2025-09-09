@@ -959,6 +959,9 @@ class UserController extends Controller
         if (!$firebaseUid) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
+
+        Log::error('CALENDAR: ' . json_encode($request->all()));
+
         return response()->json('success', 200);
     }
 
