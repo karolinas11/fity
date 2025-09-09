@@ -960,7 +960,9 @@ class UserController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        Log::error('CALENDAR: ' . json_encode($request->all()));
+        $schedule = $this->decodeSchedule($request->schedule);
+
+        Log::error('CALENDAR: ' . $schedule);
 
         return response()->json('success', 200);
     }
@@ -1434,6 +1436,36 @@ class UserController extends Controller
 
         return response()->json($recipe);
     }
+
+
+
+    function decodeSchedule(array $schedule): array {
+        $DAY  = ['Pon','Uto','Sre','Cet','Pet','Sub','Ned'];
+        $MEAL = [1, 2, 4, 3, 3];
+
+        $chainsLabeled = [];
+        $edges = [];
+
+        foreach ($schedule as $chainIdx => $chain) {
+            $labels = [];
+            foreach ($chain as $node) {
+                $x = $node['coordinates']['x'];
+                $y = $node['coordinates']['y'];
+                $meal = $MEAL[$x] ?? "row{$x}";
+                $day  = $DAY[$y]  ?? "col{$y}";
+                $labels[] = "{$meal}–{$day}";
+            }
+            $chainsLabeled[] = $labels;
+
+            $edgeList = [];
+            for ($i=0; $i<count($labels)-1; $i++) {
+                $edgeList[] = "{$labels[$i]} ⇄ {$labels[$i+1]}";
+            }
+            $edges[] = $edgeList;
+        }
+        return ['chainsLabeled' => $chainsLabeled, 'edges' => $edges];
+    }
+
 
 //    public function sendNotificationTest() {
 //        $user = User::find(351);
