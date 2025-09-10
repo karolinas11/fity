@@ -1760,7 +1760,7 @@ class UserController extends Controller
 
         // Authenticate with service account JSON
         $client = new GoogleClient();
-        $client->setAuthConfig(base_pth('fity-billing-service-account.json'));
+        $client->setAuthConfig(base_path('fity-billing-service-account.json'));
         $client->addScope('https://www.googleapis.com/auth/androidpublisher');
 
         $service = new \Google\Service\AndroidPublisher($client);
