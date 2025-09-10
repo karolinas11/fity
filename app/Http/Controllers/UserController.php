@@ -956,13 +956,13 @@ class UserController extends Controller
     }
 
     public function updateMealCalendar(Request $request) {
-//        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
-//        if (!$firebaseUid) {
-//            return response()->json(['error' => 'Unauthorized'], 401);
-//        }
-//
-//        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
-        $user = User::find(351);
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if (!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
+//        $user = User::find(351);
         $schedules = $this->decodeSchedule($request->schedule)['chainsLabeled'];
 
         Log::error('CALENDAR: ' . json_encode($schedules));
