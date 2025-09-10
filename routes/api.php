@@ -71,4 +71,4 @@ Route::post('/notification-test', [UserController::class, 'sendNotificationTest'
 Route::get('/users/get-user-recipe-alternatives', [UserController::class, 'getUserRecipeAlternatives'])->name('get-user-recipe-alternatives');
 Route::post('/users/change-user-recipe-alternative', [UserController::class, 'changeUserRecipeAlternative'])->name('change-user-recipe-alternative');
 Route::post('/validate-subscription', [UserController::class, 'validateSubscription']);
-Route::get('/users/get-last-user-schedule', UserController::class, 'getLastUserSchedule')->name('get-last-user-schedule');
+Route::get('/users/get-last-user-schedule', [UserController::class, 'getLastUserSchedule'])->name('get-last-user-schedule');
