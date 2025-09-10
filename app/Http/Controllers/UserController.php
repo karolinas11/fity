@@ -303,7 +303,11 @@ class UserController extends Controller
             $query->whereBetween('date', [$start, $end]);
         }
 
-        $userWater = $query->get();
+//        if($start == $end) {
+//            $userWater = $query->first();
+//        } else {
+            $userWater = $query->get();
+//        }
         return response()->json($userWater);
     }
 
@@ -977,6 +981,7 @@ class UserController extends Controller
             $userRecipe = UserRecipe::where('user_id', $user->id)
                 ->where('date', $targetDate)
                 ->where('type', $type)
+                ->where('active')
                 ->get()
                 ->first();
 
