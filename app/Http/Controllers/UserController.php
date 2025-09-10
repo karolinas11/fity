@@ -981,7 +981,7 @@ class UserController extends Controller
             $userRecipe = UserRecipe::where('user_id', $user->id)
                 ->where('date', $targetDate)
                 ->where('type', $type)
-                ->where('active')
+                ->where('status', 'active')
                 ->get()
                 ->first();
 
