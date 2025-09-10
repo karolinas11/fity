@@ -1549,8 +1549,8 @@ class UserController extends Controller
 
         $recipes = [];
 
-        foreach ($alternativesRaw as $recipe) {
-            $r = Recipe::find($recipe->recipe);
+        foreach ($alternativesRaw['combinations'] as $recipe) {
+            $r = Recipe::find($recipe['recipe']);
             $recipes[] = $r;
         }
 
