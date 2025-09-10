@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Models\UserAllergy;
 use App\Models\UserRecipe;
 use App\Models\UserRecipeFoodstuff;
+use App\Models\UserSchedule;
 use App\Models\UserWater;
 use App\Models\UserWeight;
 use App\Repositories\UserRecipeRepository;
@@ -969,6 +970,11 @@ class UserController extends Controller
 //        $user = User::find(351);
         $schedules = $this->decodeSchedule($request->schedule)['chainsLabeled'];
 
+        UserSchedule::create([
+            'user_id' => $user->id,
+            'schedule' => $request->schedule
+        ]);
+
         Log::error('CALENDAR: ' . json_encode($schedules));
 
         foreach ($schedules as $schedule) {
@@ -1817,6 +1823,21 @@ class UserController extends Controller
             'is_active'   => $isActive,
             'expiry_date' => $expiryDate,
         ]);
+    }
+
+    public function getLastUserSchedule(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if (!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
+
+        $lastUserSchedule = UserSchedule::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        return response()->json($lastUserSchedule);
     }
 
 
