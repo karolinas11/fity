@@ -1586,7 +1586,7 @@ class UserController extends Controller
 
         foreach ($usefullCombinations as $recipe) {
             if($recipe['recipe'] == $request->recipeId) {
-                $targetRecipe = Recipe::find($recipe->recipe);;
+                $targetRecipe = Recipe::find($recipe['recipe']);;
             }
         }
 
