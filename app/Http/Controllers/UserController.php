@@ -40,6 +40,7 @@ use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Google\Client as GoogleClient;
 
 class UserController extends Controller
 {
@@ -955,23 +956,23 @@ class UserController extends Controller
     }
 
     public function updateMealCalendar(Request $request) {
-        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
-        if (!$firebaseUid) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
-
-        $schedules = $this->decodeSchedule($request->schedule);
+//        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+//        if (!$firebaseUid) {
+//            return response()->json(['error' => 'Unauthorized'], 401);
+//        }
+//
+//        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
+        $user = User::find(351);
+        $schedules = $this->decodeSchedule($request->schedule)['chainsLabeled'];
 
         Log::error('CALENDAR: ' . json_encode($schedules));
 
         foreach ($schedules as $schedule) {
             $targetDayMeal = $schedule[0];
-            $typeDay = explode('-', $targetDayMeal);
+            $typeDay = explode('–', $targetDayMeal);
             $type = $typeDay[0];
             $day = $typeDay[1];
-            $targetDate = $this->nextDateForDay($day);
+            $targetDate = $this->userService->nextDateForDay(strtoupper($day));
 
             $userRecipe = UserRecipe::where('user_id', $user->id)
                 ->where('date', $targetDate)
@@ -979,18 +980,21 @@ class UserController extends Controller
                 ->get()
                 ->first();
 
-            for($i = 1; $i < count($schedule); $i++) {
-                $targetDayMeal2 = $schedule[$i];
-                $typeDay2 = explode('-', $targetDayMeal2);
+            for($e = 1; $e < count($schedule); $e++) {
+                $targetDayMeal2 = $schedule[$e];
+                $typeDay2 = explode('–', $targetDayMeal2);
                 $type2 = $typeDay2[0];
                 $day2 = $typeDay2[1];
-                $targetDate2 = $this->nextDateForDay($day2);
+                $targetDate2 = $this->userService->nextDateForDay(strtoupper($day2));
                 $existingRecipe = UserRecipe::where('user_id', $user->id)
                     ->where('date', $targetDate2)
                     ->where('status', 'active')
                     ->where('type', $type2)
                     ->get()
                     ->first();
+                if($existingRecipe == null || $userRecipe == null) {
+                    dd($userRecipe, $existingRecipe, $targetDate2, $type2);
+                }
                 if ($existingRecipe->recipe_id == $userRecipe->recipe_id) {
                     continue;
                 }
@@ -1029,58 +1033,65 @@ class UserController extends Controller
                     }
                 }
 
-                if (count($holders) > 0) {
-                    $rCalMin = $rProtMin = $rFatMin = $rChMin = 0;
-                    $rCalMax = $rProtMax = $rFatMax = $rChMax = 0;
 
-                    foreach ($holders as $h) {
-                        $rCalMin += $h->min * ($h->calories / 100);
-                        $rProtMin += $h->min * ($h->proteins / 100);
-                        $rFatMin += $h->min * ($h->fats / 100);
-                        $rChMin += $h->min * ($h->carbohydrates / 100);
+//                if (count($holders) > 0) {
+//                    $rCalMin = $rProtMin = $rFatMin = $rChMin = 0;
+//                    $rCalMax = $rProtMax = $rFatMax = $rChMax = 0;
+//
+//                    foreach ($holders as $h) {
+//                        $rCalMin += $h->min * ($h->calories / 100);
+//                        $rProtMin += $h->min * ($h->proteins / 100);
+//                        $rFatMin += $h->min * ($h->fats / 100);
+//                        $rChMin += $h->min * ($h->carbohydrates / 100);
+//
+//                        $rCalMax += $h->max * ($h->calories / 100);
+//                        $rProtMax += $h->max * ($h->proteins / 100);
+//                        $rFatMax += $h->max * ($h->fats / 100);
+//                        $rChMax += $h->max * ($h->carbohydrates / 100);
+//                    }
+//
+//                    $combinations[] = [
+//                        'caloriesMin' => $rCal + $rCalMin,
+//                        'proteinsMin' => $rProt + $rProtMin,
+//                        'fatsMin' => $rFat + $rFatMin,
+//                        'carbohydratesMin' => $rCh + $rChMin,
+//                        'caloriesMax' => $rCal + $rCalMax,
+//                        'proteinsMax' => $rProt + $rProtMax,
+//                        'fatsMax' => $rFat + $rFatMax,
+//                        'carbohydratesMax' => $rCh + $rChMax,
+//                        'recipe' => $recipe->id,
+//                    ];
+//                } else {
+//                    $combinations[] = [
+//                        'caloriesMin' => $rCal,
+//                        'proteinsMin' => $rProt,
+//                        'fatsMin' => $rFat,
+//                        'carbohydratesMin' => $rCh,
+//                        'caloriesMax' => $rCal,
+//                        'proteinsMax' => $rProt,
+//                        'fatsMax' => $rFat,
+//                        'carbohydratesMax' => $rCh,
+//                        'recipe' => $recipe->id
+//                    ];
+//                }
+//
+//                $usefullCombinations = $combinations;
 
-                        $rCalMax += $h->max * ($h->calories / 100);
-                        $rProtMax += $h->max * ($h->proteins / 100);
-                        $rFatMax += $h->max * ($h->fats / 100);
-                        $rChMax += $h->max * ($h->carbohydrates / 100);
-                    }
+//                foreach ($combinations as $combination) {
+//                    if ($combination['caloriesMin'] <= $cal && $combination['caloriesMax'] >= $cal
+//                        && $combination['proteinsMin'] <= $prot && $combination['proteinsMax'] >= $prot
+//                        && $combination['fatsMin'] <= $fat && $combination['fatsMax'] >= $fat
+//                        && $combination['carbohydratesMin'] <= $ch && $combination['carbohydratesMax'] >= $ch) {
+//                        $usefullCombinations[] = $combination;
+//                    }
+//
+//                }
 
-                    $combinations[] = [
-                        'caloriesMin' => $rCal + $rCalMin,
-                        'proteinsMin' => $rProt + $rProtMin,
-                        'fatsMin' => $rFat + $rFatMin,
-                        'carbohydratesMin' => $rCh + $rChMin,
-                        'caloriesMax' => $rCal + $rCalMax,
-                        'proteinsMax' => $rProt + $rProtMax,
-                        'fatsMax' => $rFat + $rFatMax,
-                        'carbohydratesMax' => $rCh + $rChMax,
-                        'recipe' => $recipe->id,
-                    ];
-                } else {
-                    $combinations[] = [
-                        'caloriesMin' => $rCal,
-                        'proteinsMin' => $rProt,
-                        'fatsMin' => $rFat,
-                        'carbohydratesMin' => $rCh,
-                        'caloriesMax' => $rCal,
-                        'proteinsMax' => $rProt,
-                        'fatsMax' => $rFat,
-                        'carbohydratesMax' => $rCh,
-                        'recipe' => $recipe->id
-                    ];
-                }
+//                if(count($usefullCombinations) == 0) {
+//                    dd($usefullCombinations);
+//                }
 
-                $usefullCombinations = [];
-
-                foreach ($combinations as $combination) {
-                    if ($combination['caloriesMin'] <= $cal && $combination['caloriesMax'] >= $cal
-                        && $combination['proteinsMin'] <= $prot && $combination['proteinsMax'] >= $prot
-                        && $combination['fatsMin'] <= $fat && $combination['fatsMax'] >= $fat
-                        && $combination['carbohydratesMin'] <= $ch && $combination['carbohydratesMax'] >= $ch) {
-                        $usefullCombinations[] = $combination;
-                    }
-
-                }
+//                dd($combinations, $cal, $prot, $fat, $ch);
 
                 $targetRecipe = $recipe;
 
@@ -1154,9 +1165,16 @@ class UserController extends Controller
                         }
                     }
                 } else {
-                    dd('0 HOLDERA');
+                    $newCombinations[] = [
+                        'calories' => $fixCal,
+                        'proteins' => $fixProt,
+                        'fats' => $fixFat,
+                        'carbohydrates' => $fixCh,
+                        'foodstuff_id' => '',
+                        'amounts' => '',
+                        'recipe_id' => $targetRecipe->id
+                    ];
                 }
-                //dd($newCombinations);
 
                 $best     = null;
                 $minDist2 = PHP_INT_MAX;  // čuvamo najmanju kvadratnu distancu
@@ -1722,29 +1740,78 @@ class UserController extends Controller
         return ['chainsLabeled' => $chainsLabeled, 'edges' => $edges];
     }
 
-    function nextDateForDay(string $day, string $tz = 'Europe/Belgrade', ?string $fromDate = null): ?DateTime {
-        // Mapiranje srpskih skraćenica na engleske nazive (koje razume DateTime)
-        $map = [
-            'PON' => 'Monday',
-            'UTO' => 'Tuesday',
-            'SRE' => 'Wednesday',
-            'CET' => 'Thursday',
-            'PET' => 'Friday',
-            'SUB' => 'Saturday',
-            'NED' => 'Sunday',
-        ];
+    public function validateSubscription(Request $request)
+    {
+        $platform = $request->input('platform'); // 'android' or 'ios'
+        $token = $request->input('purchase_token'); // from Flutter
 
-        $key = mb_strtoupper(trim($day), 'UTF-8');
-        if (!isset($map[$key])) return null; // nepoznat unos
+        if ($platform === 'android') {
+            return $this->validateAndroid($token, $request->input('product_id'));
+        } elseif ($platform === 'ios') {
+            return $this->validateIOS($token);
+        }
 
-        $tzObj = new DateTimeZone($tz);
-        $base  = $fromDate ? new DateTime($fromDate, $tzObj) : new DateTime('now', $tzObj);
+        return response()->json(['error' => 'Invalid platform'], 400);
+    }
 
-        // "next {day}" uvek daje sledeći dan u budućnosti (neće vratiti "danas" čak i ako se poklapa)
-        $target = clone $base;
-        $target->modify('next ' . $map[$key]);
+    private function validateAndroid($purchaseToken, $productId)
+    {
+        $packageName = config('services.google.package_name');
 
-        return $target;
+        // Authenticate with service account JSON
+        $client = new GoogleClient();
+        $client->setAuthConfig(base_pth('fity-billing-service-account.json'));
+        $client->addScope('https://www.googleapis.com/auth/androidpublisher');
+
+        $service = new \Google\Service\AndroidPublisher($client);
+
+        try {
+            $result = $service->purchases_subscriptions->get(
+                $packageName,
+                $productId,
+                $purchaseToken
+            );
+
+            $isActive = $result->getExpiryTimeMillis() > now()->valueOf();
+
+            return response()->json([
+                'is_active'   => $isActive,
+                'expiry_date' => $result->getExpiryTimeMillis(),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    private function validateIOS($receiptData)
+    {
+        $endpoint = "https://sandbox.itunes.apple.com/verifyReceipt";
+        // Use production endpoint in prod: https://buy.itunes.apple.com/verifyReceipt
+
+        $response = Http::post($endpoint, [
+            'receipt-data' => $receiptData,
+            'password'     => config('services.apple.shared_secret'), // App-specific shared secret
+        ]);
+
+        if (!$response->ok()) {
+            return response()->json(['error' => 'Apple validation failed'], 400);
+        }
+
+        $data = $response->json();
+
+        // Parse Apple receipt fields
+        $latestReceipt = collect($data['latest_receipt_info'] ?? [])->last();
+
+        $expiryDate = isset($latestReceipt['expires_date_ms'])
+            ? intval($latestReceipt['expires_date_ms'])
+            : null;
+
+        $isActive = $expiryDate && $expiryDate > now()->valueOf();
+
+        return response()->json([
+            'is_active'   => $isActive,
+            'expiry_date' => $expiryDate,
+        ]);
     }
 
 
@@ -1759,4 +1826,5 @@ class UserController extends Controller
 //        $this->messaging->send($message);
 //        return response()->json('success', 200);
 //    }
+
 }

@@ -34,5 +34,11 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'google' => [
+        'package_name' => env('GOOGLE_PACKAGE_NAME'),
+    ],
+    'apple' => [
+        'shared_secret' => env('APPLE_SHARED_SECRET'),
+    ],
 
 ];

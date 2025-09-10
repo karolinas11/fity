@@ -70,3 +70,4 @@ Route::post('/users/update-notification-status', [UserController::class, 'update
 Route::post('/notification-test', [UserController::class, 'sendNotificationTest'])->name('send-notification-test');
 Route::get('/users/get-user-recipe-alternatives', [UserController::class, 'getUserRecipeAlternatives'])->name('get-user-recipe-alternatives');
 Route::post('/users/change-user-recipe-alternative', [UserController::class, 'changeUserRecipeAlternative'])->name('change-user-recipe-alternative');
+Route::post('/validate-subscription', [UserController::class, 'validateSubscription']);

@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Log;
+use DateTime;
+use DateTimeZone;
 
 class UserService
 {
@@ -244,4 +246,31 @@ class UserService
     public function assignFirebaseUid($userId, $firebaseUid, $email, $name) {
         return $this->userRepository->assignFirebaseUid($userId, $firebaseUid, $email, $name);
     }
+
+    public function nextDateForDay(
+        string $day,
+        string $tz = 'Europe/Belgrade',
+        ?string $fromDate = null,
+        string $format = 'Y-m-d' // npr. 2025-09-11
+    ): ?string {
+        $map = [
+            'PON' => 'Monday',
+            'UTO' => 'Tuesday',
+            'SRE' => 'Wednesday',
+            'CET' => 'Thursday',
+            'PET' => 'Friday',
+            'SUB' => 'Saturday',
+            'NED' => 'Sunday',
+        ];
+
+        $key = mb_strtoupper(trim($day), 'UTF-8');
+        if (!isset($map[$key])) return null;
+
+        $tzObj  = new DateTimeZone($tz);
+        $base   = $fromDate ? new DateTime($fromDate, $tzObj) : new DateTime('now', $tzObj);
+        $target = (clone $base)->modify('next ' . $map[$key]); // uvek sledeći (ne “danas”)
+
+        return $target->format($format);
+    }
+
 }
