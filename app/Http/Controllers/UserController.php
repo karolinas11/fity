@@ -303,7 +303,7 @@ class UserController extends Controller
             $query->whereBetween('date', [$start, $end]);
         }
 
-        $userWater = $query->first();
+        $userWater = $query->get();
         return response()->json($userWater);
     }
 
