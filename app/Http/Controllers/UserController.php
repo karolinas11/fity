@@ -972,7 +972,7 @@ class UserController extends Controller
 
         UserSchedule::create([
             'user_id' => $user->id,
-            'schedule' => $request->schedule
+            'schedule' => json_encode($request->schedule)
         ]);
 
         Log::error('CALENDAR: ' . json_encode($schedules));
@@ -1003,9 +1003,9 @@ class UserController extends Controller
                     ->where('type', $type2)
                     ->get()
                     ->first();
-                if($existingRecipe == null || $userRecipe == null) {
-                    dd($userRecipe, $existingRecipe, $targetDate2, $type2);
-                }
+//                if($existingRecipe == null || $userRecipe == null) {
+//                    dd($userRecipe, $existingRecipe, $targetDate2, $type2);
+//                }
                 if ($existingRecipe->recipe_id == $userRecipe->recipe_id) {
                     continue;
                 }
