@@ -401,7 +401,7 @@ class OnBoardingQuestionController extends Controller {
         $userAllergies = UserAllergy::where('user_id', $userId)->get();
         $allergyIds = [];
         foreach ($userAllergies as $userAllergy) {
-            if(Foodstuff::where('id', $userAllergy->foodstuff_id)->get()->first()->foodstuff_category_id == 6) continue;
+//            if(Foodstuff::where('id', $userAllergy->foodstuff_id)->get()->first()->foodstuff_category_id == 6) continue;
             $allergyIds[] = $userAllergy->foodstuff_id;
         }
 
