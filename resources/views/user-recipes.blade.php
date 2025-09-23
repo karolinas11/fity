@@ -145,7 +145,7 @@
                             </div>
                             @foreach($day['meals'] as $meal)
                                 <div class="col-md-2">
-                                    <h4>{{ \App\Models\Recipe::find($meal['same_meal_id'])->name }}</h4>
+                                    <h4>{{ \App\Models\Recipe::find($meal['same_meal_id'])->name }} ---- {{ \App\Models\Recipe::find($meal['same_meal_id'])->type }}</h4>
                                     <div class="divider"></div>
                                     <p>Kalorije - {{ $meal['calories'] }}</p>
                                     <p>Proteini - {{ $meal['proteins'] }}g</p>
