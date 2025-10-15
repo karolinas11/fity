@@ -1790,6 +1790,7 @@ class UserController extends Controller
                 'expiry_date' => $result->getExpiryTimeMillis(),
             ]);
         } catch (\Exception $e) {
+            Log::error('ERROR:' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 400);
         }
     }
@@ -1805,6 +1806,7 @@ class UserController extends Controller
         ]);
 
         if (!$response->ok()) {
+            Log::error('ERROR: Apple validation failed');
             return response()->json(['error' => 'Apple validation failed'], 400);
         }
 
