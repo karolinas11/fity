@@ -1812,7 +1812,7 @@ class UserController extends Controller
             'exclude-old-transactions' => true,
         ]);
 
-        Log::error('Parameters: ' . $base64Token . ' ' . config('services.apple.shared_secret'));
+//        Log::error('Parameters: ' . $base64Token . ' ' . config('services.apple.shared_secret'));
 
         if (!$response->ok()) {
             Log::error('ERROR: Apple validation failed');
