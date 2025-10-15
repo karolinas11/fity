@@ -1800,7 +1800,7 @@ class UserController extends Controller
         $endpoint = "https://sandbox.itunes.apple.com/verifyReceipt";
         // Use production endpoint in prod: https://buy.itunes.apple.com/verifyReceipt
 
-        $jwt = trim($receiptData);
+        $jwt = $receiptData;
         $base64Token = base64_encode($jwt);
 
         $response = Http::withOptions([
