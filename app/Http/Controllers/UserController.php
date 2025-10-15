@@ -1800,14 +1800,14 @@ class UserController extends Controller
         $endpoint = "https://sandbox.itunes.apple.com/verifyReceipt";
         // Use production endpoint in prod: https://buy.itunes.apple.com/verifyReceipt
 
-        $jwt = $receiptData;
-        $base64Token = base64_encode($jwt);
+//        $jwt = $receiptData;
+//        $base64Token = base64_encode($jwt);
 
         $response = Http::withOptions([
             'connect_timeout' => 120,   // koliko sekundi čekamo da uspostavimo konekciju
             'timeout' => 120,          // ukupno vreme čekanja za odgovor
         ])->post($endpoint, [
-            'receipt-data' => $base64Token,
+            'receipt-data' => $receiptData,
             'password'     => config('services.apple.shared_secret'),
             'exclude-old-transactions' => true,
         ]);
