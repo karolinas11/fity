@@ -1800,16 +1800,19 @@ class UserController extends Controller
         $endpoint = "https://sandbox.itunes.apple.com/verifyReceipt";
         // Use production endpoint in prod: https://buy.itunes.apple.com/verifyReceipt
 
+        $jwt = trim($receiptData);
+        $base64Token = base64_encode($jwt);
+
         $response = Http::withOptions([
             'connect_timeout' => 120,   // koliko sekundi čekamo da uspostavimo konekciju
             'timeout' => 120,          // ukupno vreme čekanja za odgovor
         ])->post($endpoint, [
-            'receipt-data' => trim($receiptData),
+            'receipt-data' => $base64Token,
             'password'     => config('services.apple.shared_secret'),
             'exclude-old-transactions' => true,
         ]);
 
-        Log::error('Parameters: ' . $receiptData . ' ' . config('services.apple.shared_secret'));
+        Log::error('Parameters: ' . $base64Token . ' ' . config('services.apple.shared_secret'));
 
         if (!$response->ok()) {
             Log::error('ERROR: Apple validation failed');
