@@ -79,6 +79,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libfreetype6-dev \
     && rm -rf /var/lib/apt/lists/*
 
+RUN docker-php-ext-install pdo_mysql
+
 # copy PHP extensions built in builder (extensions are part of base image install, so skip)
 # copy composer binary
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
