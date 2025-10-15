@@ -1804,7 +1804,7 @@ class UserController extends Controller
             'connect_timeout' => 10,   // koliko sekundi čekamo da uspostavimo konekciju
             'timeout' => 120,          // ukupno vreme čekanja za odgovor
         ])->post($endpoint, [
-            'receipt-data' => $receiptData,
+            'receipt-data' => trim($receiptData),
             'password'     => config('services.apple.shared_secret'),
             'exclude-old-transactions' => true,
         ]);
