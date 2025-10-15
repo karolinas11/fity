@@ -1801,7 +1801,7 @@ class UserController extends Controller
         // Use production endpoint in prod: https://buy.itunes.apple.com/verifyReceipt
 
         $response = Http::withOptions([
-            'connect_timeout' => 10,   // koliko sekundi čekamo da uspostavimo konekciju
+            'connect_timeout' => 120,   // koliko sekundi čekamo da uspostavimo konekciju
             'timeout' => 120,          // ukupno vreme čekanja za odgovor
         ])->post($endpoint, [
             'receipt-data' => trim($receiptData),
