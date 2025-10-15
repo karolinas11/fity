@@ -1803,12 +1803,17 @@ class UserController extends Controller
         $response = Http::post($endpoint, [
             'receipt-data' => $receiptData,
             'password'     => config('services.apple.shared_secret'), // App-specific shared secret
+            'exclude-old-transactions' => true
         ]);
+
+        Log::error('Parameters: ' . $receiptData . ' ' . config('services.apple.shared_secret'));
 
         if (!$response->ok()) {
             Log::error('ERROR: Apple validation failed');
             return response()->json(['error' => 'Apple validation failed'], 400);
         }
+
+        Log::error('Sandbox: ' . $response->json());
 
         $data = $response->json();
 
