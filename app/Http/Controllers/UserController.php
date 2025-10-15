@@ -1800,10 +1800,13 @@ class UserController extends Controller
         $endpoint = "https://sandbox.itunes.apple.com/verifyReceipt";
         // Use production endpoint in prod: https://buy.itunes.apple.com/verifyReceipt
 
-        $response = Http::post($endpoint, [
+        $response = Http::withOptions([
+            'connect_timeout' => 10,   // koliko sekundi čekamo da uspostavimo konekciju
+            'timeout' => 120,          // ukupno vreme čekanja za odgovor
+        ])->post($endpoint, [
             'receipt-data' => $receiptData,
-            'password'     => config('services.apple.shared_secret'), // App-specific shared secret
-            'exclude-old-transactions' => true
+            'password'     => config('services.apple.shared_secret'),
+            'exclude-old-transactions' => true,
         ]);
 
         Log::error('Parameters: ' . $receiptData . ' ' . config('services.apple.shared_secret'));
@@ -1813,7 +1816,7 @@ class UserController extends Controller
             return response()->json(['error' => 'Apple validation failed'], 400);
         }
 
-        Log::error('Sandbox: ' . $response->json());
+        Log::error('Sandbox: ' . json_encode($response->json(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
 
         $data = $response->json();
 
