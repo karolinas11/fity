@@ -158,7 +158,7 @@ class UserController extends Controller
 
         $response = Http::timeout(10000)
             ->withoutVerifying()
-            ->post('https://fity-algorithm.fly.dev/meal-plan', [
+            ->post('https://algo.getfity.app/meal-plan', [
                 'target_calories' => $target['calories'],
                 'target_protein' => $target['proteins'],
                 'target_fat' => $target['fats'],
