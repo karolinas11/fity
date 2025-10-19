@@ -1853,6 +1853,19 @@ class UserController extends Controller
         return response()->json($lastUserSchedule);
     }
 
+    public function deleteUser(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if (!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
+
+        $user->delete();
+
+        return response()->json('success', 200);
+    }
+
 
 //    public function sendNotificationTest() {
 //        $user = User::find(351);
