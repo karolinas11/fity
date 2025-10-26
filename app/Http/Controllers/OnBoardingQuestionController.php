@@ -422,6 +422,7 @@ class OnBoardingQuestionController extends Controller {
 
 
         $data = $response->json();
+        shuffle($data['daily_plans']);
 
         $i = 0;
         for($k = 0; $k < 5; $k++) {
