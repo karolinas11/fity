@@ -75,6 +75,10 @@ class UserController extends Controller
         $this->photoService = new PhotoService();
         $this->userRecipeRepository = new UserRecipeRepository();
         $this->recipeService = new RecipeService();
+
+        
+        Log::error('LOGOVAO SAM OVDE SAD ERROR 111');
+        Log::info('LOGOVAO SAM OVDE SAD INFO 111');
     }
 
     public function showAddUser()
