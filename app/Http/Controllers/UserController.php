@@ -1753,8 +1753,8 @@ class UserController extends Controller
 
     public function validateSubscription(Request $request)
     {
-        Log::error('LOGOVAO SAM OVDE SAD');
-
+        Log::error('LOGOVAO SAM OVDE SAD ERROR');
+        Log::info('LOGOVAO SAM OVDE SAD INFO');
         $platform = $request->input('platform'); // 'android' or 'ios'
         $token = $request->input('purchase_token'); // from Flutter
 
