@@ -1,6 +1,5 @@
 <?php
 namespace App\Http\Controllers;
-use App\Jobs\GenerateMealPlanJob;
 use App\Models\Foodstuff;
 use App\Models\Recipe;
 use App\Models\RecipeFoodstuff;
@@ -368,7 +367,6 @@ class OnBoardingQuestionController extends Controller {
         $question7 = json_decode($answers['question_7'], true);
         $question6 = json_decode($answers['question_6'], true);
 
-        // --- LOGIKA ZA BROJ OBROKA (OSTAVLJENA JER JE BRZA) ---
         $mealsNum = 0;
         $defaultUserMealsNum = 5;
         foreach ($question7 as $value) {
@@ -376,15 +374,9 @@ class OnBoardingQuestionController extends Controller {
                 $mealsNum++;
             }
         }
+
         $user->meals_num = $mealsNum > 2 ? $mealsNum : $defaultUserMealsNum;
-        $user->days = 30; // Ovo je takođe brzo ažuriranje
-
-        // VAŽNO: plan_generated NE SMEMO postaviti ovde, to se radi u Job-u
         $user->save();
-
-        // --- LOGIKA ZA ALERGIJE (OSTAVLJENA JER JE BRZA) ---
-        // Uklonimo prethodne alergije pre kreiranja novih da ne bi duplirali
-        UserAllergy::where('user_id', $userId)->delete();
 
         $foodstuffsArray = [];
         if($question6 && $question6[0]) {
@@ -394,25 +386,92 @@ class OnBoardingQuestionController extends Controller {
                 if($foodstuff) {
                     UserAllergy::create([
                         'user_id' => $userId,
-                        'foodstuff_id' => Foodstuff::where('name', $foodstuff)->first()->id // Uvek proverite da li first() vraća null!
+                        'foodstuff_id' => Foodstuff::where('name', $foodstuff)->first()->id
                     ]);
                 }
             }
         }
 
-        // Izvučemo podatke za Job
-        $target = $this->userService->getMacrosForUser2($user);
+        Log::error('MEALS NUM: ' . $mealsNum);
+//        $user->meals_num = 4;
+        $user->days = 30;
+        $user->plan_generated = now();
+        $user->save();
 
         $userAllergies = UserAllergy::where('user_id', $userId)->get();
-        $allergyIds = $userAllergies->pluck('foodstuff_id')->toArray();
+        $allergyIds = [];
+        foreach ($userAllergies as $userAllergy) {
+//            if(Foodstuff::where('id', $userAllergy->foodstuff_id)->get()->first()->foodstuff_category_id == 6) continue;
+            $allergyIds[] = $userAllergy->foodstuff_id;
+        }
 
-        // --- KLJUČNA IZMENA: DISPEČOVANJE POSLA ---
-        // Posao će dobiti sve potrebne podatke: Korisnika, Makroe i Alergije
-        GenerateMealPlanJob::dispatch($user, $target, $allergyIds);
-        Log::error('Meal plan generation job dispatched for user: ' . $userId);
+        $target = $this->userService->getMacrosForUser2($user);
+        $response = Http::timeout(10000)
+            ->withoutVerifying()
+            ->post('https://algo.getfity.app/meal-plan', [
+                'target_calories' => $target['calories'],
+                'target_protein' => $target['proteins'],
+                'target_fat' => $target['fats'],
+                'meals_num' => $user->meals_num,
+                'tolerance_calories' => $user->tolerance_calories,
+                'tolerance_proteins' => $user->tolerance_proteins,
+                'tolerance_fats' => $user->tolerance_fats,
+                'days' => $user->days,
+                'allergy_holder_ids' => $allergyIds
+            ]);
 
-        // --- TRENUTNI ODGOVOR FRONTENDU ---
-        return response()->json(['userId' => $userId, 'status' => 'Meal plan generation started'], 200);
+
+        $data = $response->json();
+        shuffle($data['daily_plans']);
+
+        $i = 0;
+        for($k = 0; $k < 5; $k++) {
+            foreach ($data['daily_plans'] as $day) {
+                if(!$day['exists']) continue;
+                $date = date('Y-m-d', strtotime('+' . $i . ' days'));
+                $i++;
+                $lunch = false;
+                foreach ($day['meals'] as $meal) {
+//                if($meal['same_meal_id'] == 33) {
+//                    continue;
+//                }
+                    $r = Recipe::find($meal['same_meal_id']);
+                    $userRecipe = UserRecipe::create([
+                        'user_id' => $userId,
+                        'recipe_id' => $meal['same_meal_id'],
+                        'status' => 'active',
+                        'date' => $date,
+                        'type' => $lunch && $r->type == 2? 4: $r->type
+                    ]);
+                    if($r->type == 2) {
+                        $lunch = true;
+                    }
+                    $foodstuffs = $this->recipefoodstuffService->getRecipeFoodstuffs($meal['same_meal_id']);
+                    foreach ($foodstuffs as $foodstuff) {
+                        if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->carbohydrates_holder == 0) {
+                            UserRecipeFoodstuff::create([
+                                'user_recipe_id' => $userRecipe->id,
+                                'foodstuff_id' => $foodstuff->foodstuff_id,
+                                'amount' => $foodstuff->amount,
+                                'purchased' => 0
+                            ]);
+                        }
+                    }
+
+                    foreach ($meal['holder_quantities'] as $key => $holder) {
+                        UserRecipeFoodstuff::create([
+                            'user_recipe_id' => $userRecipe->id,
+                            'foodstuff_id' => $key,
+                            'amount' => $holder,
+                            'purchased' => 0
+                        ]);
+                    }
+                }
+            }
+        }
+
+
+        return response()->json($userId, '200');
     }
 
 }
