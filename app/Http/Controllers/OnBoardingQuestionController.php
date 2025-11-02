@@ -412,7 +412,7 @@ class OnBoardingQuestionController extends Controller {
         Log::error('Meal plan generation job dispatched for user: ' . $userId);
 
         // --- TRENUTNI ODGOVOR FRONTENDU ---
-        return response()->json(['userId' => $userId, 'status' => 'Meal plan generation started'], 200);
+        return response()->json($userId, '200');
     }
 
 }
