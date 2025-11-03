@@ -23,6 +23,9 @@ class GenerateMealPlanJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $tries = 3;
+    public $uniqueFor = 600;
+
     protected $user;
     protected $target;
     protected $allergyIds;
@@ -58,90 +61,95 @@ class GenerateMealPlanJob implements ShouldQueue
         $allergyIds = $this->allergyIds;
         $userId = $user->id;
 
-        Log::info('Job started for user: ' . $userId);
+        try {
+            Log::info('Job started for user: ' . $userId);
 
-        // 1. HTTP Poziv ka Algoritmu
-        $response = Http::timeout(10000)
-            ->withoutVerifying()
-            ->post('https://algo.getfity.app/meal-plan', [
-                'target_calories' => $target['calories'],
-                'target_protein' => $target['proteins'],
-                'target_fat' => $target['fats'],
-                'meals_num' => $user->meals_num,
-                'tolerance_calories' => $user->tolerance_calories,
-                'tolerance_proteins' => $user->tolerance_proteins,
-                'tolerance_fats' => $user->tolerance_fats,
-                'days' => $user->days,
-                'allergy_holder_ids' => $allergyIds
-            ]);
+            // 1. HTTP Poziv ka Algoritmu
+            $response = Http::timeout(10000)
+                ->withoutVerifying()
+                ->post('https://algo.getfity.app/meal-plan', [
+                    'target_calories' => $target['calories'],
+                    'target_protein' => $target['proteins'],
+                    'target_fat' => $target['fats'],
+                    'meals_num' => $user->meals_num,
+                    'tolerance_calories' => $user->tolerance_calories,
+                    'tolerance_proteins' => $user->tolerance_proteins,
+                    'tolerance_fats' => $user->tolerance_fats,
+                    'days' => $user->days,
+                    'allergy_holder_ids' => $allergyIds
+                ]);
 
-        if ($response->failed()) {
-            Log::error('Algo API failed for user ' . $userId, ['response' => $response->body()]);
-            // Opciono: Dodati logiku za ponovni pokušaj ili obaveštenje korisnika o grešci
-            return;
-        }
+            if ($response->failed()) {
+                Log::error('Algo API failed for user ' . $userId, ['response' => $response->body()]);
+                // Opciono: Dodati logiku za ponovni pokušaj ili obaveštenje korisnika o grešci
+                return;
+            }
 
-        $data = $response->json();
-        shuffle($data['daily_plans']);
+            $data = $response->json();
+            shuffle($data['daily_plans']);
 
-        // 2. Logika za upis u bazu
-        $i = 0;
-        for($k = 0; $k < 5; $k++) {
-            foreach ($data['daily_plans'] as $day) {
-                if(!$day['exists']) continue;
-                $date = date('Y-m-d', strtotime('+' . $i . ' days'));
-                $i++;
-                $lunch = false;
+            // 2. Logika za upis u bazu
+            $i = 0;
+            for($k = 0; $k < 5; $k++) {
+                foreach ($data['daily_plans'] as $day) {
+                    if(!$day['exists']) continue;
+                    $date = date('Y-m-d', strtotime('+' . $i . ' days'));
+                    $i++;
+                    $lunch = false;
 
-                foreach ($day['meals'] as $meal) {
-                    $r = Recipe::find($meal['same_meal_id']);
-                    if (!$r) {
-                        Log::warning("Recipe ID {$meal['same_meal_id']} not found.");
-                        continue;
-                    }
+                    foreach ($day['meals'] as $meal) {
+                        $r = Recipe::find($meal['same_meal_id']);
+                        if (!$r) {
+                            Log::warning("Recipe ID {$meal['same_meal_id']} not found.");
+                            continue;
+                        }
 
-                    $userRecipe = UserRecipe::create([
-                        'user_id' => $userId,
-                        'recipe_id' => $meal['same_meal_id'],
-                        'status' => 'active',
-                        'date' => $date,
-                        'type' => $lunch && $r->type == 2 ? 4 : $r->type
-                    ]);
+                        $userRecipe = UserRecipe::create([
+                            'user_id' => $userId,
+                            'recipe_id' => $meal['same_meal_id'],
+                            'status' => 'active',
+                            'date' => $date,
+                            'type' => $lunch && $r->type == 2 ? 4 : $r->type
+                        ]);
 
-                    if($r->type == 2) {
-                        $lunch = true;
-                    }
+                        if($r->type == 2) {
+                            $lunch = true;
+                        }
 
-                    // Logika za namirnice
-                    $foodstuffs = $this->recipefoodstuffService->getRecipeFoodstuffs($meal['same_meal_id']);
+                        // Logika za namirnice
+                        $foodstuffs = $this->recipefoodstuffService->getRecipeFoodstuffs($meal['same_meal_id']);
 
-                    foreach ($foodstuffs as $foodstuff) {
-                        if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->carbohydrates_holder == 0) {
+                        foreach ($foodstuffs as $foodstuff) {
+                            if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->carbohydrates_holder == 0) {
+                                UserRecipeFoodstuff::create([
+                                    'user_recipe_id' => $userRecipe->id,
+                                    'foodstuff_id' => $foodstuff->foodstuff_id,
+                                    'amount' => $foodstuff->amount,
+                                    'purchased' => 0
+                                ]);
+                            }
+                        }
+
+                        foreach ($meal['holder_quantities'] as $key => $holder) {
                             UserRecipeFoodstuff::create([
                                 'user_recipe_id' => $userRecipe->id,
-                                'foodstuff_id' => $foodstuff->foodstuff_id,
-                                'amount' => $foodstuff->amount,
+                                'foodstuff_id' => $key,
+                                'amount' => $holder,
                                 'purchased' => 0
                             ]);
                         }
                     }
-
-                    foreach ($meal['holder_quantities'] as $key => $holder) {
-                        UserRecipeFoodstuff::create([
-                            'user_recipe_id' => $userRecipe->id,
-                            'foodstuff_id' => $key,
-                            'amount' => $holder,
-                            'purchased' => 0
-                        ]);
-                    }
                 }
             }
+
+            // 3. Ažuriranje korisnika (poslednji korak)
+            $user->plan_generated = now();
+            $user->save();
+
+            Log::info('Job completed successfully for user: ' . $userId);
+        } catch (\Exception $e) {
+            Log::error('Job failed for user: ' . $userId, ['exception' => $e]);
         }
 
-        // 3. Ažuriranje korisnika (poslednji korak)
-        $user->plan_generated = now();
-        $user->save();
-
-        Log::info('Job completed successfully for user: ' . $userId);
     }
 }
