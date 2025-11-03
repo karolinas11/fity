@@ -76,7 +76,7 @@ class UserController extends Controller
         $this->userRecipeRepository = new UserRecipeRepository();
         $this->recipeService = new RecipeService();
 
-        
+
         Log::error('LOGOVAO SAM OVDE SAD ERROR 111');
         Log::info('LOGOVAO SAM OVDE SAD INFO 111');
     }
@@ -572,18 +572,43 @@ class UserController extends Controller
         return redirect()->away($intentUrl);
     }
 
-    public function addUserWeight(Request $request) {
+    public function addUserWeight(Request $request)
+    {
         $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
-        if(!$firebaseUid) {
+
+        if (!$firebaseUid) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
-        $userWeight = UserWeight::create([
-            'user_id' => $userId,
-            'weight' => $request->input('weight'),
+
+        $user = User::where('firebase_uid', $firebaseUid)->first();
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        // Datum koji dolazi iz requesta
+        $createdAt = Carbon::parse($request->input('created_at'))->startOfDay();
+
+        // Provera da li već postoji zapis za taj dan
+        $existing = UserWeight::where('user_id', $user->id)
+            ->whereDate('created_at', $createdAt)
+            ->first();
+
+        if ($existing) {
+            // Ažurira postojeći zapis
+            $existing->update([
+                'weight' => $request->input('weight'),
+                'created_at' => $createdAt, // opciono — ako želiš da poravna datum
             ]);
-        $userWeight->created_at = Carbon::parse($request->input('created_at'))->format('Y-m-d H:i:s');
-        $userWeight->save();
+            return response()->json($existing);
+        }
+
+        // Kreira novi zapis
+        $userWeight = UserWeight::create([
+            'user_id' => $user->id,
+            'weight' => $request->input('weight'),
+            'created_at' => $createdAt,
+        ]);
+
         return response()->json($userWeight);
     }
 
