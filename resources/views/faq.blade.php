@@ -14,6 +14,7 @@
         leading-trim: NONE;
         line-height: 100%;
         letter-spacing: -1%;
+        color: #173430;
 
     }
 </style>
