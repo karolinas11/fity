@@ -1554,6 +1554,9 @@ class UserController extends Controller
         $user = User::where('firebase_uid', $firebaseUid)->get()->first();
         $user->notification_token = $request->notificationToken;
         $user->save();
+
+        Log::error('Notification tokens: ' . $request->notificationToken . '---' . $user->notification_token);
+
         return response()->json('success', 200);
     }
 
@@ -1897,6 +1900,18 @@ class UserController extends Controller
         return response()->json('success', 200);
     }
 
+    public function updateSubscription(Request $request) {
+        $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
+        if (!$firebaseUid) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
+        $user->is_subscribed = $request->isSubscribed;
+        $user->save();
+
+        return response()->json('success', 200);
+    }
 
 //    public function sendNotificationTest() {
 //        $user = User::find(351);

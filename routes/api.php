@@ -73,3 +73,4 @@ Route::post('/users/change-user-recipe-alternative', [UserController::class, 'ch
 Route::post('/validate-subscription', [UserController::class, 'validateSubscription']);
 Route::get('/users/get-last-user-schedule', [UserController::class, 'getLastUserSchedule'])->name('get-last-user-schedule');
 Route::delete('/user/delete', [UserController::class, 'deleteUser'])->name('delete-user');
+Route::post('/user/update-subscription', [UserController::class, 'updateSubscription'])->name('update-subscription');
