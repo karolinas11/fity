@@ -1552,10 +1552,10 @@ class UserController extends Controller
         }
 
         $user = User::where('firebase_uid', $firebaseUid)->get()->first();
-        $user->notification_token = $request->notificationToken;
+        $user->notification_token = $request->input('notificationToken');
         $user->save();
 
-        Log::error('Notification tokens: ' . $request->notificationToken . '---' . $user->notification_token);
+        Log::error('Notification tokens: ' . json_encode($request->all()));
 
         return response()->json('success', 200);
     }
