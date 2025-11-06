@@ -1610,7 +1610,7 @@ class UserController extends Controller
         $cal = $data['cal'];
         $prot = $data['prot'];
         $fat = $data['fat'];
-        $ch = $data['ch'];
+        //$ch = $data['ch'];
         $targetRecipe = null;
 
         foreach ($usefullCombinations as $recipe) {
@@ -1622,7 +1622,7 @@ class UserController extends Controller
         $fixCal = 0;
         $fixProt = 0;
         $fixFat = 0;
-        $fixCh = 0;
+        //$fixCh = 0;
         $newHolders = [];
         foreach ($targetRecipe->foodstuffs as $fm) {
             $f = RecipeFoodstuff::where('foodstuff_id', $fm->id)
@@ -1632,7 +1632,7 @@ class UserController extends Controller
                 $fixCal += $f->amount * ($fm->calories / 100);
                 $fixProt += $f->amount * ($fm->proteins / 100);
                 $fixFat += $f->amount * ($fm->fats / 100);
-                $fixCh += $f->amount * ($fm->carbohydrates / 100);
+                //$fixCh += $f->amount * ($fm->carbohydrates / 100);
             } else {
                 $newHolders[] = $fm;
             }
@@ -1647,7 +1647,7 @@ class UserController extends Controller
                     'calories' => $i * ($newHolders[0]->calories / 100) + $fixCal,
                     'proteins' => $i * ($newHolders[0]->proteins / 100) + $fixProt,
                     'fats' => $i * ($newHolders[0]->fats / 100) + $fixFat,
-                    'carbohydrates' => $i * ($newHolders[0]->carbohydrates / 100) + $fixCh,
+                    //'carbohydrates' => $i * ($newHolders[0]->carbohydrates / 100) + $fixCh,
                     'foodstuff_id' => $newHolders[0]->id,
                     'amounts' => $i,
                     'recipe_id' => $targetRecipe->id
@@ -1662,7 +1662,7 @@ class UserController extends Controller
                         'calories' => $i * ($newHolders[0]->calories / 100) + $j * ($newHolders[1]->calories / 100) + $fixCal,
                         'proteins' => $i * ($newHolders[0]->proteins / 100) + $j * ($newHolders[1]->proteins / 100) + $fixProt,
                         'fats' => $i * ($newHolders[0]->fats / 100) + $j * ($newHolders[1]->fats / 100) + $fixFat,
-                        'carbohydrates' => $i * ($newHolders[0]->carbohydrates / 100) + $j * ($newHolders[1]->carbohydrates / 100) + $fixCh,
+                        //'carbohydrates' => $i * ($newHolders[0]->carbohydrates / 100) + $j * ($newHolders[1]->carbohydrates / 100) + $fixCh,
                         'foodstuff_id' => $newHolders[0]->id . '-' . $newHolders[1]->id,
                         'amounts' => $i . '-' . $j,
                         'recipe_id' => $targetRecipe->id
@@ -1680,7 +1680,7 @@ class UserController extends Controller
                             'calories' => $i * ($newHolders[0]->calories / 100) + $j * ($newHolders[1]->calories / 100) + $k * ($newHolders[2]->calories / 100) + $fixCal,
                             'proteins' => $i * ($newHolders[0]->proteins / 100) + $j * ($newHolders[1]->proteins / 100) + $k * ($newHolders[2]->proteins / 100) + $fixProt,
                             'fats' => $i * ($newHolders[0]->fats / 100) + $j * ($newHolders[1]->fats / 100) + $k * ($newHolders[2]->fats / 100) + $fixFat,
-                            'carbohydrates' => $i * ($newHolders[0]->carbohydrates / 100) + $j * ($newHolders[1]->carbohydrates / 100) + $k * ($newHolders[2]->carbohydrates / 100) + $fixCh,
+                            //'carbohydrates' => $i * ($newHolders[0]->carbohydrates / 100) + $j * ($newHolders[1]->carbohydrates / 100) + $k * ($newHolders[2]->carbohydrates / 100) + $fixCh,
                             'foodstuff_id' => $newHolders[0]->id . '-' . $newHolders[1]->id . '-' . $newHolders[2]->id,
                             'amounts' => $i . '-' . $j . '-' . $k,
                             'recipe_id' => $targetRecipe->id
@@ -1699,13 +1699,13 @@ class UserController extends Controller
             $dCal  = $cand['calories']      - $cal;
             $dProt = $cand['proteins']      - $prot;
             $dFat  = $cand['fats']          - $fat;
-            $dCh   = $cand['carbohydrates'] - $ch;
+            //$dCh   = $cand['carbohydrates'] - $ch;
 
             // kvadrat Euklidske distance (bez sqrt jer nam dovoljna komparacija)
             $dist2 = $dCal*$dCal
                 + $dProt*$dProt
-                + $dFat*$dFat
-                + $dCh*$dCh;
+                + $dFat*$dFat;
+                //+ $dCh*$dCh;
 
             if ($dist2 < $minDist2) {
                 $minDist2 = $dist2;
