@@ -30,13 +30,13 @@ class RecipeService
         $cal = 0;
         $prot = 0;
         $fat = 0;
-        $ch = 0;
+        //$ch = 0;
         foreach ($userRecipe->foodstuffs as &$foodstuff) {
             $f = Foodstuff::where('id', $foodstuff->foodstuff_id)->get()[0];
             $cal += $foodstuff->amount * ($f->calories / 100);
             $prot += $foodstuff->amount * ($f->proteins / 100);
             $fat += $foodstuff->amount * ($f->fats / 100);
-            $ch += $foodstuff->amount * ($f->carbohydrates / 100);
+            //$ch += $foodstuff->amount * ($f->carbohydrates / 100);
         }
 
         $type = $userRecipe->type == 4 ? 2: $userRecipe->type;
@@ -47,7 +47,7 @@ class RecipeService
             $rCal = 0;
             $rProt = 0;
             $rFat = 0;
-            $rCh = 0;
+            //$rCh = 0;
 
             $holders = [];
             foreach ($recipe->foodstuffs as $fm) {
@@ -58,7 +58,7 @@ class RecipeService
                     $rCal += $f->amount * ($fm->calories / 100);
                     $rProt += $f->amount * ($fm->proteins / 100);
                     $rFat += $f->amount * ($fm->fats / 100);
-                    $rCh += $f->amount * ($fm->carbohydrates / 100);
+                    //$rCh += $f->amount * ($fm->carbohydrates / 100);
                 } else {
                     $holders[] = $fm;
                 }
@@ -72,23 +72,23 @@ class RecipeService
                     $rCalMin += $h->min * ($h->calories      / 100);
                     $rProtMin += $h->min * ($h->proteins      / 100);
                     $rFatMin += $h->min * ($h->fats          / 100);
-                    $rChMin  += $h->min * ($h->carbohydrates / 100);
+                    //$rChMin  += $h->min * ($h->carbohydrates / 100);
 
                     $rCalMax += $h->max * ($h->calories      / 100);
                     $rProtMax += $h->max * ($h->proteins      / 100);
                     $rFatMax += $h->max * ($h->fats          / 100);
-                    $rChMax  += $h->max * ($h->carbohydrates / 100);
+                    //$rChMax  += $h->max * ($h->carbohydrates / 100);
                 }
 
                 $combinations[] = [
                     'caloriesMin'      => $rCal   + $rCalMin,
                     'proteinsMin'      => $rProt  + $rProtMin,
                     'fatsMin'          => $rFat   + $rFatMin,
-                    'carbohydratesMin' => $rCh    + $rChMin,
+                    //'carbohydratesMin' => $rCh    + $rChMin,
                     'caloriesMax'      => $rCal   + $rCalMax,
                     'proteinsMax'      => $rProt  + $rProtMax,
                     'fatsMax'          => $rFat   + $rFatMax,
-                    'carbohydratesMax' => $rCh    + $rChMax,
+                    //'carbohydratesMax' => $rCh    + $rChMax,
                     'recipe'           => $recipe->id,
                 ];
             } else {
@@ -96,11 +96,11 @@ class RecipeService
                     'caloriesMin' => $rCal,
                     'proteinsMin' => $rProt,
                     'fatsMin' => $rFat,
-                    'carbohydratesMin' => $rCh,
+                    //'carbohydratesMin' => $rCh,
                     'caloriesMax' => $rCal,
                     'proteinsMax' => $rProt,
                     'fatsMax' => $rFat,
-                    'carbohydratesMax' => $rCh,
+                    //'carbohydratesMax' => $rCh,
                     'recipe' => $recipe->id
                 ];
             }
@@ -112,7 +112,7 @@ class RecipeService
             if($combination['caloriesMin'] <= $cal && $combination['caloriesMax'] >= $cal
                 && $combination['proteinsMin'] <= $prot && $combination['proteinsMax'] >= $prot
                 && $combination['fatsMin'] <= $fat && $combination['fatsMax'] >= $fat
-                && $combination['carbohydratesMin'] <= $ch && $combination['carbohydratesMax'] >= $ch
+                //&& $combination['carbohydratesMin'] <= $ch && $combination['carbohydratesMax'] >= $ch
                 && $combination['recipe'] != $userRecipe->recipe_id) {
                 $usefullCombinations[] = $combination;
             }
@@ -123,7 +123,7 @@ class RecipeService
             'cal' => $cal,
             'prot' => $prot,
             'fat' => $fat,
-            'ch' => $ch
+            //'ch' => $ch
         ];
     }
 }
