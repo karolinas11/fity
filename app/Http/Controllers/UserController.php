@@ -1582,10 +1582,12 @@ class UserController extends Controller
         $alternativesRaw = $this->recipeService->getRecipeAlternatives(UserRecipe::find($request->recipeId));
 
         $recipes = [];
-
+        $i = 0;
         foreach ($alternativesRaw['combinations'] as $recipe) {
             $r = Recipe::find($recipe['recipe']);
             $recipes[] = $r;
+            $i++;
+            if($i > 9) break;
         }
 
         return response()->json($recipes);

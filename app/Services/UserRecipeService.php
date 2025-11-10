@@ -180,10 +180,10 @@ class UserRecipeService
                 }
             }
 
-            $recipe->calAmount = $cal;
-            $recipe->proteinAmount = $prot;
-            $recipe->fatsAmount = $fat;
-            $recipe->chAmount = $ch;
+            $recipe->calAmount = null;
+            $recipe->proteinAmount = null;
+            $recipe->fatsAmount = null;
+            $recipe->chAmount = null;
 
             return $recipe;
         }
