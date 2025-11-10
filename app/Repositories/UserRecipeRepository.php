@@ -31,6 +31,7 @@ class UserRecipeRepository
                 $end = Carbon::parse($endDate)->format('Y-m-d');
             }
             return UserRecipe::where('user_id', $userId)
+                ->where('status', '!=', 'replaced')
                 ->whereDate('date', '>=', $start)
                 ->whereDate('date', '<=', $end)
                 ->get();
