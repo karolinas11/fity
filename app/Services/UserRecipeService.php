@@ -95,6 +95,7 @@ class UserRecipeService
             $recipe->preparation_time = $r->preparation_time;
             $recipe->featured_image = $r->featured_image;
             $recipe->dates = $dates;
+            $recipe->short_description = $r->short_description;
             $description = str_replace('\n', "\n", $r->description);
             $recipe->steps = preg_split('/\r\n|\r|\n/', $description);
             $recipe->steps = array_filter($recipe->steps, fn($step) => trim($step) !== '');
