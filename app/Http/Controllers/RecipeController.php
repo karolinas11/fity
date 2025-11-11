@@ -922,19 +922,25 @@ class RecipeController
             $userRecipes = UserRecipe::where('user_id', $user->id)
                 ->where('recipe_id', $request->recipeId)
                 ->get();
+
+            if($request->input('status') == 'bookmarked') {
+                $recipe->bookmarked_status = 1;
+            } else if ($request->input('status') == 'deleted') {
+                $recipe->bookmarked_status = -1;
+            } else {
+                $recipe->bookmarked_status = 0;
+            }
+            $recipe->save();
+
             foreach($userRecipes as $userRecipe) {
                 if($request->input('status') == 'bookmarked') {
                     $userRecipe->bookmarked_status = 1;
-                    $recipe->bookmarked_status = 1;
                 } else if ($request->input('status') == 'deleted') {
                     $userRecipe->bookmarked_status = -1;
-                    $recipe->bookmarked_status = -1;
                 } else {
                     $userRecipe->bookmarked_status = 0;
-                    $recipe->bookmarked_status = 0;
                 }
                 $userRecipe->save();
-                $recipe->save();
             }
 
             return response()->json($recipe);
