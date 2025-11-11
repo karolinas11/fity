@@ -908,6 +908,9 @@ class RecipeController
 
             return response()->json($recipe);
         } else {
+
+            Log::error('RecipeId: ' . $request->recipeId);
+
             $recipe = Recipe::find($request->recipeId);
             $userRecipes = UserRecipe::where('user_id', $user->id)
                 ->where('recipe_id', $request->recipeId)
