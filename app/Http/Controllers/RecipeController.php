@@ -1048,8 +1048,10 @@ class RecipeController
             foreach($userRecipes as $userRecipe) {
                 if($userRecipe->bookmarked_status == 1) {
                     $b = 'bookmarked';
+                    break;
                 } else if($userRecipe->bookmarked_status == -1) {
                     $b = 'deleted';
+                    break;
                 }
             }
 
