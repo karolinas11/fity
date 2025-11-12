@@ -980,6 +980,14 @@ class RecipeController
         return view('faq', compact('faq'));
     }
 
+    public function getQuestion1() {
+        return view('question1');
+    }
+
+    public function getQuestion2() {
+        return view('question2');
+    }
+
     public function filterRecipes(Request $request) {
         $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
         if(!$firebaseUid) {

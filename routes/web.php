@@ -52,3 +52,6 @@ Route::get('/users', [UserController::class, 'showUsersList'])->name('show-users
 Route::get('/boarding-question',[OnBoardingQuestionController::class, 'index']);
 
 Route::get('/not-test', [UserController::class, 'showNotificationTest'])->name('show-notification-test');
+
+Route::get('/question-1', [RecipeController::class, 'getQuestion1'])->name('get-question-1');
+Route::get('/question-2', [RecipeController::class, 'getQuestion2'])->name('get-question-2');

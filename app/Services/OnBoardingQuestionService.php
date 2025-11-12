@@ -53,8 +53,8 @@ class OnBoardingQuestionService{
                 'description' => $question->description,
                 'type' => $question->type == 'select' ? 'choice' : $question->type,
                 'answers' => $answers,
-                'help' => 'Saznaj više',
-                'helpLink' => 'https://google.com',
+                'help' => $question->help,
+                'helpLink' => $question->help_link,
             ];
             array_push($finalQuestions, $singleQuestion);
         }
@@ -113,6 +113,8 @@ class OnBoardingQuestionService{
                 'description' => '',
                 'type' => 'calculation',
                 'answers' => $answers,
+                'help' => 'Saznajte više o načinu obračuna kalorija',
+                'helpLink' => route('get-question-2'),
             ];
 
             array_push($finalQuestions, $singleQuestion);
