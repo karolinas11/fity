@@ -1595,7 +1595,7 @@ class UserController extends Controller
             $r = Recipe::find($recipe['recipe']);
             if ($r->bookmarked_status == 1) {
                 $r->bookmarked_status = 'bookmarked';
-            } else if ($recipe->bookmarked_status == -1) {
+            } else if ($r->bookmarked_status == -1) {
                 $r->bookmarked_status = 'deleted';
             } else {
                 $r->bookmarked_status = 'active';
