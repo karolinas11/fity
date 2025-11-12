@@ -1028,6 +1028,11 @@ class UserController extends Controller
                     ->where('type', $type2)
                     ->get()
                     ->first();
+
+                Log::error('ExistingRecipe: ' . json_encode($existingRecipe));
+                Log::error('UserRecipe: ' . json_encode($userRecipe));
+
+
 //                if($existingRecipe == null || $userRecipe == null) {
 //                    dd($userRecipe, $existingRecipe, $targetDate2, $type2);
 //                }
