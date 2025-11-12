@@ -1035,7 +1035,7 @@ class RecipeController
 //                    ->get()
 //                    ->first();
 
-                if (!$recipe->bookmarked_status != -1) {
+                if ($recipe->bookmarked_status != -1) {
                     continue;
                 }
             }
