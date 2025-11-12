@@ -40,13 +40,13 @@ class UserRecipeService
             $prot = 0;
             $fat = 0;
             $ch = 0;
-//    	    if ($recipe["bookmarked_status"] == 1) {
-//               		$recipe["bookmarked_status"] = 'bookmarked';
-//        	} else if ($recipe["bookmarked_status"] == -1) {
-//                	$recipe["bookmarked_status"] = 'deleted';
-//        	} else {
-//                	$recipe["bookmarked_status"] = 'active';
-//            }
+    	    if ($recipe["bookmarked_status"] == 1) {
+               		$recipe["bookmarked_status"] = 'bookmarked';
+        	} else if ($recipe["bookmarked_status"] == -1) {
+                	$recipe["bookmarked_status"] = 'deleted';
+        	} else {
+                	$recipe["bookmarked_status"] = 'active';
+            }
 	        foreach ($recipe->foodstuffs as &$foodstuff) {
                 $f = Foodstuff::where('id', $foodstuff->foodstuff_id)->get()[0];
                 $cal += $foodstuff->amount * ($f->calories / 100);
