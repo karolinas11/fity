@@ -52,7 +52,9 @@ class OnBoardingQuestionService{
                 'question' => $question->title,
                 'description' => $question->description,
                 'type' => $question->type == 'select' ? 'choice' : $question->type,
-                'answers' => $answers
+                'answers' => $answers,
+                'help' => 'Saznaj više',
+                'helpLink' => 'https://google.com',
             ];
             array_push($finalQuestions, $singleQuestion);
         }
