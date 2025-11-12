@@ -1016,6 +1016,8 @@ class UserController extends Controller
                 ->get()
                 ->first();
 
+            Log::error('UserRecipe ARGS: ' . $targetDate . ' ' . $type . ' ' . $user->id);
+
             for($e = 1; $e < count($schedule); $e++) {
                 $targetDayMeal2 = $schedule[$e];
                 $typeDay2 = explode('–', $targetDayMeal2);
@@ -1032,7 +1034,6 @@ class UserController extends Controller
                 Log::error('ARGS: ' . $targetDate2 . ' ' . $type2 . ' ' . $user->id);
 
                 Log::error('ExistingRecipe: ' . json_encode($existingRecipe));
-                Log::error('UserRecipe: ' . json_encode($userRecipe));
 
 
 //                if($existingRecipe == null || $userRecipe == null) {
