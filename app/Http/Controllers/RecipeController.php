@@ -1045,15 +1045,15 @@ class RecipeController
                 ->get();
 
             $b = 'active';
-            foreach($userRecipes as $userRecipe) {
-                if($userRecipe->bookmarked_status == 1) {
+//            foreach($userRecipes as $userRecipe) {
+                if($recipe->bookmarked_status == 1) {
                     $b = 'bookmarked';
-                    break;
-                } else if($userRecipe->bookmarked_status == -1) {
+//                    break;
+                } else if($recipe->bookmarked_status == -1) {
                     $b = 'deleted';
-                    break;
+//                    break;
                 }
-            }
+//            }
 
             $recipe->bookmarked_status = $b;
 
