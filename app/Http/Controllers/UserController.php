@@ -1876,9 +1876,8 @@ class UserController extends Controller
 
         $user = User::where('firebase_uid', $firebaseUid)->get()->first();
 
-        $lastUserSchedule = UserSchedule::where('user_id', $user->id)
-            ->orderBy('id', 'desc')
-            ->get()
+        $lastUserSchedule = UserSchedule::latest('created_at')
+            ->where('user_id', $user->id)
             ->first();
 
         return response()->json($lastUserSchedule);
