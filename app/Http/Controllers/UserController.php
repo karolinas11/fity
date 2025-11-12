@@ -1593,6 +1593,13 @@ class UserController extends Controller
         $i = 0;
         foreach ($alternativesRaw['combinations'] as $recipe) {
             $r = Recipe::find($recipe['recipe']);
+            if ($r->bookmarked_status == 1) {
+                $r->bookmarked_status = 'bookmarked';
+            } else if ($recipe->bookmarked_status == -1) {
+                $r->bookmarked_status = 'deleted';
+            } else {
+                $r->bookmarked_status = 'active';
+            }
             $recipes[] = $r;
             $i++;
             if($i > 9) break;
