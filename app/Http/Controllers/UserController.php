@@ -1296,22 +1296,32 @@ class UserController extends Controller
 
         $user = User::where('firebase_uid', $firebaseUid)->get()->first();
 
+        if($request->input('screen')) {
+            $re = Recipe::find($request->mealId);
+            $rid = $re->id;
+            $t = $re->type;
+        } else {
+            $userRecipe = UserRecipe::find($request->mealId);
+            $dates = $request->dates;
+
+            $t = $userRecipe->type;
+            $rid = $userRecipe->recipe_id;
+        }
 //        $user = User::find(337);
-        $userRecipe = UserRecipe::find($request->mealId);
-        $dates = $request->dates;
+
 
         foreach ($dates as $date) {
             $existingRecipe = UserRecipe::where('user_id', $user->id)
                 ->where('date', $date)
                 ->where('status', 'active')
-                ->where('type', $userRecipe->type)
+                ->where('type', $t)
                 ->get()
                 ->first();
-            if ($existingRecipe->recipe_id == $userRecipe->recipe_id) {
+            if ($existingRecipe->recipe_id == $rid) {
                 continue;
             }
 
-            $recipe = Recipe::find($userRecipe->recipe_id);
+            $recipe = Recipe::find($rid);
 
             $cal = 0;
             $prot = 0;
@@ -1470,7 +1480,15 @@ class UserController extends Controller
                     }
                 }
             } else {
-                dd('0 HOLDERA');
+                $newCombinations[] = [
+                    'calories' => $fixCal,
+                    'proteins' => $fixProt,
+                    'fats' => $fixFat,
+                    //'carbohydrates' => $fixCh,
+                    'foodstuff_id' => '',
+                    'amounts' => '',
+                    'recipe_id' => $targetRecipe->id
+                ];
             }
             //dd($newCombinations);
 
@@ -1505,7 +1523,7 @@ class UserController extends Controller
                 'user_id' => $user->id,
                 'recipe_id' => $newRecipe->id,
                 'status' => 'active',
-                'type' => $userRecipe->type,
+                'type' => $t,
                 'date' => $date
             ]);
 
@@ -1705,7 +1723,15 @@ class UserController extends Controller
                 }
             }
         } else {
-            dd('0 HOLDERA');
+            $newCombinations[] = [
+                'calories' => $fixCal,
+                'proteins' => $fixProt,
+                'fats' => $fixFat,
+                //'carbohydrates' => $fixCh,
+                'foodstuff_id' => '',
+                'amounts' => '',
+                'recipe_id' => $targetRecipe->id
+            ];
         }
 
         $best     = null;
