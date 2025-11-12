@@ -1251,7 +1251,7 @@ class UserController extends Controller
                     'user_id' => $user->id,
                     'recipe_id' => $newRecipe->id,
                     'status' => 'active',
-                    'type' => $userRecipe->type,
+                    'type' => $existingRecipe->type,
                     'date' => $targetDate2
                 ]);
 
