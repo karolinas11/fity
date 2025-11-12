@@ -1296,14 +1296,13 @@ class UserController extends Controller
 
         $user = User::where('firebase_uid', $firebaseUid)->get()->first();
 
+        $dates = $request->dates;
         if($request->input('screen')) {
             $re = Recipe::find($request->mealId);
             $rid = $re->id;
             $t = $re->type;
         } else {
             $userRecipe = UserRecipe::find($request->mealId);
-            $dates = $request->dates;
-
             $t = $userRecipe->type;
             $rid = $userRecipe->recipe_id;
         }
