@@ -1029,6 +1029,8 @@ class UserController extends Controller
                     ->get()
                     ->first();
 
+                Log::error('ARGS: ' . $targetDate2 . ' ' . $type2 . ' ' . $user->id);
+
                 Log::error('ExistingRecipe: ' . json_encode($existingRecipe));
                 Log::error('UserRecipe: ' . json_encode($userRecipe));
 
