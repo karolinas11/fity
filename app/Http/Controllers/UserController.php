@@ -1878,6 +1878,7 @@ class UserController extends Controller
 
         $lastUserSchedule = UserSchedule::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
+            ->get()
             ->first();
 
         return response()->json($lastUserSchedule);
