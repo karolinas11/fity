@@ -57,11 +57,10 @@ class UserController extends Controller
     protected PhotoService $photoService;
     protected UserRecipeRepository $userRecipeRepository;
     protected RecipeService $recipeService;
-    protected Messaging $messaging;
 
 //    protected $firebaseAuth;
 
-    public function __construct(Messaging $messaging) {
+    public function __construct() {
         $this->userService = new UserService();
         $this->recipeFoodstuffService= new RecipeFoodstuffService();
         $this->userWaterService= new UserWaterService();
@@ -1980,14 +1979,19 @@ class UserController extends Controller
 
     public function sendNotificationTest() {
         $user = User::find(548);
-        $message = CloudMessage::withTarget('token', $user->notification_token)
-            ->withNotification(Notification::create(
-                'Pozdrav ' . $user->name,
-                'Vaša obaveštenja su ažurirana.'
-            ));
 
-        $this->messaging->send($message);
-        return response()->json('success', 200);
+        // Samo pozoveš funkciju iz servisa
+        $result = $this->authService->sendNotification(
+            $user->notification_token,
+            'Pozdrav ' . $user->name,
+            'Vaša obaveštenja su ažurirana.'
+        );
+
+        if ($result) {
+            return response()->json('success', 200);
+        } else {
+            return response()->json('error sending message', 500);
+        }
     }
 
 }
