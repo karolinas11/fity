@@ -1977,16 +1977,16 @@ class UserController extends Controller
         return response()->json('success', 200);
     }
 
-//    public function sendNotificationTest() {
-//        $user = User::find(351);
-//        $message = CloudMessage::withTarget('token', $user->notification_token)
-//            ->withNotification(Notification::create(
-//                'Pozdrav ' . $user->name,
-//                'Vaša obaveštenja su ažurirana.'
-//            ));
-//
-//        $this->messaging->send($message);
-//        return response()->json('success', 200);
-//    }
+    public function sendNotificationTest() {
+        $user = User::find(548);
+        $message = CloudMessage::withTarget('token', $user->notification_token)
+            ->withNotification(Notification::create(
+                'Pozdrav ' . $user->name,
+                'Vaša obaveštenja su ažurirana.'
+            ));
+
+        $this->messaging->send($message);
+        return response()->json('success', 200);
+    }
 
 }
