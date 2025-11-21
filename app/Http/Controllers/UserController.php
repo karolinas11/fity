@@ -57,10 +57,11 @@ class UserController extends Controller
     protected PhotoService $photoService;
     protected UserRecipeRepository $userRecipeRepository;
     protected RecipeService $recipeService;
+    protected Messaging $messaging;
 
 //    protected $firebaseAuth;
 
-    public function __construct() {
+    public function __construct(Messaging $messaging) {
         $this->userService = new UserService();
         $this->recipeFoodstuffService= new RecipeFoodstuffService();
         $this->userWaterService= new UserWaterService();
