@@ -1867,7 +1867,7 @@ class UserController extends Controller
 
     private function validateIOS($receiptData)
     {
-        $endpoint = "https://buy.itunes.apple.com/verifyReceipt";
+        $endpoint = env('APPLE_SUBSCRIPTION_VALIDATION_URL');
         // Use production endpoint in prod: https://buy.itunes.apple.com/verifyReceipt
 
 //        $jwt = $receiptData;
