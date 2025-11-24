@@ -341,7 +341,7 @@ class UserController extends Controller
             'gender' => $user->gender == 'm'? 'Male': 'Female',
             'age' => $user->age,
             'name' => $request->name,
-            'member_type' => $request->type == 2? 'Starter': 'Regular'
+            'member_type' => $user->type == 2? 'Starter': 'Regular'
         ];
 
         $this->userService->updateSubscriberFields($request->email, $customFields);
@@ -1978,6 +1978,13 @@ class UserController extends Controller
         $user = User::where('firebase_uid', $firebaseUid)->get()->first();
         $user->is_subscribed = $request->isSubscribed;
         $user->save();
+
+        if($user->is_subscribed == 1) {
+            $customFields = [
+                'subscription_type' => 'Monthly'
+            ];
+            $this->userService->updateSubscriberFields($user->email, $customFields);
+        }
 
         return response()->json('success', 200);
     }
