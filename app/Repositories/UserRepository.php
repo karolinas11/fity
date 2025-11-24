@@ -218,6 +218,7 @@ class UserRepository
                 $user->type = 2;
             }
             $user->save();
+            return $user;
         } catch (QueryException $e) {
             Log::error('Can\'t assign firebase uid: ' . $e->getMessage());
         }
