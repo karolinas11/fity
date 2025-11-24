@@ -76,3 +76,4 @@ Route::delete('/user/delete', [UserController::class, 'deleteUser'])->name('dele
 Route::post('/user/update-subscription', [UserController::class, 'updateSubscription'])->name('update-subscription');
 Route::post('/user/undo-water', [UserController::class, 'undoWater'])->name('undo-water');
 Route::post('/user/add-recipe-to-plan', [UserController::class, 'addRecipeToPlan'])->name('add-recipe-to-plan');
+Route::get('/test-custom-fields', [UserController::class, 'testCustomFields'])->name('test-custom-fields');

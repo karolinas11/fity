@@ -330,7 +330,22 @@ class UserController extends Controller
         if(!$firebaseUid) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        $this->userService->assignFirebaseUid($request->userId, $firebaseUid, $request->email, $request->name);
+        $user = $this->userService->assignFirebaseUid($request->userId, $firebaseUid, $request->email, $request->name);
+
+        $name = explode(' ', $request->name);
+        $firstName = $name[0];
+        $lastName = $name[1] ?? '';
+        $customFields = [
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'gender' => $user->gender == 'm'? 'Male': 'Female',
+            'age' => $user->age,
+            'name' => $request->name,
+            'member_type' => $request->type == 2? 'Starter': 'Regular'
+        ];
+
+        $this->userService->updateSubscriberFields($request->email, $customFields);
+
         return response()->json(['user' => User::find($request->userId)]);
     }
 
@@ -339,7 +354,25 @@ class UserController extends Controller
         if(!$firebaseUid) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
+        $user = User::where('firebase_uid', $firebaseUid)->first();
+        $userId = $user->id;
+
+        if($user->landed == 0) {
+            if($user->is_subscribed == 0) {
+                $customFields = [
+                    'subscription_type' => 'Trial'
+                ];
+            } else if($user->is_subscribed == 1) {
+                $customFields = [
+                    'subscription_type' => 'Monthly'
+                ];
+            }
+
+            $this->userService->updateSubscriberFields($user->email, $customFields);
+        }
+
+        $user->landed = 1;
+        $user->save();
         $recipes = $this->userRecipeService->getUserRecipesByDate($userId, $request->startDate, $request->endDate);
         return response()->json($recipes);
     }
@@ -1992,6 +2025,18 @@ class UserController extends Controller
         } else {
             return response()->json('error sending message', 500);
         }
+    }
+
+    public function testCustomFields() {
+        $email = 'rtanglestudio@gmail.com';
+        $customFields = [
+            'member_type' => 'Regular',
+            'gender' => 'Female',
+            'subscription_status' => 'Expired',
+            'subscription_type' => 'Monthly'
+        ];
+        $this->userService->updateSubscriberFields($email, $customFields);
+        return response()->json('success', 200);
     }
 
 }

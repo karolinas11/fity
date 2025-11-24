@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use DateTime;
 use DateTimeZone;
@@ -271,6 +272,26 @@ class UserService
         $target = (clone $base)->modify('next ' . $map[$key]); // uvek sledeći (ne “danas”)
 
         return $target->format($format);
+    }
+
+    public function updateSubscriberFields(string $email, array $customFields)
+    {
+        // Koristimo POST na /subscribers endpoint jer on radi "Update or Create"
+        $response = Http::withToken('eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI0IiwianRpIjoiYTRjMDAwNTgzNjZlMDEzMDI0MzMyNzJjOTgwYTA0NzMxMzViNDMxNjZhNzFiZGMwZjQ3ODY4MDFiODgwZDI5OTU4NDI1NTVjNDk5MjgyNTkiLCJpYXQiOjE3NTUxOTc5MTAuNDAxMzMsIm5iZiI6MTc1NTE5NzkxMC40MDEzMzMsImV4cCI6NDkxMDg3MTUxMC4zOTc2OCwic3ViIjoiODA1NDMyIiwic2NvcGVzIjpbXX0.WHVKyWScwktAHSdWtYEnCwPjMdmj10BPsb-xnhVtdIJZw3CBorz4gusjXukavPucBBslNbOL2RPXntvb50fp2riCPQn_AUo6jzEXIkmlivILqDtl_0KiIdjXlsO3oLA2CqlPG6hWDAjmmtO3ELGNN732akMxzjJY8qvOKXU5GBkpoC1E3jDrptU3sLmjkcSmGo19Avsc2jRRAmJLRb6WecAFkZzCzB9Esp-QLUOQaotOFzOz9zcC5XLW_ob1ktoa0hwWQItSFFBAOxz6nQteppsBSP7URk_7awd7BbsJrvY1bUGzxDkmawcfI9j_b7YCSCiCZltecSG25ofg_MQddHPmdLSKVgMaixCEW8PeMtg-zS4NH0l_OyW5TkzNzvQcoY7o9-lzNUWCbkqcupHo9HULUxZPpa2I9sl1-Ln7-YL98GBKUu_Uvhb0SPCOa3kfa-Zve2tJwdHyYi8uiA1FlLyU1wP8DF3JgCoz6fTF1pSWUGkk3YmVsKj18H-re2IqJfTveLurUfPuGbIknracxoQtxomgTovthofXEMZlHLmjuU6LeA2gynVOBrb-ssJM9BQ3bBoMWHelnbAk3Yg4aOu4m4UKfu-CaBxAi7CCQohmdWbtO84U2d1IwdjR8xfOZHt4MMaJJT19NAiL7rVn27tMdHgypME53Z9BAu0Pr3Y')
+            ->acceptJson()
+            ->post('https://connect.mailerlite.com/api/subscribers', [
+                'email' => $email,
+                'fields' => $customFields,
+            ]);
+
+        // 3. Provera odgovora
+        if ($response->successful()) {
+            return true;
+        } else {
+            // Logujemo grešku da znamo šta nije u redu (npr. loš API ključ ili loš format)
+            Log::error('MailerLite Update Error za ' . $email . ': ' . $response->body());
+            return false;
+        }
     }
 
 }
