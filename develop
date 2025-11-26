@@ -1,0 +1,8 @@
+Updating bf21202..825376c
+Fast-forward
+ app/DataTables/RecipeDataTable.php      | 128 +++++++++++-----------
+ app/Http/Controllers/UserController.php |  56 +++++++++-
+ app/Repositories/UserRepository.php     | 182 ++++++++++++++++++++++++++++++++
+ app/Services/UserService.php            |  21 ++++
+ routes/api.php                          |   1 +
+ 5 files changed, 322 insertions(+), 66 deletions(-)
