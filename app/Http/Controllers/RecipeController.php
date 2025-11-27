@@ -56,7 +56,9 @@ class RecipeController
             'type' => $request->input('type'),
             'insulin'=> $request->input('insulin'),
             'preparation_time' => $request->input('preparation_time'),
-            'unique_breakfast' => $request->input('unique_breakfast')
+            'unique_breakfast' => $request->input('unique_breakfast'),
+            'fasting_water' => $request->input('fasting_water'),
+            'fasting_oil' => $request->input('fasting_oil'),
         ];
 
         if ($request->hasFile('featured_image')) {
@@ -129,6 +131,8 @@ class RecipeController
             'unique_breakfast' => $request->input('unique_breakfast'),
             'type' => $request->input('type'),
             'preparation_time' => $request->input('preparation_time'),
+            'fasting_water' => $request->input('fasting_water'),
+            'fasting_oil' => $request->input('fasting_oil'),
         ];
 
         if ($request->hasFile('featured_image')) {
