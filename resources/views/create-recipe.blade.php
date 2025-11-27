@@ -65,6 +65,16 @@
                 <input type="checkbox" name="unique_breakfast">
             </div>
 
+            <div class="col-md-12">
+                <label>Posno na vodi</label>
+                <input type="checkbox" name="fasting_water">
+            </div>
+
+            <div class="col-md-12">
+                <label>Posno na ulju</label>
+                <input type="checkbox" name="fasting_oil">
+            </div>
+
             <div class="foodstuffs mb-4">
                 <div class="single-foodstuff row mb-3">
                     <div class="col-md-6">
@@ -208,6 +218,8 @@
             formData.append('type', document.querySelector('select[name="type"]').value);
             formData.append('insulin', document.querySelector('input[name="insulin"]').checked ? 1 : 0);
             formData.append('unique_breakfast', document.querySelector('input[name="unique_breakfast"]').checked ? 1 : 0);
+            formData.append('fasting_water', document.querySelector('input[name="fasting_water"]').checked ? 1 : 0);
+            formData.append('fasting_oil', document.querySelector('input[name="fasting_oil"]').checked ? 1 : 0);
             formData.append('foodstuffs', JSON.stringify(foodstuffData));
             /**/
 

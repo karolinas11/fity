@@ -46,6 +46,19 @@
 
                     </ul>
                 </div>
+
+                @auth
+                    <div class="nav-item">
+                        <a class="nav-link" href="{{ route('logout') }}"
+                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            Odjavi se
+                        </a>
+
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                            @csrf
+                        </form>
+                    </div>
+                @endauth
             </div>
         </nav>
 

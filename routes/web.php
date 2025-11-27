@@ -9,48 +9,51 @@ use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
 
-    return view('welcome');
-});
 
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('/add-user-form', [UserController::class, 'showAddUser'])->name('show-add-user');
-Route::post('/add-user', [UserController::class, 'addUser'])->name('add-user');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/', function () {
 
-Route::get('/add-foodstuff-category-form', [FoodstuffCategoryController::class, 'showAddFoodstuffCategory'])->name('show-add-foodstuff-category');
-Route::post('/add-foodstuff-category', [FoodstuffCategoryController::class, 'addFoodstuffCategory'])->name('add-foodstuff-category');
+        return view('welcome');
+    });
 
-Route::get('/add-foodstuff-form', [FoodstuffController::class, 'showAddFoodstuff'])->name('show-add-foodstuff');
-Route::post('/add-foodstuff', [FoodstuffController::class, 'addFoodstuff'])->name('add-foodstuff');
+    Route::get('/add-user-form', [UserController::class, 'showAddUser'])->name('show-add-user');
+    Route::post('/add-user', [UserController::class, 'addUser'])->name('add-user');
 
-Route::get('/add-recipe-form', [RecipeController::class, 'showAddRecipe'])->name('show-add-recipe');
-Route::post('/add-recipe', [RecipeController::class, 'addRecipe'])->name('add-recipe');
+    Route::get('/add-foodstuff-category-form', [FoodstuffCategoryController::class, 'showAddFoodstuffCategory'])->name('show-add-foodstuff-category');
+    Route::post('/add-foodstuff-category', [FoodstuffCategoryController::class, 'addFoodstuffCategory'])->name('add-foodstuff-category');
 
-Route::get('/user/{userId}', [UserController::class, 'assignRecipesToUser'])->name('assign-recipes-to-user');
-Route::post('/user/edit', [UserController::class, 'editUser']);
+    Route::get('/add-foodstuff-form', [FoodstuffController::class, 'showAddFoodstuff'])->name('show-add-foodstuff');
+    Route::post('/add-foodstuff', [FoodstuffController::class, 'addFoodstuff'])->name('add-foodstuff');
 
-Route::get('/recipes', [RecipeController::class, 'showRecipesList'])->name('show-recipes-list');
-Route::get('/foodstuffs', [FoodstuffController::class, 'showFoodstuffsList'])->name('show-foodstuffs-list');
+    Route::get('/add-recipe-form', [RecipeController::class, 'showAddRecipe'])->name('show-add-recipe');
+    Route::post('/add-recipe', [RecipeController::class, 'addRecipe'])->name('add-recipe');
 
-Route::get('/foodstuff/{foodstuffId}/edit', [FoodstuffController::class, 'showFoodstuffEdit'])->name('show-foodstuff-edit');
-Route::post('/foodstuff/{foodstuffId}/edit', [FoodstuffController::class, 'editFoodstuff'])->name('edit-foodstuff');
-Route::delete('/foodstuff/{foodstuffId}/delete', [FoodstuffController::class, 'deleteFoodstuff'])->name('delete-foodstuff');
+    Route::get('/user/{userId}', [UserController::class, 'assignRecipesToUser'])->name('assign-recipes-to-user');
+    Route::post('/user/edit', [UserController::class, 'editUser']);
 
-Route::get('/recipe/{recipeId}/edit', [RecipeController::class, 'showRecipeEdit'])->name('show-recipe-edit');
-Route::post('/recipe/{recipeId}/edit', [RecipeController::class, 'editRecipe'])->name('edit-recipe');
-Route::delete('/recipe/{recipeId}/delete', [RecipeController::class, 'deleteRecipe'])->name('delete-recipe');
+    Route::get('/recipes', [RecipeController::class, 'showRecipesList'])->name('show-recipes-list');
+    Route::get('/foodstuffs', [FoodstuffController::class, 'showFoodstuffsList'])->name('show-foodstuffs-list');
 
-Route::get('/ide-gas', [RecipeController::class, 'printRecipes'])->name('ide-gas');
-Route::get('/ide-gas2', [RecipeController::class, 'printFoodstuffs'])->name('ide-gas');
-Route::get('/test-curl', [RecipeController::class, 'testCurl'])->name('test-curl');
+    Route::get('/foodstuff/{foodstuffId}/edit', [FoodstuffController::class, 'showFoodstuffEdit'])->name('show-foodstuff-edit');
+    Route::post('/foodstuff/{foodstuffId}/edit', [FoodstuffController::class, 'editFoodstuff'])->name('edit-foodstuff');
+    Route::delete('/foodstuff/{foodstuffId}/delete', [FoodstuffController::class, 'deleteFoodstuff'])->name('delete-foodstuff');
 
-Route::get('/users', [UserController::class, 'showUsersList'])->name('show-users-list');
-Route::get('/boarding-question',[OnBoardingQuestionController::class, 'index']);
+    Route::get('/recipe/{recipeId}/edit', [RecipeController::class, 'showRecipeEdit'])->name('show-recipe-edit');
+    Route::post('/recipe/{recipeId}/edit', [RecipeController::class, 'editRecipe'])->name('edit-recipe');
+    Route::delete('/recipe/{recipeId}/delete', [RecipeController::class, 'deleteRecipe'])->name('delete-recipe');
 
+    Route::get('/ide-gas', [RecipeController::class, 'printRecipes'])->name('ide-gas');
+    Route::get('/ide-gas2', [RecipeController::class, 'printFoodstuffs'])->name('ide-gas');
+    Route::get('/test-curl', [RecipeController::class, 'testCurl'])->name('test-curl');
+
+    Route::get('/users', [UserController::class, 'showUsersList'])->name('show-users-list');
+    Route::get('/boarding-question', [OnBoardingQuestionController::class, 'index']);
+});
 Route::get('/not-test', [UserController::class, 'showNotificationTest'])->name('show-notification-test');
 
 Route::get('/question-1', [RecipeController::class, 'getQuestion1'])->name('get-question-1');
