@@ -2018,7 +2018,7 @@ class UserController extends Controller
     }
 
     public function sendNotificationTest() {
-        $user = User::find(548);
+        $user = User::find(576);
 
         // Samo pozoveš funkciju iz servisa
         $result = $this->authService->sendNotification(
