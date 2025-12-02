@@ -9,18 +9,18 @@
         </div>
 
         <div class="row mt-5">
-            <div class="col-md-4 mb-4">
+            <div class="col-md-6 mb-4">
                 <h3>Broj korisnika</h3>
                 <p>{{ $total }}</p>
             </div>
-            <div class="col-md-4 mb-4">
+            <div class="col-md-6 mb-4">
                 <h3>Pretplaćeni korisnici</h3>
                 <p>{{ $subscribed }}</p>
             </div>
-            <div class="col-md-4 mb-4">
-                <h3>Fantomski korisnici</h3>
-                <p>{{ $phantom }}</p>
-            </div>
+{{--            <div class="col-md-4 mb-4">--}}
+{{--                <h3>Fantomski korisnici</h3>--}}
+{{--                <p>{{ $phantom }}</p>--}}
+{{--            </div>--}}
         </div>
     </div>
 @endsection
