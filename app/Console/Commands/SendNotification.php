@@ -127,13 +127,30 @@ class SendNotification extends Command
             }
 
             $this->info("Notifikacija poslata {$count} korisnika!");
+        } else if($this->argument('type') == 'checking') {
+            $users = User::whereNotNull('notification_token')->get();
+            $count = 0;
+
+            foreach ($users as $user) {
+                $result = $this->authService->sendNotification(
+                    $user->notification_token,
+                    $this->argument('title'),
+                    'Neophodno je da štikliraš sve obroke za najbolje praćenje rezultata.'
+                );
+
+                if ($result) {
+                    $count++;
+                }
+            }
+
+            $this->info("Notifikacija poslata {$count} korisnika!");
         } else {
             $user = User::find(576);
 
             $result = $this->authService->sendNotification(
                 $user->notification_token,
                 'Obaveštenje',
-                'Neophodno je da štikliraš sve obroke za najbolje praćenje rezultata.'
+                'Neophodno je da štikliraš sve obroke za najbolje praćenje rezultata..'
             );
 
             if ($result) {
