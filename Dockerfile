@@ -29,7 +29,7 @@ WORKDIR /var/www/html
 
 # Copy Laravel source
 COPY . /var/www/html
-
+RUN ls -la
 # Install dependencies
 RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
