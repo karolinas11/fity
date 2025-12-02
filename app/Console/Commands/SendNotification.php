@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\User;
 use App\Services\AuthService;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class SendNotification extends Command
@@ -15,7 +16,7 @@ class SendNotification extends Command
      */
     protected $signature = 'notify:send
                             {title=Obaveštenje}
-                            {body=Imate novu poruku}';
+                            {type}';
 
     /**
      * The console command description.
@@ -37,20 +38,118 @@ class SendNotification extends Command
      */
     public function handle()
     {
-        $user = User::find(576);
+        if($this->argument('type') == 'trial_expires') {
+            $targetDate = Carbon::now()->subDays(7)->toDateString();
 
-        $result = $this->authService->sendNotification(
-            $user->notification_token,
-            'Obaveštenje',
-            'Neophodno je da štikliraš sve obroke za najbolje praćenje rezultata.'
-        );
+            $users = User::whereDate('created_at', $targetDate)
+                ->where('is_subscribed', 0)
+                ->whereNotNull('notification_token')
+                ->get();
 
-        if ($result) {
-            $this->info('Notifikacija poslata!');
-            return 0;
+            $count = 0;
+
+            foreach ($users as $user) {
+                $result = $this->authService->sendNotification(
+                    $user->notification_token,
+                    'Hej, danas ti ističe probni period korišćenja Fity aplikacije.',
+                    'Da bi nastavio/la da budeš korisnik, potrebno je da odabereš tip pretplate.'
+                );
+
+                if ($result) {
+                    $count++;
+                }
+            }
+
+            $this->info("Notifikacija poslata {$count} korisnika!");
+        } else if($this->argument('type') == 'water') {
+            $users = User::all();
+
+            foreach ($users as $user) {
+                $result = $this->authService->sendNotification(
+                    $user->notification_token,
+                    $this->argument('title'),
+                    'Bitno je da unosiš preporučene količine vode na dnevnom nivou za zdravlje.'
+                );
+
+                if ($result) {
+                    $this->info('Notifikacija poslata!');
+                    return 0;
+                } else {
+                    $this->error('Greška prilikom slanja notifikacije.');
+                    return 1;
+                }
+            }
+        } else if($this->argument('type') == 'improvement') {
+            $users = User::all();
+
+            foreach ($users as $user) {
+                $result = $this->authService->sendNotification(
+                    $user->notification_token,
+                    $this->argument('title'),
+                    'Redovno beleženje napretka je najbolja motivacija i pokazatelj rezultata. Unesi svoje rezultate.'
+                );
+
+                if ($result) {
+                    $this->info('Notifikacija poslata!');
+                    return 0;
+                } else {
+                    $this->error('Greška prilikom slanja notifikacije.');
+                    return 1;
+                }
+            }
+        } else if($this->argument('type') == 'shopping') {
+            $users = User::all();
+
+            foreach ($users as $user) {
+                $result = $this->authService->sendNotification(
+                    $user->notification_token,
+                    $this->argument('title'),
+                    'Kupovina namirnica unapred je ključna za doslednost ishrani. Spremi se za šoping.'
+                );
+
+                if ($result) {
+                    $this->info('Notifikacija poslata!');
+                    return 0;
+                } else {
+                    $this->error('Greška prilikom slanja notifikacije.');
+                    return 1;
+                }
+            }
+        } else if($this->argument('type') == 'new_recipe') {
+            $users = User::all();
+
+            foreach ($users as $user) {
+                $result = $this->authService->sendNotification(
+                    $user->notification_token,
+                    $this->argument('title'),
+                    'Baci pogled na novi recept koji smo smislili za tebe.'
+                );
+
+                if ($result) {
+                    $this->info('Notifikacija poslata!');
+                    return 0;
+                } else {
+                    $this->error('Greška prilikom slanja notifikacije.');
+                    return 1;
+                }
+            }
         } else {
-            $this->error('Greška prilikom slanja notifikacije.');
-            return 1;
+            $user = User::find(576);
+
+            $result = $this->authService->sendNotification(
+                $user->notification_token,
+                'Obaveštenje',
+                'Neophodno je da štikliraš sve obroke za najbolje praćenje rezultata.'
+            );
+
+            if ($result) {
+                $this->info('Notifikacija poslata!');
+                return 0;
+            } else {
+                $this->error('Greška prilikom slanja notifikacije.');
+                return 1;
+            }
         }
+
     }
 }
