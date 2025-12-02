@@ -16,7 +16,7 @@ class SendNotification extends Command
      */
     protected $signature = 'notify:send
                             {title=Obaveštenje}
-                            {type}';
+                            {type=test}';
 
     /**
      * The console command description.
