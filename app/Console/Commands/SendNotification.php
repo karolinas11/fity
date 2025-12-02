@@ -62,7 +62,7 @@ class SendNotification extends Command
 
             $this->info("Notifikacija poslata {$count} korisnika!");
         } else if($this->argument('type') == 'water') {
-            $users = User::all();
+            $users = User::whereNotNull('notification_token')->get();
 
             foreach ($users as $user) {
                 $result = $this->authService->sendNotification(
@@ -80,7 +80,7 @@ class SendNotification extends Command
                 }
             }
         } else if($this->argument('type') == 'improvement') {
-            $users = User::all();
+            $users = User::whereNotNull('notification_token')->get();
 
             foreach ($users as $user) {
                 $result = $this->authService->sendNotification(
@@ -98,7 +98,7 @@ class SendNotification extends Command
                 }
             }
         } else if($this->argument('type') == 'shopping') {
-            $users = User::all();
+            $users = User::whereNotNull('notification_token')->get();
 
             foreach ($users as $user) {
                 $result = $this->authService->sendNotification(
@@ -116,7 +116,7 @@ class SendNotification extends Command
                 }
             }
         } else if($this->argument('type') == 'new_recipe') {
-            $users = User::all();
+            $users = User::whereNotNull('notification_token')->get();
 
             foreach ($users as $user) {
                 $result = $this->authService->sendNotification(
