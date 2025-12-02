@@ -2046,7 +2046,7 @@ class UserController extends Controller
         return response()->json('success', 200);
     }
 
-    public function getUsersStatistics() {
+    public function showUsersStatistics() {
         $users = User::where('id', '>', 570)->get();
         $total = $users->count();
         $subscribed = 0;

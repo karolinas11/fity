@@ -45,7 +45,7 @@
                 </a>
             </div>
             <div class="col-md-6 mb-4">
-                <a href="{{ route('show-users-statistics') }}" class="btn btn-error btn-lg w-100">
+                <a href="{{ route('show-users-statistics') }}" class="btn btn-secondary btn-lg w-100">
                     Statistika korisnika
                 </a>
             </div>
