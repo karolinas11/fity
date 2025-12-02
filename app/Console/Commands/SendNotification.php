@@ -63,6 +63,7 @@ class SendNotification extends Command
             $this->info("Notifikacija poslata {$count} korisnika!");
         } else if($this->argument('type') == 'water') {
             $users = User::whereNotNull('notification_token')->get();
+            $count = 0;
 
             foreach ($users as $user) {
                 $result = $this->authService->sendNotification(
@@ -72,15 +73,14 @@ class SendNotification extends Command
                 );
 
                 if ($result) {
-                    $this->info('Notifikacija poslata!');
-                    return 0;
-                } else {
-                    $this->error('Greška prilikom slanja notifikacije.');
-                    return 1;
+                    $count++;
                 }
             }
+
+            $this->info("Notifikacija poslata {$count} korisnika!");
         } else if($this->argument('type') == 'improvement') {
             $users = User::whereNotNull('notification_token')->get();
+            $count = 0;
 
             foreach ($users as $user) {
                 $result = $this->authService->sendNotification(
@@ -90,15 +90,12 @@ class SendNotification extends Command
                 );
 
                 if ($result) {
-                    $this->info('Notifikacija poslata!');
-                    return 0;
-                } else {
-                    $this->error('Greška prilikom slanja notifikacije.');
-                    return 1;
+                    $count++;
                 }
             }
         } else if($this->argument('type') == 'shopping') {
             $users = User::whereNotNull('notification_token')->get();
+            $count = 0;
 
             foreach ($users as $user) {
                 $result = $this->authService->sendNotification(
@@ -108,15 +105,14 @@ class SendNotification extends Command
                 );
 
                 if ($result) {
-                    $this->info('Notifikacija poslata!');
-                    return 0;
-                } else {
-                    $this->error('Greška prilikom slanja notifikacije.');
-                    return 1;
+                    $count++;
                 }
             }
+
+            $this->info("Notifikacija poslata {$count} korisnika!");
         } else if($this->argument('type') == 'new_recipe') {
             $users = User::whereNotNull('notification_token')->get();
+            $count = 0;
 
             foreach ($users as $user) {
                 $result = $this->authService->sendNotification(
@@ -126,13 +122,11 @@ class SendNotification extends Command
                 );
 
                 if ($result) {
-                    $this->info('Notifikacija poslata!');
-                    return 0;
-                } else {
-                    $this->error('Greška prilikom slanja notifikacije.');
-                    return 1;
+                    $count++;
                 }
             }
+
+            $this->info("Notifikacija poslata {$count} korisnika!");
         } else {
             $user = User::find(576);
 
