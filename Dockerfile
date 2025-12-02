@@ -29,9 +29,9 @@ WORKDIR /var/www/html
 
 # Copy Laravel source
 COPY . /var/www/html
-
+RUN ls -la
 # Install dependencies
-RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+RUN composer install --no-dev --no-interaction --prefer-dist
 
 # Set proper permissions for Laravel storage and cache
 RUN chown -R www-data:www-data /var/www/html \
