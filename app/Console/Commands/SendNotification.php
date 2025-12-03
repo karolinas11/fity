@@ -145,7 +145,7 @@ class SendNotification extends Command
 
             $this->info("Notifikacija poslata {$count} korisnika!");
         } else {
-            $user = User::find(576);
+            $user = User::find(559);
 
             $result = $this->authService->sendNotification(
                 $user->notification_token,
