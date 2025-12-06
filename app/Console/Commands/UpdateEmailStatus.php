@@ -39,6 +39,7 @@ class UpdateEmailStatus extends Command
         if($this->argument('type') == 'trial_expires') {
             $users = User::where('created_at', '<', Carbon::now()->subDays(7))
                 ->where('is_subscribed', 0)
+                ->where('email', '!=', null)
                 ->get();
 
             $count = 0;
