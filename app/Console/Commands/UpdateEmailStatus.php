@@ -37,11 +37,8 @@ class UpdateEmailStatus extends Command
     public function handle()
     {
         if($this->argument('type') == 'trial_expires') {
-            $targetDate = Carbon::now()->subDays(7)->toDateString();
-
             $users = User::where('created_at', '<', Carbon::now()->subDays(7))
                 ->where('is_subscribed', 0)
-                ->whereNotNull('notification_token')
                 ->get();
 
             $count = 0;
