@@ -61,6 +61,79 @@ class SendNotification extends Command
             }
 
             $this->info("Notifikacija poslata {$count} korisnika!");
+
+        } else if($this->argument('type') == 'trial_expired_3') {
+            $targetDate = Carbon::now()->subDays(10)->toDateString();
+
+            $users = User::whereDate('created_at', $targetDate)
+                ->where('is_subscribed', 0)
+                ->whereNotNull('notification_token')
+                ->get();
+
+            $count = 0;
+
+            foreach ($users as $user) {
+                $result = $this->authService->sendNotification(
+                    $user->notification_token,
+                    'Obaveštenje',
+                    'Hej, da bi nastavio/la da koristiš Fity aplikaciju, pokreni Fity ponovo.'
+                );
+
+                if ($result) {
+                    $count++;
+                }
+            }
+
+            $this->info("Notifikacija poslata {$count} korisnika!");
+
+        } else if($this->argument('type') == 'trial_expired_10') {
+            $targetDate = Carbon::now()->subDays(17)->toDateString();
+
+            $users = User::whereDate('created_at', $targetDate)
+                ->where('is_subscribed', 0)
+                ->whereNotNull('notification_token')
+                ->get();
+
+            $count = 0;
+
+            foreach ($users as $user) {
+                $result = $this->authService->sendNotification(
+                    $user->notification_token,
+                    'Obaveštenje',
+                    'Dobar plan ishrane je neophodan za postizanje rezultata. Pokreni Fity ponovo i ostvari svoje ciljeve.'
+                );
+
+                if ($result) {
+                    $count++;
+                }
+            }
+
+            $this->info("Notifikacija poslata {$count} korisnika!");
+
+        } else if($this->argument('type') == 'trial_expired_30') {
+            $targetDate = Carbon::now()->subDays(37)->toDateString();
+
+            $users = User::whereDate('created_at', $targetDate)
+                ->where('is_subscribed', 0)
+                ->whereNotNull('notification_token')
+                ->get();
+
+            $count = 0;
+
+            foreach ($users as $user) {
+                $result = $this->authService->sendNotification(
+                    $user->notification_token,
+                    'Obaveštenje',
+                    'Kvalitetna ishrana i dobro kreiran plan iste, su neophodni za zdravlje. Pokreni Fity i uživaj u zdravom životu.'
+                );
+
+                if ($result) {
+                    $count++;
+                }
+            }
+
+            $this->info("Notifikacija poslata {$count} korisnika!");
+
         } else if($this->argument('type') == 'water') {
             $users = User::whereNotNull('notification_token')->get();
             $count = 0;
@@ -78,6 +151,7 @@ class SendNotification extends Command
             }
 
             $this->info("Notifikacija poslata {$count} korisnika!");
+
         } else if($this->argument('type') == 'improvement') {
             $users = User::whereNotNull('notification_token')->get();
             $count = 0;
@@ -93,6 +167,9 @@ class SendNotification extends Command
                     $count++;
                 }
             }
+
+            $this->info("Notifikacija poslata {$count} korisnika!");
+
         } else if($this->argument('type') == 'shopping') {
             $users = User::whereNotNull('notification_token')->get();
             $count = 0;
@@ -110,6 +187,7 @@ class SendNotification extends Command
             }
 
             $this->info("Notifikacija poslata {$count} korisnika!");
+
         } else if($this->argument('type') == 'new_recipe') {
             $users = User::whereNotNull('notification_token')->get();
             $count = 0;
@@ -127,6 +205,7 @@ class SendNotification extends Command
             }
 
             $this->info("Notifikacija poslata {$count} korisnika!");
+
         } else if($this->argument('type') == 'checking') {
             $users = User::whereNotNull('notification_token')->get();
             $count = 0;
@@ -144,6 +223,7 @@ class SendNotification extends Command
             }
 
             $this->info("Notifikacija poslata {$count} korisnika!");
+
         } else {
             $user = User::find(559);
 
