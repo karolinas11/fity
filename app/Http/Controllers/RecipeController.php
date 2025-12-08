@@ -1100,7 +1100,7 @@ class RecipeController
 
         $user = User::where('firebase_uid', $firebaseUid)->get()->first();
         $user->weight = $request->input('weight');
-        $user->goal = $request->input('goal');
+        $user->goal = $request->input('goal') == 'maintain' || $request->input('goal') == 'stable' ? 'stable' : $request->input('goal');
         $user->meals_num = $request->input('meals');
         $activity = 1.2;
         switch (strtolower($request->input('activity'))) {
