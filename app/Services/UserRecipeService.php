@@ -33,6 +33,8 @@ class UserRecipeService
             $recipe->preparation_time = $r->preparation_time;
             $recipe->main_recipe_id = $r->id;
             $recipe->featured_image = $r->featured_image;
+            $recipe->fasting_oil = $r->fasting_oil;
+            $recipe->fasting_water = $r->fasting_water;
             $description = str_replace('\n', "\n", $r->description);
             $recipe->steps = preg_split('/\r\n|\r|\n/', $description);
             $recipe->steps = array_filter($recipe->steps, fn($step) => trim($step) !== '');
@@ -96,6 +98,8 @@ class UserRecipeService
             $recipe->featured_image = $r->featured_image;
             $recipe->dates = $dates;
             $recipe->short_description = $r->short_description;
+            $recipe->fasting_oil = $r->fasting_oil;
+            $recipe->fasting_water = $r->fasting_water;
             $description = str_replace('\n', "\n", $r->description);
             $recipe->steps = preg_split('/\r\n|\r|\n/', $description);
             $recipe->steps = array_filter($recipe->steps, fn($step) => trim($step) !== '');
