@@ -15,6 +15,11 @@
         <div class="row">
             <div class="col-md-12 text-center">
                 <h1 class="mb-4">Korisnik #{{ $user->id }}</h1>
+                <div class="text-center mb-4">
+                    <a href="{{ route('user.exportPdf', $user->id) }}" class="btn btn-success">
+                        Export to PDF
+                    </a>
+                </div>
                 <input type="text" name="name" id="name" class="form-control" value="{{ $user->name }}">
             </div>
 

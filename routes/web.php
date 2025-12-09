@@ -55,6 +55,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/boarding-question', [OnBoardingQuestionController::class, 'index']);
 
     Route::get('/users-statistics', [UserController::class, 'showUsersStatistics'])->name('show-users-statistics');
+    Route::get('/user/{id}/export-pdf', [UserController::class, 'exportPdf'])
+        ->name('user.exportPdf');
+
 });
 Route::get('/not-test', [UserController::class, 'showNotificationTest'])->name('show-notification-test');
 

@@ -42,6 +42,7 @@ use Kreait\Firebase\Messaging\Notification;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Google\Client as GoogleClient;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class UserController extends Controller
 {
@@ -2064,5 +2065,119 @@ class UserController extends Controller
 
         return view('users-statistics', compact('total', 'subscribed', 'phantom'));
     }
+
+    public function exportPdf($id)
+    {
+        $user = User::find($userId);
+//        if($user->macros_type == '1') {
+//            $target = $this->userService->getMacrosForUser($user);
+//        } else {
+        $target = $this->userService->getMacrosForUser2($user);
+//        }
+
+        $userAllergies = UserAllergy::where('user_id', $userId)->get();
+        $allergyIds = [];
+        foreach ($userAllergies as $userAllergy) {
+//            if(Foodstuff::where('id', $userAllergy->foodstuff_id)->get()->first()->foodstuff_category_id == 6) continue;
+            $allergyIds[] = $userAllergy->foodstuff_id;
+        }
+
+        $response = Http::timeout(10000)
+            ->withoutVerifying()
+            ->post('https://algo.getfity.app/meal-plan', [
+                'target_calories' => $target['calories'],
+                'target_protein' => $target['proteins'],
+                'target_fat' => $target['fats'],
+                'meals_num' => $user->meals_num,
+                'tolerance_calories' => $user->tolerance_calories,
+                'tolerance_proteins' => $user->tolerance_proteins,
+                'tolerance_fats' => $user->tolerance_fats,
+                'days' => 30,
+                'allergy_holder_ids' => $allergyIds
+            ]);
+
+
+        $data = $response->json();
+
+        $i = 0;
+        for($k = 0; $k < 5; $k++) {
+            foreach ($data['daily_plans'] as $day) {
+                if (!$day['exists']) continue;
+                $date = date('Y-m-d', strtotime('+' . $i . ' days'));
+                $i++;
+                $lunch = false;
+                foreach ($day['meals'] as $meal) {
+//                if($meal['same_meal_id'] == 33) {
+//                    continue;
+//                }
+                    $r = Recipe::find($meal['same_meal_id']);
+//                    $userRecipe = UserRecipe::create([
+//                        'user_id' => $userId,
+//                        'recipe_id' => $meal['same_meal_id'],
+//                        'status' => 'active',
+//                        'date' => $date,
+//                        'type' => $lunch && $r->type == 2 ? 4 : $r->type
+//                    ]);
+                    if ($r->type == 2) {
+                        $lunch = true;
+                    }
+                    $foodstuffs = $this->recipefoodstuffService->getRecipeFoodstuffs($meal['same_meal_id']);
+                    foreach ($foodstuffs as $foodstuff) {
+                        if ($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->carbohydrates_holder == 0) {
+//                            UserRecipeFoodstuff::create([
+//                                'user_recipe_id' => $userRecipe->id,
+//                                'foodstuff_id' => $foodstuff->foodstuff_id,
+//                                'amount' => $foodstuff->amount,
+//                                'purchased' => 0
+//                            ]);
+                        }
+                    }
+
+                    foreach ($meal['holder_quantities'] as $key => $holder) {
+//                        UserRecipeFoodstuff::create([
+//                            'user_recipe_id' => $userRecipe->id,
+//                            'foodstuff_id' => $key,
+//                            'amount' => $holder,
+//                            'purchased' => 0
+//                        ]);
+                    }
+                }
+            }
+        }
+
+        foreach($data['daily_plans'] as &$day) {
+            $dayCalories = $dayProteins = $dayFats = $dayCarbs = 0;
+            foreach($day['meals'] as &$meal) {
+                $meal['carbohydrates'] = 0;
+                $foodstuffs = $this->recipefoodstuffService->getRecipeFoodstuffs($meal['same_meal_id']);
+                foreach ($meal['holder_quantities'] as $key => $holder) {
+                    $f = Foodstuff::find($key);
+                    $meal['carbohydrates'] += $f->carbohydrates * $holder / 100;
+                }
+                foreach ($foodstuffs as $foodstuff) {
+                    if($foodstuff->proteins_holder == 0 && $foodstuff->fats_holder == 0 && $foodstuff->carbohydrates_holder == 0) {
+                        $f = Foodstuff::find($foodstuff->foodstuff_id);
+                        $meal['carbohydrates'] += $f->carbohydrates * $foodstuff->amount / 100;
+                    }
+                }
+                $meal['foodstuffs'] = $foodstuffs;
+                $dayCalories += $meal['calories'];
+                $dayProteins += $meal['proteins'];
+                $dayFats += $meal['fats'];
+
+            }
+            $day['calories'] = $dayCalories;
+            $day['proteins'] = $dayProteins;
+            $day['fats'] = $dayFats;
+        }
+
+        $pdf = PDF::loadView('pdf.user-meal-plan', [
+            'user' => $user,
+            'data' => $data
+        ]);
+
+        return $pdf->download('meal-plan-user-'.$user->id.'.pdf');
+    }
+
 
 }
