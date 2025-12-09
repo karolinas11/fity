@@ -2068,14 +2068,14 @@ class UserController extends Controller
 
     public function exportPdf($id)
     {
-        $user = User::find($userId);
+        $user = User::find($id);
 //        if($user->macros_type == '1') {
 //            $target = $this->userService->getMacrosForUser($user);
 //        } else {
         $target = $this->userService->getMacrosForUser2($user);
 //        }
 
-        $userAllergies = UserAllergy::where('user_id', $userId)->get();
+        $userAllergies = UserAllergy::where('user_id', $id)->get();
         $allergyIds = [];
         foreach ($userAllergies as $userAllergy) {
 //            if(Foodstuff::where('id', $userAllergy->foodstuff_id)->get()->first()->foodstuff_category_id == 6) continue;
@@ -2100,7 +2100,7 @@ class UserController extends Controller
         $data = $response->json();
 
         $i = 0;
-        for($k = 0; $k < 5; $k++) {
+//        for($k = 0; $k < 5; $k++) {
             foreach ($data['daily_plans'] as $day) {
                 if (!$day['exists']) continue;
                 $date = date('Y-m-d', strtotime('+' . $i . ' days'));
@@ -2143,7 +2143,7 @@ class UserController extends Controller
                     }
                 }
             }
-        }
+//        }
 
         foreach($data['daily_plans'] as &$day) {
             $dayCalories = $dayProteins = $dayFats = $dayCarbs = 0;
