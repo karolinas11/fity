@@ -131,7 +131,7 @@
             <div class="row mb-3">
                 <label for="is_test" class="col-md-4 col-form-label">Test korisnik</label>
                 <div class="col-md-8">
-                    <select name="macros_type" id="macros_type" class="form-select">
+                    <select name="is_test" id="is_test" class="form-select">
                         <option value="1" selected>Jeste</option>
                         <option value="0">Nije</option>
                     </select>
