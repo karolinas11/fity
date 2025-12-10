@@ -21,16 +21,54 @@
         <h2>Dan {{ $day['day'] }}</h2>
 
         @php
-            // Broj pojavljivanja obroka type=2
+            // Priprema grupa prema type
+            $breakfast = [];
+            $type2 = [];
+            $snacks = [];
+
+            foreach($day['meals'] as $m) {
+                $recipe = \App\Models\Recipe::find($m['same_meal_id']);
+                if ($recipe->type == 1) {
+                    $breakfast[] = $m;
+                } elseif ($recipe->type == 2) {
+                    $type2[] = $m;
+                } elseif ($recipe->type == 3) {
+                    $snacks[] = $m;
+                }
+            }
+
+            // Konačan željeni redosled
+            $sortedMeals = [];
+
+            // 1. Doručak
+            foreach ($breakfast as $x) $sortedMeals[] = $x;
+
+            // 2. Ručak 1
+            if (isset($type2[0])) $sortedMeals[] = $type2[0];
+
+            // 3. Užina 1
+            if (isset($snacks[0])) $sortedMeals[] = $snacks[0];
+
+            // 4. Ručak 2
+            if (isset($type2[1])) $sortedMeals[] = $type2[1];
+
+            // 5. Užina 2
+            if (isset($snacks[1])) $sortedMeals[] = $snacks[1];
+
+            // 6. Večera (ako postoji treći type 2)
+            if (isset($type2[2])) $sortedMeals[] = $type2[2];
+
+            // Brojač za naziv Ručak/Večera
             $type2Count = 0;
         @endphp
 
-        @foreach($day['meals'] as $meal)
+
+        @foreach($sortedMeals as $meal)
 
             @php
                 $recipe = \App\Models\Recipe::find($meal['same_meal_id']);
 
-                // Prevod type -> naziv obroka
+                // Prevod type + logika ručak/večera
                 $typeText = match($recipe->type) {
                     1 => 'Doručak',
                     2 => ($type2Count++ == 0 ? 'Ručak' : 'Večera'),

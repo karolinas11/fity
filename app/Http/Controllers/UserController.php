@@ -134,6 +134,7 @@ class UserController extends Controller
             'days' => $request->input('days'),
             'macros_type' => $request->input('macros_type'),
             'name' => $request->input('name'),
+            'is_test' => $request->input('is_test')
         ];
 
         $user = $this->userService->addUser($userData);
@@ -2048,7 +2049,7 @@ class UserController extends Controller
     }
 
     public function showUsersStatistics() {
-        $users = User::where('id', '>', 570)->get();
+        $users = User::where('id', '>', 570)->where('is_test', 0)->get();
         $total = $users->count();
         $subscribed = 0;
         $phantom = 0;
