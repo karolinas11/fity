@@ -61,6 +61,7 @@ Route::get('/users/change-user-recipe', [UserController::class, 'changeUserRecip
 Route::post('/users/generate-new-meal-plan', [UserController::class, 'generateNewMealPlan'])->name('generate-new-meal-plan');
 Route::post('/users/update-meal-calendar', [UserController::class, 'updateMealCalendar'])->name('update-meal-calendar');
 Route::post('/users/repeat-meals', [UserController::class, 'repeatMeals'])->name('repeat-meals');
+Route::post('/users/repeat-specific-meal', [UserController::class, 'repeatSpecificMeal'])->name('repeat-specific-meal');
 Route::get('/user/get-onboarding-2', [OnBoardingQuestionController::class, 'getOnboardingQuestion2'])->name('get-onboarding-2');
 Route::post('/generate-new-plan', [RecipeController::class, 'generateNewPlan'])->name('generate-new-plan');
 Route::get('/users/get-subscribers', [UserController::class, 'getSubscribers'])->name('get-subscribers');
