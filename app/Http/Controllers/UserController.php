@@ -1604,7 +1604,7 @@ class UserController extends Controller
         if (!$user) return response()->json(['error' => 'User not found'], 404);
 
         // 2. Preuzimanje parametara iz zahteva
-        $targetDate   = $request->date;      // Tačan datum zamene
+        $targetDate   = $request->targetDate;      // Tačan datum zamene
         $oldUserRecipeId = $request->oldUserMealId; // "Žrtva" - UserRecipe ID
         $newRecipeId  = $request->newRecipeId;  // Raw Recipe ID koji ubacujemo
 
