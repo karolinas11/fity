@@ -1660,63 +1660,61 @@ class UserController extends Controller
         }
 
         // 5. Generisanje kombinacija (Brute-force optimizacija)
-        $combinations = [];
+        //$combinations = [];
+        // 5 & 6. Generisanje i pronalazak najbolje opcije "u letu" (Bez trošenja memorije)
+        $best = null;
+        $minDist2 = PHP_INT_MAX;
         $hCount = count($holders);
 
         if ($hCount == 0) {
-            $combinations[] = ['calories' => $fixCal, 'proteins' => $fixProt, 'fats' => $fixFat, 'ids' => [], 'amounts' => []];
+            $best = ['ids' => [], 'amounts' => []];
         } elseif ($hCount == 1) {
             for ($i = $holders[0]->min; $i <= $holders[0]->max; $i += $holders[0]->step) {
-                $combinations[] = [
-                    'calories' => $i * ($holders[0]->calories / 100) + $fixCal,
-                    'proteins' => $i * ($holders[0]->proteins / 100) + $fixProt,
-                    'fats'     => $i * ($holders[0]->fats / 100) + $fixFat,
-                    'ids'      => [$holders[0]->id],
-                    'amounts'  => [$i]
-                ];
+                $cal  = $i * ($holders[0]->calories / 100) + $fixCal;
+                $prot = $i * ($holders[0]->proteins / 100) + $fixProt;
+                $fat  = $i * ($holders[0]->fats / 100) + $fixFat;
+
+                $dCal = $cal - $targetCal; $dProt = $prot - $targetProt; $dFat = $fat - $targetFat;
+                $dist2 = ($dCal * $dCal) + ($dProt * $dProt) + ($dFat * $dFat);
+
+                if ($dist2 < $minDist2) {
+                    $minDist2 = $dist2;
+                    $best = ['ids' => [$holders[0]->id], 'amounts' => [$i]];
+                }
             }
         } elseif ($hCount == 2) {
             for ($i = $holders[0]->min; $i <= $holders[0]->max; $i += $holders[0]->step) {
                 for ($j = $holders[1]->min; $j <= $holders[1]->max; $j += $holders[1]->step) {
-                    $combinations[] = [
-                        'calories' => ($i * $holders[0]->calories + $j * $holders[1]->calories) / 100 + $fixCal,
-                        'proteins' => ($i * $holders[0]->proteins + $j * $holders[1]->proteins) / 100 + $fixProt,
-                        'fats'     => ($i * $holders[0]->fats + $j * $holders[1]->fats) / 100 + $fixFat,
-                        'ids'      => [$holders[0]->id, $holders[1]->id],
-                        'amounts'  => [$i, $j]
-                    ];
+                    $cal  = ($i * $holders[0]->calories + $j * $holders[1]->calories) / 100 + $fixCal;
+                    $prot = ($i * $holders[0]->proteins + $j * $holders[1]->proteins) / 100 + $fixProt;
+                    $fat  = ($i * $holders[0]->fats + $j * $holders[1]->fats) / 100 + $fixFat;
+
+                    $dCal = $cal - $targetCal; $dProt = $prot - $targetProt; $dFat = $fat - $targetFat;
+                    $dist2 = ($dCal * $dCal) + ($dProt * $dProt) + ($dFat * $dFat);
+
+                    if ($dist2 < $minDist2) {
+                        $minDist2 = $dist2;
+                        $best = ['ids' => [$holders[0]->id, $holders[1]->id], 'amounts' => [$i, $j]];
+                    }
                 }
             }
         } elseif ($hCount == 3) {
             for ($i = $holders[0]->min; $i <= $holders[0]->max; $i += $holders[0]->step) {
                 for ($j = $holders[1]->min; $j <= $holders[1]->max; $j += $holders[1]->step) {
                     for ($k = $holders[2]->min; $k <= $holders[2]->max; $k += $holders[2]->step) {
-                        $combinations[] = [
-                            'calories' => ($i * $holders[0]->calories + $j * $holders[1]->calories + $k * $holders[2]->calories) / 100 + $fixCal,
-                            'proteins' => ($i * $holders[0]->proteins + $j * $holders[1]->proteins + $k * $holders[2]->proteins) / 100 + $fixProt,
-                            'fats'     => ($i * $holders[0]->fats + $j * $holders[1]->fats + $k * $holders[2]->fats) / 100 + $fixFat,
-                            'ids'      => [$holders[0]->id, $holders[1]->id, $holders[2]->id],
-                            'amounts'  => [$i, $j, $k]
-                        ];
+                        $cal  = ($i * $holders[0]->calories + $j * $holders[1]->calories + $k * $holders[2]->calories) / 100 + $fixCal;
+                        $prot = ($i * $holders[0]->proteins + $j * $holders[1]->proteins + $k * $holders[2]->proteins) / 100 + $fixProt;
+                        $fat  = ($i * $holders[0]->fats + $j * $holders[1]->fats + $k * $holders[2]->fats) / 100 + $fixFat;
+
+                        $dCal = $cal - $targetCal; $dProt = $prot - $targetProt; $dFat = $fat - $targetFat;
+                        $dist2 = ($dCal * $dCal) + ($dProt * $dProt) + ($dFat * $dFat);
+
+                        if ($dist2 < $minDist2) {
+                            $minDist2 = $dist2;
+                            $best = ['ids' => [$holders[0]->id, $holders[1]->id, $holders[2]->id], 'amounts' => [$i, $j, $k]];
+                        }
                     }
                 }
-            }
-        }
-
-        // 6. Pronalaženje najbolje opcije (Minimalna kvadratna distanca)
-        $best = null;
-        $minDist2 = PHP_INT_MAX;
-
-        foreach ($combinations as $cand) {
-            $dCal  = $cand['calories'] - $targetCal;
-            $dProt = $cand['proteins'] - $targetProt;
-            $dFat  = $cand['fats']     - $targetFat;
-
-            $dist2 = ($dCal * $dCal) + ($dProt * $dProt) + ($dFat * $dFat);
-
-            if ($dist2 < $minDist2) {
-                $minDist2 = $dist2;
-                $best = $cand;
             }
         }
 
