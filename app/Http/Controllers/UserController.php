@@ -1606,22 +1606,30 @@ class UserController extends Controller
         $oldUserRecipeId = $request->oldUserMealId; // "Žrtva" - UserRecipe ID
         $newRecipeId  = $request->newRecipeId;  // Raw Recipe ID koji ubacujemo
 
-        // 3. Dohvatanje "žrtve" i računanje njenih nutritivnih vrednosti
-        $existingRecipe = UserRecipe::with('foodstuffs.foodstuff')->find($oldUserRecipeId);
+        // 3. Dohvatanje "žrtve" (Izbačen .foodstuff iz relacije da ne baca grešku)
+        $existingRecipe = UserRecipe::with('foodstuffs')->find($oldUserRecipeId);
 
         if (!$existingRecipe) {
             return response()->json(['error' => 'Target meal not found'], 404);
         }
+
+        // RUČNO UČITAVANJE: Dohvatamo sve 'Foodstuff' modele za ovu žrtvu da izbegnemo N+1 problem
+        $foodstuffIds = $existingRecipe->foodstuffs->pluck('foodstuff_id');
+        $foodstuffsData = \App\Models\Foodstuff::whereIn('id', $foodstuffIds)->get()->keyBy('id');
 
         $targetCal = 0;
         $targetProt = 0;
         $targetFat = 0;
 
         foreach ($existingRecipe->foodstuffs as $userFood) {
-            $f = $userFood->foodstuff;
-            $targetCal  += $userFood->amount * ($f->calories / 100);
-            $targetProt += $userFood->amount * ($f->proteins / 100);
-            $targetFat  += $userFood->amount * ($f->fats / 100);
+            // Preuzimamo podatke o namirnici iz ranije učitanog niza umesto preko relacije
+            $f = $foodstuffsData->get($userFood->foodstuff_id);
+
+            if ($f) {
+                $targetCal  += $userFood->amount * ($f->calories / 100);
+                $targetProt += $userFood->amount * ($f->proteins / 100);
+                $targetFat  += $userFood->amount * ($f->fats / 100);
+            }
         }
 
         // 4. Priprema novog recepta i njegovih "holdera"
@@ -1632,7 +1640,6 @@ class UserController extends Controller
         $holders = [];
 
         foreach ($newRecipe->foodstuffs as $fm) {
-            // Koristimo pivot tabelu ili relaciju da proverimo da li je holder
             $pivot = RecipeFoodstuff::where('foodstuff_id', $fm->id)
                 ->where('recipe_id', $newRecipe->id)
                 ->first();
@@ -1642,7 +1649,6 @@ class UserController extends Controller
                 $fixProt += $pivot->amount * ($fm->proteins / 100);
                 $fixFat  += $pivot->amount * ($fm->fats / 100);
             } else {
-                // Dodajemo pivot podatke u holder objekte radi lakšeg loop-a
                 $fm->min = $pivot->min;
                 $fm->max = $pivot->max;
                 $fm->step = $pivot->step ?? $pivot->min;
@@ -1711,9 +1717,8 @@ class UserController extends Controller
             }
         }
 
-        // 7. DB Transakcija za sigurnost (opciono ali preporučljivo)
+        // 7. DB Transakcija za sigurnost
         \DB::transaction(function () use ($user, $newRecipe, $existingRecipe, $targetDate, $best) {
-            // Kreiranje novog UserRecipe-a
             $newUserRecipe = UserRecipe::create([
                 'user_id'   => $user->id,
                 'recipe_id' => $newRecipe->id,
@@ -1722,10 +1727,8 @@ class UserController extends Controller
                 'date'      => $targetDate
             ]);
 
-            // Arhiviranje starog
             $existingRecipe->update(['status' => 'replaced']);
 
-            // Upis fiksnih namirnica
             $allRecipeFoodstuffs = $this->recipefoodstuffService->getRecipeFoodstuffs($newRecipe->id);
             foreach ($allRecipeFoodstuffs as $fn) {
                 if ($fn->proteins_holder == 0 && $fn->fats_holder == 0 && $fn->carbohydrates_holder == 0) {
@@ -1738,7 +1741,6 @@ class UserController extends Controller
                 }
             }
 
-            // Upis optimizovanih holdera
             foreach ($best['ids'] as $index => $foodstuffId) {
                 UserRecipeFoodstuff::create([
                     'user_recipe_id' => $newUserRecipe->id,
