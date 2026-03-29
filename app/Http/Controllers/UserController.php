@@ -1635,7 +1635,7 @@ class UserController extends Controller
         }
 
         // 4. Priprema novog recepta i njegovih "holdera"
-        $newRecipe = Recipe::with('foodstuffs')->find($newRecipeId);
+        $newRecipe = Recipe::with('foodstuffs')->find(UserRecipe->find($newRecipeId)->recipe_id);
         if (!$newRecipe) return response()->json(['error' => 'New recipe not found'], 404);
 
         $fixCal = 0; $fixProt = 0; $fixFat = 0;
