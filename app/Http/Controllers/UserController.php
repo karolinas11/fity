@@ -1592,192 +1592,185 @@ class UserController extends Controller
 
     public function repeatSpecificMeal(Request $request)
     {
-        // 1. Brza provera autentifikacije
+        // 1. Autentifikacija
         $firebaseUid = $this->authService->verifyUserAndGetUid($request->header('Authorization'));
         if (!$firebaseUid) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        Log::error('REQUEST:', $request->all());
+        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
 
-        $user = User::where('firebase_uid', $firebaseUid)->first();
-        if (!$user) return response()->json(['error' => 'User not found'], 404);
+        // 2. Preuzimanje parametara i modela
+        $date = $request->targetDate;
 
-        // 2. Preuzimanje parametara iz zahteva
-        $targetDate   = $request->targetDate;      // Tačan datum zamene
-        $oldUserRecipeId = $request->oldUserMealId; // "Žrtva" - UserRecipe ID
-        $newRecipeId  = $request->newRecipeId;  // Raw Recipe ID koji ubacujemo
-
-        // 3. Dohvatanje "žrtve" (Izbačen .foodstuff iz relacije da ne baca grešku)
-        $existingRecipe = UserRecipe::with('foodstuffs')->find($oldUserRecipeId);
-
+        // "Žrtva" - obrok koji menjamo
+        $existingRecipe = UserRecipe::find($request->oldUserMealId);
         if (!$existingRecipe) {
-            return response()->json(['error' => 'Target meal not found'], 404);
+            return response()->json(['error' => 'Old meal not found'], 404);
+        }
+        $t = $existingRecipe->type;
+
+        // Novi obrok (dohvatamo Recipe preko prosleđenog UserRecipe ID-a)
+        $newUserRecipeRef = UserRecipe::find($request->newRecipeId);
+        if (!$newUserRecipeRef) {
+            return response()->json(['error' => 'New meal not found'], 404);
+        }
+        $targetRecipe = Recipe::find($newUserRecipeRef->recipe_id);
+
+        // 3. Računanje makrosa starog obroka
+        $cal = 0;
+        $prot = 0;
+        $fat = 0;
+        foreach ($existingRecipe->foodstuffs as &$foodstuff) {
+            $f = Foodstuff::where('id', $foodstuff->foodstuff_id)->get()[0];
+            $cal += $foodstuff->amount * ($f->calories / 100);
+            $prot += $foodstuff->amount * ($f->proteins / 100);
+            $fat += $foodstuff->amount * ($f->fats / 100);
         }
 
-        // RUČNO UČITAVANJE: Dohvatamo sve 'Foodstuff' modele za ovu žrtvu da izbegnemo N+1 problem
-        $foodstuffIds = $existingRecipe->foodstuffs->pluck('foodstuff_id');
-        $foodstuffsData = \App\Models\Foodstuff::whereIn('id', $foodstuffIds)->get()->keyBy('id');
+        // 4. Analiza novog recepta (Fiksne namirnice i Holdere)
+        $fixCal = 0;
+        $fixProt = 0;
+        $fixFat = 0;
+        $newHolders = [];
 
-        $targetCal = 0;
-        $targetProt = 0;
-        $targetFat = 0;
+        foreach ($targetRecipe->foodstuffs as $fm) {
+            $f = RecipeFoodstuff::where('foodstuff_id', $fm->id)
+                ->where('recipe_id', $targetRecipe->id)
+                ->get()[0];
 
-        foreach ($existingRecipe->foodstuffs as $userFood) {
-            // Preuzimamo podatke o namirnici iz ranije učitanog niza umesto preko relacije
-            $f = $foodstuffsData->get($userFood->foodstuff_id);
-
-            if ($f) {
-                $targetCal  += $userFood->amount * ($f->calories / 100);
-                $targetProt += $userFood->amount * ($f->proteins / 100);
-                $targetFat  += $userFood->amount * ($f->fats / 100);
-            }
-        }
-
-        // 4. Priprema novog recepta i njegovih "holdera"
-        $newRid = UserRecipe::find($newRecipeId)->recipe_id;
-        $newRecipe = Recipe::with('foodstuffs')->find($newRid);
-        if (!$newRecipe) return response()->json(['error' => 'New recipe not found'], 404);
-
-        $fixCal = 0; $fixProt = 0; $fixFat = 0;
-        $holders = [];
-        $fixedFoodstuffs = []; // <-- DODAJEMO NOVI NIZ
-
-        foreach ($newRecipe->foodstuffs as $fm) {
-            $pivot = RecipeFoodstuff::where('foodstuff_id', $fm->id)
-                ->where('recipe_id', $newRecipe->id)
-                ->first();
-
-            if ($pivot->proteins_holder == 0 && $pivot->fats_holder == 0 && $pivot->carbohydrates_holder == 0) {
-                $fixCal  += $pivot->amount * ($fm->calories / 100);
-                $fixProt += $pivot->amount * ($fm->proteins / 100);
-                $fixFat  += $pivot->amount * ($fm->fats / 100);
-
-                // <-- PAMTITE FIKSNU NAMIRNICU ZA KASNIJI UPIS
-                $fixedFoodstuffs[] = [
-                    'foodstuff_id' => $fm->id,
-                    'amount'       => $pivot->amount
-                ];
+            if($f->proteins_holder == 0 && $f->fats_holder == 0 && $f->carbohydrates_holder == 0) {
+                $fixCal += $f->amount * ($fm->calories / 100);
+                $fixProt += $f->amount * ($fm->proteins / 100);
+                $fixFat += $f->amount * ($fm->fats / 100);
             } else {
-                $fm->min = $pivot->min;
-                $fm->max = $pivot->max;
-                $fm->step = $pivot->step ?? $pivot->min;
-
-                // 1. ZAŠTITA: Sprečavanje beskonačne petlje (ako je step 0)
-                if ($fm->step <= 0) {
-                    $fm->step = 1;
-                }
-
-                // 2. OPTIMIZACIJA: Dinamičko računanje koraka da se spreči Timeout
-                // Ograničavamo maksimalan broj iteracija po namirnici na oko 40
-                $range = $fm->max - $fm->min;
-                if ($range > 0) {
-                    $maxIterationsAllowed = 40;
-                    $idealStep = ceil($range / $maxIterationsAllowed);
-
-                    // Ako je idealni korak veći od trenutnog, pregazimo ga
-                    if ($idealStep > $fm->step) {
-                        $fm->step = $idealStep;
-                    }
-                }
-
-                $holders[] = $fm;
+                $newHolders[] = $fm;
             }
         }
 
-        // 5. Generisanje kombinacija (Brute-force optimizacija)
-        //$combinations = [];
-        // 5 & 6. Generisanje i pronalazak najbolje opcije "u letu" (Bez trošenja memorije)
-        $best = null;
+        // 5. Kombinacije novih holdera (Tvoj originalni algoritam)
+        $newCombinations = [];
+
+        if(count($newHolders) == 1) {
+            $step = $newHolders[0]->step ?? $newHolders[0]->min;
+            for($i = $newHolders[0]->min; $i <= $newHolders[0]->max; $i += $step) {
+                $newCombinations[] = [
+                    'calories' => $i * ($newHolders[0]->calories / 100) + $fixCal,
+                    'proteins' => $i * ($newHolders[0]->proteins / 100) + $fixProt,
+                    'fats' => $i * ($newHolders[0]->fats / 100) + $fixFat,
+                    'foodstuff_id' => $newHolders[0]->id,
+                    'amounts' => $i,
+                    'recipe_id' => $targetRecipe->id
+                ];
+            }
+        } else if(count($newHolders) == 2) {
+            $step = $newHolders[0]->step ?? $newHolders[0]->min;
+            $step2 = $newHolders[1]->step ?? $newHolders[1]->min;
+            for($i = $newHolders[0]->min; $i <= $newHolders[0]->max; $i += $step) {
+                for ($j = $newHolders[1]->min; $j <= $newHolders[1]->max; $j += $step2) {
+                    $newCombinations[] = [
+                        'calories' => $i * ($newHolders[0]->calories / 100) + $j * ($newHolders[1]->calories / 100) + $fixCal,
+                        'proteins' => $i * ($newHolders[0]->proteins / 100) + $j * ($newHolders[1]->proteins / 100) + $fixProt,
+                        'fats' => $i * ($newHolders[0]->fats / 100) + $j * ($newHolders[1]->fats / 100) + $fixFat,
+                        'foodstuff_id' => $newHolders[0]->id . '-' . $newHolders[1]->id,
+                        'amounts' => $i . '-' . $j,
+                        'recipe_id' => $targetRecipe->id
+                    ];
+                }
+            }
+        } else if(count($newHolders) == 3) {
+            $step = $newHolders[0]->step ?? $newHolders[0]->min;
+            $step2 = $newHolders[1]->step ?? $newHolders[1]->min;
+            $step3 = $newHolders[2]->step ?? $newHolders[2]->min;
+            for($i = $newHolders[0]->min; $i <= $newHolders[0]->max; $i += $step) {
+                for ($j = $newHolders[1]->min; $j <= $newHolders[1]->max; $j += $step2) {
+                    for ($k = $newHolders[2]->min; $k <= $newHolders[2]->max; $k += $step3) {
+                        $newCombinations[] = [
+                            'calories' => $i * ($newHolders[0]->calories / 100) + $j * ($newHolders[1]->calories / 100) + $k * ($newHolders[2]->calories / 100) + $fixCal,
+                            'proteins' => $i * ($newHolders[0]->proteins / 100) + $j * ($newHolders[1]->proteins / 100) + $k * ($newHolders[2]->proteins / 100) + $fixProt,
+                            'fats' => $i * ($newHolders[0]->fats / 100) + $j * ($newHolders[1]->fats / 100) + $k * ($newHolders[2]->fats / 100) + $fixFat,
+                            'foodstuff_id' => $newHolders[0]->id . '-' . $newHolders[1]->id . '-' . $newHolders[2]->id,
+                            'amounts' => $i . '-' . $j . '-' . $k,
+                            'recipe_id' => $targetRecipe->id
+                        ];
+                    }
+                }
+            }
+        } else {
+            $newCombinations[] = [
+                'calories' => $fixCal,
+                'proteins' => $fixProt,
+                'fats' => $fixFat,
+                'foodstuff_id' => '',
+                'amounts' => '',
+                'recipe_id' => $targetRecipe->id
+            ];
+        }
+
+        // 6. Traženje najbolje opcije po distanci
+        $best     = null;
         $minDist2 = PHP_INT_MAX;
-        $hCount = count($holders);
 
-        if ($hCount == 0) {
-            $best = ['ids' => [], 'amounts' => []];
-        } elseif ($hCount == 1) {
-            for ($i = $holders[0]->min; $i <= $holders[0]->max; $i += $holders[0]->step) {
-                $cal  = $i * ($holders[0]->calories / 100) + $fixCal;
-                $prot = $i * ($holders[0]->proteins / 100) + $fixProt;
-                $fat  = $i * ($holders[0]->fats / 100) + $fixFat;
+        foreach ($newCombinations as $cand) {
+            $dCal  = $cand['calories'] - $cal;
+            $dProt = $cand['proteins'] - $prot;
+            $dFat  = $cand['fats']     - $fat;
 
-                $dCal = $cal - $targetCal; $dProt = $prot - $targetProt; $dFat = $fat - $targetFat;
-                $dist2 = ($dCal * $dCal) + ($dProt * $dProt) + ($dFat * $dFat);
+            $dist2 = $dCal*$dCal + $dProt*$dProt + $dFat*$dFat;
 
-                if ($dist2 < $minDist2) {
-                    $minDist2 = $dist2;
-                    $best = ['ids' => [$holders[0]->id], 'amounts' => [$i]];
-                }
-            }
-        } elseif ($hCount == 2) {
-            for ($i = $holders[0]->min; $i <= $holders[0]->max; $i += $holders[0]->step) {
-                for ($j = $holders[1]->min; $j <= $holders[1]->max; $j += $holders[1]->step) {
-                    $cal  = ($i * $holders[0]->calories + $j * $holders[1]->calories) / 100 + $fixCal;
-                    $prot = ($i * $holders[0]->proteins + $j * $holders[1]->proteins) / 100 + $fixProt;
-                    $fat  = ($i * $holders[0]->fats + $j * $holders[1]->fats) / 100 + $fixFat;
-
-                    $dCal = $cal - $targetCal; $dProt = $prot - $targetProt; $dFat = $fat - $targetFat;
-                    $dist2 = ($dCal * $dCal) + ($dProt * $dProt) + ($dFat * $dFat);
-
-                    if ($dist2 < $minDist2) {
-                        $minDist2 = $dist2;
-                        $best = ['ids' => [$holders[0]->id, $holders[1]->id], 'amounts' => [$i, $j]];
-                    }
-                }
-            }
-        } elseif ($hCount == 3) {
-            for ($i = $holders[0]->min; $i <= $holders[0]->max; $i += $holders[0]->step) {
-                for ($j = $holders[1]->min; $j <= $holders[1]->max; $j += $holders[1]->step) {
-                    for ($k = $holders[2]->min; $k <= $holders[2]->max; $k += $holders[2]->step) {
-                        $cal  = ($i * $holders[0]->calories + $j * $holders[1]->calories + $k * $holders[2]->calories) / 100 + $fixCal;
-                        $prot = ($i * $holders[0]->proteins + $j * $holders[1]->proteins + $k * $holders[2]->proteins) / 100 + $fixProt;
-                        $fat  = ($i * $holders[0]->fats + $j * $holders[1]->fats + $k * $holders[2]->fats) / 100 + $fixFat;
-
-                        $dCal = $cal - $targetCal; $dProt = $prot - $targetProt; $dFat = $fat - $targetFat;
-                        $dist2 = ($dCal * $dCal) + ($dProt * $dProt) + ($dFat * $dFat);
-
-                        if ($dist2 < $minDist2) {
-                            $minDist2 = $dist2;
-                            $best = ['ids' => [$holders[0]->id, $holders[1]->id, $holders[2]->id], 'amounts' => [$i, $j, $k]];
-                        }
-                    }
-                }
+            if ($dist2 < $minDist2) {
+                $minDist2 = $dist2;
+                $best     = $cand;
             }
         }
 
-        // 7. DB Transakcija za sigurnost
-        \DB::transaction(function () use ($user, $newRecipe, $existingRecipe, $targetDate, $best, $fixedFoodstuffs) { // <-- Dodat $fixedFoodstuffs ovde
-            $newUserRecipe = UserRecipe::create([
-                'user_id'   => $user->id,
-                'recipe_id' => $newRecipe->id,
-                'status'    => 'active',
-                'type'      => $existingRecipe->type,
-                'date'      => $targetDate
+        // 7. Formatiranje i upis u bazu
+        $newH = [];
+        $newA = [];
+        if (!empty($best['foodstuff_id'])) {
+            $newHs = explode('-', $best['foodstuff_id']);
+            $newH = array_map('intval', $newHs);
+            $newAs = explode('-', $best['amounts']);
+            $newA = array_map('intval', $newAs);
+        }
+
+        $newRecipe = Recipe::find($best['recipe_id']);
+
+        $newUserRecipe = UserRecipe::create([
+            'user_id' => $user->id,
+            'recipe_id' => $newRecipe->id,
+            'status' => 'active',
+            'type' => $t,
+            'date' => $date
+        ]);
+
+        $existingRecipe->status = 'replaced';
+        $existingRecipe->save();
+
+        // Upis fiksne hrane iz servisa (Tvoja originalna logika)
+        $foodstuffs = $this->recipefoodstuffService->getRecipeFoodstuffs($newRecipe->id);
+        foreach ($foodstuffs as $fn) {
+            if($fn->proteins_holder == 0 && $fn->fats_holder == 0 && $fn->carbohydrates_holder == 0) {
+                UserRecipeFoodstuff::create([
+                    'user_recipe_id' => $newUserRecipe->id,
+                    'foodstuff_id' => $fn->foodstuff_id,
+                    'amount' => $fn->amount,
+                    'purchased' => 0
+                ]);
+            }
+        }
+
+        // Upis holdera
+        for($i = 0; $i < count($newH); $i++) {
+            UserRecipeFoodstuff::create([
+                'user_recipe_id' => $newUserRecipe->id,
+                'foodstuff_id' => $newH[$i],
+                'amount' => $newA[$i],
+                'purchased' => 0
             ]);
+        }
 
-            $existingRecipe->update(['status' => 'replaced']);
-
-            // UPIS FIKSNIH NAMIRNICA IZ NIZA (Nema više pucanja i dodatnih upita ka bazi!)
-            foreach ($fixedFoodstuffs as $fixed) {
-                UserRecipeFoodstuff::create([
-                    'user_recipe_id' => $newUserRecipe->id,
-                    'foodstuff_id'   => $fixed['foodstuff_id'],
-                    'amount'         => $fixed['amount'],
-                    'purchased'      => 0
-                ]);
-            }
-
-            // UPIS HOLDERA
-            foreach ($best['ids'] as $index => $foodstuffId) {
-                UserRecipeFoodstuff::create([
-                    'user_recipe_id' => $newUserRecipe->id,
-                    'foodstuff_id'   => $foodstuffId,
-                    'amount'         => $best['amounts'][$index],
-                    'purchased'      => 0
-                ]);
-            }
-        });
-
-        return response()->json(['message' => 'Meal replaced successfully'], 200);
+        return response()->json('success', 200);
     }
 
     public function getSubscribers() {
