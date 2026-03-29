@@ -1641,6 +1641,7 @@ class UserController extends Controller
 
         $fixCal = 0; $fixProt = 0; $fixFat = 0;
         $holders = [];
+        $fixedFoodstuffs = []; // <-- DODAJEMO NOVI NIZ
 
         foreach ($newRecipe->foodstuffs as $fm) {
             $pivot = RecipeFoodstuff::where('foodstuff_id', $fm->id)
@@ -1651,6 +1652,12 @@ class UserController extends Controller
                 $fixCal  += $pivot->amount * ($fm->calories / 100);
                 $fixProt += $pivot->amount * ($fm->proteins / 100);
                 $fixFat  += $pivot->amount * ($fm->fats / 100);
+
+                // <-- PAMTITE FIKSNU NAMIRNICU ZA KASNIJI UPIS
+                $fixedFoodstuffs[] = [
+                    'foodstuff_id' => $fm->id,
+                    'amount'       => $pivot->amount
+                ];
             } else {
                 $fm->min = $pivot->min;
                 $fm->max = $pivot->max;
@@ -1738,7 +1745,7 @@ class UserController extends Controller
         }
 
         // 7. DB Transakcija za sigurnost
-        \DB::transaction(function () use ($user, $newRecipe, $existingRecipe, $targetDate, $best) {
+        \DB::transaction(function () use ($user, $newRecipe, $existingRecipe, $targetDate, $best, $fixedFoodstuffs) { // <-- Dodat $fixedFoodstuffs ovde
             $newUserRecipe = UserRecipe::create([
                 'user_id'   => $user->id,
                 'recipe_id' => $newRecipe->id,
@@ -1749,18 +1756,17 @@ class UserController extends Controller
 
             $existingRecipe->update(['status' => 'replaced']);
 
-            $allRecipeFoodstuffs = $this->recipefoodstuffService->getRecipeFoodstuffs($newRecipe->id);
-            foreach ($allRecipeFoodstuffs as $fn) {
-                if ($fn->proteins_holder == 0 && $fn->fats_holder == 0 && $fn->carbohydrates_holder == 0) {
-                    UserRecipeFoodstuff::create([
-                        'user_recipe_id' => $newUserRecipe->id,
-                        'foodstuff_id'   => $fn->foodstuff_id,
-                        'amount'         => $fn->amount,
-                        'purchased'      => 0
-                    ]);
-                }
+            // UPIS FIKSNIH NAMIRNICA IZ NIZA (Nema više pucanja i dodatnih upita ka bazi!)
+            foreach ($fixedFoodstuffs as $fixed) {
+                UserRecipeFoodstuff::create([
+                    'user_recipe_id' => $newUserRecipe->id,
+                    'foodstuff_id'   => $fixed['foodstuff_id'],
+                    'amount'         => $fixed['amount'],
+                    'purchased'      => 0
+                ]);
             }
 
+            // UPIS HOLDERA
             foreach ($best['ids'] as $index => $foodstuffId) {
                 UserRecipeFoodstuff::create([
                     'user_recipe_id' => $newUserRecipe->id,
