@@ -1655,6 +1655,25 @@ class UserController extends Controller
                 $fm->min = $pivot->min;
                 $fm->max = $pivot->max;
                 $fm->step = $pivot->step ?? $pivot->min;
+
+                // 1. ZAŠTITA: Sprečavanje beskonačne petlje (ako je step 0)
+                if ($fm->step <= 0) {
+                    $fm->step = 1;
+                }
+
+                // 2. OPTIMIZACIJA: Dinamičko računanje koraka da se spreči Timeout
+                // Ograničavamo maksimalan broj iteracija po namirnici na oko 40
+                $range = $fm->max - $fm->min;
+                if ($range > 0) {
+                    $maxIterationsAllowed = 40;
+                    $idealStep = ceil($range / $maxIterationsAllowed);
+
+                    // Ako je idealni korak veći od trenutnog, pregazimo ga
+                    if ($idealStep > $fm->step) {
+                        $fm->step = $idealStep;
+                    }
+                }
+
                 $holders[] = $fm;
             }
         }
