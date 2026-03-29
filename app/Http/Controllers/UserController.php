@@ -282,7 +282,10 @@ class UserController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
         $userId = User::where('firebase_uid', $firebaseUid)->first()->id;
+
         $this->userWaterService->updateUserWater($userId, $request->water);
+
+        return response()->json('success', 200);
     }
 
     public function getUserWater(Request $request) {
@@ -306,11 +309,12 @@ class UserController extends Controller
             $query->whereBetween('date', [$start, $end]);
         }
 
-//        if($start == $end) {
-//            $userWater = $query->first();
-//        } else {
-            $userWater = $query->get();
-//        }
+        // MAGIJA JE OVDE: Grupišemo sve unose po datumu i sabiramo (SUM) vrednosti.
+        // Frontend dobija netaknut format, npr: [{"date": "2026-03-29", "water": 750}]
+        $userWater = $query->selectRaw('date, SUM(water) as water')
+            ->groupBy('date')
+            ->get();
+
         return response()->json($userWater);
     }
 
@@ -2180,10 +2184,15 @@ class UserController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        $user = User::where('firebase_uid', $firebaseUid)->get()->first();
+        $user = User::where('firebase_uid', $firebaseUid)->first(); // Optimizovano: sklonjen ->get()
+        $today = Carbon::today()->format('Y-m-d');
+
+        // Pronalazimo i brišemo SAMO poslednji unos (poslednju čašu) za DANAŠNJI dan
         $lastUserWater = UserWater::where('user_id', $user->id)
+            ->where('date', $today)
             ->orderBy('created_at', 'desc')
             ->first();
+
         if($lastUserWater) {
             $lastUserWater->delete();
         }
