@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FoodstuffCategoryController;
 use App\Http\Controllers\FoodstuffController;
+use App\Http\Controllers\GymLandingController;
 use App\Http\Controllers\OnBoardingQuestionController;
 use App\Http\Controllers\onBoardingQuestionOptionController;
 use App\Http\Controllers\RecipeController;
@@ -63,3 +64,13 @@ Route::get('/not-test', [UserController::class, 'showNotificationTest'])->name('
 
 Route::get('/question-1', [RecipeController::class, 'getQuestion1'])->name('get-question-1');
 Route::get('/question-2', [RecipeController::class, 'getQuestion2'])->name('get-question-2');
+
+/*
+| Javne rute za QR kampanju u teretanama. Moraju ostati van 'auth' grupe:
+| .well-known fajlove citaju Google i Apple bez ikakve prijave.
+*/
+Route::get('/.well-known/assetlinks.json', [GymLandingController::class, 'assetLinks']);
+Route::get('/.well-known/apple-app-site-association', [GymLandingController::class, 'appleAppSiteAssociation']);
+Route::get('/gym', [GymLandingController::class, 'show'])->name('gym-landing');
+Route::get('/gym/{code}/qr', [GymLandingController::class, 'qr'])->name('gym-qr');
+Route::get('/gym/{code}', [GymLandingController::class, 'show'])->name('gym-landing-code');

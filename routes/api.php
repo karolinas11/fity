@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FoodstuffController;
 use App\Http\Controllers\OnBoardingQuestionController;
+use App\Http\Controllers\PromoController;
 use App\Http\Controllers\OnBoardingQuestionOptionController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\UserController;
@@ -78,3 +79,6 @@ Route::post('/user/update-subscription', [UserController::class, 'updateSubscrip
 Route::post('/user/undo-water', [UserController::class, 'undoWater'])->name('undo-water');
 Route::post('/user/add-recipe-to-plan', [UserController::class, 'addRecipeToPlan'])->name('add-recipe-to-plan');
 Route::get('/test-custom-fields', [UserController::class, 'testCustomFields'])->name('test-custom-fields');
+
+Route::get('/promo/{code}', [PromoController::class, 'show'])->name('promo-show');
+Route::post('/promo/redeem', [PromoController::class, 'redeem'])->name('promo-redeem');

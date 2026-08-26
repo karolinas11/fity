@@ -20,6 +20,7 @@ use App\Models\UserWeight;
 use App\Repositories\UserRecipeRepository;
 use App\Services\AuthService;
 use App\Services\PhotoService;
+use App\Services\PromoService;
 use App\Services\RecipeFoodstuffService;
 use App\Services\RecipeService;
 use App\Services\ScopeService;
@@ -58,6 +59,7 @@ class UserController extends Controller
     protected PhotoService $photoService;
     protected UserRecipeRepository $userRecipeRepository;
     protected RecipeService $recipeService;
+    protected PromoService $promoService;
 
 //    protected $firebaseAuth;
 
@@ -76,6 +78,7 @@ class UserController extends Controller
         $this->photoService = new PhotoService();
         $this->userRecipeRepository = new UserRecipeRepository();
         $this->recipeService = new RecipeService();
+        $this->promoService = new PromoService();
     }
 
     public function showAddUser()
@@ -338,6 +341,13 @@ class UserController extends Controller
         }
         $user = $this->userService->assignFirebaseUid($request->userId, $firebaseUid, $request->email, $request->name);
 
+        // Registracija je prvi trenutak kad korisnik moze da unese promo kod -
+        // za nove korisnike bez naloga do sada nije bilo sta da se redeem-uje.
+        $promoResult = null;
+        if ($user && $request->filled('promo_code')) {
+            $promoResult = $this->promoService->redeem($user, $request->input('promo_code'));
+        }
+
         $name = explode(' ', $request->name);
         $firstName = $name[0];
         $lastName = $name[1] ?? '';
@@ -352,7 +362,10 @@ class UserController extends Controller
 
         $this->userService->updateSubscriberFields($request->email, $customFields);
 
-        return response()->json(['user' => User::find($request->userId)]);
+        return response()->json([
+            'user' => User::find($request->userId),
+            'promo' => $promoResult,
+        ]);
     }
 
     public function getRecipesByUserIdAndWeek(Request $request) {
@@ -598,6 +611,13 @@ class UserController extends Controller
             array_push($meals, 'užina 2');
         }
         $user->meals = $meals;
+
+        // Nove verzije aplikacije citaju trial_ends_at direktno. Starije verzije same
+        // racunaju probni period iz created_at, pa im ga vracamo pomerenog tako da i
+        // one vide produzenje dobijeno promo kodom. Vidi PromoService::legacyCreatedAt().
+        $user->trial_days_remaining = $this->promoService->remainingTrialDays($user);
+        $user->created_at = $this->promoService->legacyCreatedAt($user);
+
         return response()->json($user);
     }
 
