@@ -8,6 +8,14 @@ return [
     */
     'default_code' => env('PROMO_DEFAULT_CODE', 'GYM30'),
 
+    /*
+    | Landing stranica (/gym/{code}) sada zivi u posebnom React repou
+    | (fity-landing), deployovanom na ovaj domen - ne na api.getfity.app.
+    | QR generator ovo koristi da enkodira pravi link umesto route() helpera,
+    | jer ova Laravel app vise ne servira samu stranicu.
+    */
+    'public_base_url' => env('PROMO_PUBLIC_BASE_URL', 'https://getfity.app'),
+
     'stores' => [
         'ios' => 'https://apps.apple.com/rs/app/fity-meals/id6753711257',
         'android' => 'https://play.google.com/store/apps/details?id=app.getfity',

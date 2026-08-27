@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PromoCode;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\Writer\PngWriter;
@@ -12,39 +11,20 @@ use Illuminate\Http\Request;
 class GymLandingController extends Controller
 {
     /**
-     * Stranica na koju vodi QR kod iz teretane.
-     *
-     * Ako je aplikacija instalirana, Android App Link / iOS Universal Link presretne
-     * ovaj URL i otvori aplikaciju - do ove stranice se tada nikad ne dolazi.
-     * Ovo je, dakle, put za korisnike koji aplikaciju jos nemaju.
+     * Stara ruta na ovom (api.) domenu. Prava landing stranica sada zivi u
+     * posebnom React repou (fity-landing) na config('promo.public_base_url') -
+     * ovo je samo redirect za svakog ko na ovu adresu naleti direktno
+     * (stari link, App Link fallback pre nego sto se assetlinks.json
+     * verifikuje na oba domena).
      */
     public function show(Request $request, ?string $code = null)
     {
         $code = strtoupper(trim($code ?? config('promo.default_code')));
-        $promoCode = PromoCode::findByCode($code);
 
-        $trialDays = $promoCode?->trial_days ?? 30;
-        $available = $promoCode !== null && $promoCode->isRedeemable();
-
-        // Play Install Referrer isporucuje ovaj string aplikaciji pri prvom pokretanju
-        // posle instalacije - to je Android put koji radi bez ijedne akcije korisnika.
-        $referrer = http_build_query([
-            'utm_source' => 'gym',
-            'utm_medium' => 'qr',
-            'utm_campaign' => strtolower($code),
-            'promo' => $code,
-        ]);
-
-        return response()->view('gym-landing', [
-            'code' => $code,
-            'trialDays' => $trialDays,
-            'available' => $available,
-            'unavailableReason' => $promoCode?->unavailableReason(),
-            'androidUrl' => config('promo.stores.android') . '&referrer=' . urlencode($referrer),
-            'iosUrl' => config('promo.stores.ios'),
-            'iosAppId' => config('promo.apps.ios_app_id'),
-            'appArgument' => $request->url(),
-        ]);
+        return redirect()->away(
+            rtrim(config('promo.public_base_url'), '/') . '/gym/' . $code,
+            301
+        );
     }
 
     /**
@@ -57,7 +37,7 @@ class GymLandingController extends Controller
     {
         $format = $request->query('format', 'png') === 'svg' ? 'svg' : 'png';
         $size = max(200, min(4000, (int) $request->query('size', 1000)));
-        $url = route('gym-landing-code', ['code' => strtoupper($code)]);
+        $url = rtrim(config('promo.public_base_url'), '/') . '/gym/' . strtoupper($code);
 
         $result = Builder::create()
             ->writer($format === 'svg' ? new SvgWriter() : new PngWriter())
@@ -70,6 +50,10 @@ class GymLandingController extends Controller
         return response($result->getString(), 200, [
             'Content-Type' => $result->getMimeType(),
             'Content-Disposition' => 'inline; filename="fity-qr-' . strtolower($code) . '.' . $format . '"',
+            // Ruta je van /api/* pa je van default CORS pravila - landing repo
+            // (drugi domen) fetch-uje ovo direktno kao blob radi pravog
+            // preuzimanja jednim klikom, ne samo otvaranja u novom tabu.
+            'Access-Control-Allow-Origin' => '*',
         ]);
     }
 
