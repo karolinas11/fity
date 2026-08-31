@@ -12,7 +12,7 @@ return new class extends Migration
             [
                 'label' => 'Teretane - 30 dana besplatno',
                 'trial_days' => 30,
-                'starts_at' => '2026-09-01 00:00:00',
+                'starts_at' => null,
                 'ends_at' => null,
                 'max_redemptions' => null,
                 'is_active' => true,
